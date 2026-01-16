@@ -1,0 +1,311 @@
+/* CarConstructor3D - CSS Isometric 3D Constructor */
+
+.car-constructor-3d {
+    display: flex;
+    height: 100%;
+    background: var(--color-bg-primary);
+    overflow: hidden;
+}
+
+/* Parts Panel */
+.parts-panel-3d {
+    width: 280px;
+    background: rgba(30, 39, 73, 0.95);
+    backdrop-filter: blur(20px);
+    border-right: 2px solid var(--color-accent-cyan);
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+}
+
+.panel-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.parts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.part-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 242, 255, 0.3);
+    border-radius: var(--radius-lg);
+    cursor: grab;
+    transition: all var(--transition-fast);
+}
+
+.part-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-accent-cyan);
+    transform: translateX(5px);
+}
+
+.part-item:active {
+    cursor: grabbing;
+}
+
+.part-item.complete {
+    border-color: var(--color-accent-green, #00ff9f);
+    background: rgba(0, 255, 159, 0.1);
+}
+
+.part-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.part-info {
+    flex: 1;
+}
+
+.part-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.part-count {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.check {
+    color: var(--color-accent-green, #00ff9f);
+    font-size: 1rem;
+}
+
+/* Constructor Area */
+.constructor-area {
+    padding: var(--spacing-2xl);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1s ease-out;
+}
+
+.hint-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+    filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.6));
+}
+
+.constructor-hint h2 {
+    margin: 0 0 var(--spacing-md) 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.75rem;
+}
+
+.constructor-hint p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+}
+
+/* 3D Parts */
+.part-3d {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    transition: transform var(--transition-normal);
+}
+
+.part-3d:hover {
+    transform: scale(1.1) !important;
+}
+
+.part-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-accent-cyan);
+    background: rgba(0, 242, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.part-face.front {
+    transform: translateZ(40px);
+    background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(157, 78, 221, 0.2));
+}
+
+.part-face.top {
+    transform: rotateX(90deg) translateZ(40px);
+    background: rgba(0, 242, 255, 0.15);
+    height: 80px;
+}
+
+.part-face.side {
+    transform: rotateY(90deg) translateZ(40px);
+    background: rgba(0, 242, 255, 0.1);
+    width: 80px;
+}
+
+.part-icon-3d {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Different part types */
+.part-3d[data-part-type="chassis"] .part-face {
+    border-color: #666;
+    background: linear-gradient(135deg, rgba(102, 102, 102, 0.3), rgba(51, 51, 51, 0.3));
+}
+
+.part-3d[data-part-type="engine"] .part-face {
+    border-color: #ff006e;
+    background: linear-gradient(135deg, rgba(255, 0, 110, 0.3), rgba(157, 78, 221, 0.3));
+}
+
+.part-3d[data-part-type="wheel"] .part-face {
+    border-color: #333;
+    background: linear-gradient(135deg, rgba(51, 51, 51, 0.4), rgba(0, 0, 0, 0.4));
+    border-radius: 50%;
+}
+
+.part-3d[data-part-type="body"] .part-face {
+    border-color: #00ff9f;
+    background: linear-gradient(135deg, rgba(0, 255, 159, 0.2), rgba(0, 242, 255, 0.2));
+}
+
+/* Launch Overlay */
+.launch-overlay {
+    position: absolute;
+    bottom: var(--spacing-2xl);
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background: rgba(30, 39, 73, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--color-accent-green, #00ff9f);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    min-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 255, 159, 0.4);
+    animation: slideInUp 0.5s ease-out;
+    z-index: 100;
+}
+
+.launch-message {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-md);
+}
+
+.btn-launch {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    color: var(--color-text-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.6);
+}
+
+.btn-launch:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(0, 242, 255, 0.9);
+}
+
+.btn-launch:active {
+    transform: scale(0.98);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .parts-panel-3d {
+        width: 200px;
+    }
+
+    .launch-overlay {
+        min-width: 90%;
+    }
+}

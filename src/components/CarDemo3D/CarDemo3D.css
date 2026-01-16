@@ -1,0 +1,176 @@
+/* CarDemo3D Component Styles */
+
+.car-demo-3d {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, #0a0e27 0%, #1e2749 100%);
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Close button */
+.close-3d-btn {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 0, 110, 0.9);
+    border: 2px solid #ff006e;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1002;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 16px rgba(255, 0, 110, 0.4);
+}
+
+.close-3d-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 24px rgba(255, 0, 110, 0.7);
+}
+
+/* Overlay */
+.demo-overlay {
+    position: absolute;
+    top: var(--spacing-2xl);
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+.demo-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 var(--spacing-sm) 0;
+    animation: slideInDown 0.6s ease-out;
+}
+
+.demo-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    animation: slideInDown 0.6s ease-out 0.2s both;
+}
+
+/* Controls Panel */
+.controls-panel {
+    position: absolute;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    background: rgba(30, 39, 73, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--color-accent-cyan);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    z-index: 1001;
+    box-shadow: 0 8px 32px rgba(0, 242, 255, 0.4);
+}
+
+.controls-hint {
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent-cyan);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+}
+
+/* Arrow Controls */
+.arrow-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.arrow-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    justify-content: center;
+}
+
+.arrow-btn {
+    width: 56px;
+    height: 56px;
+    background: rgba(0, 242, 255, 0.2);
+    border: 2px solid var(--color-accent-cyan);
+    border-radius: var(--radius-md);
+    color: var(--color-accent-cyan);
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(0, 242, 255, 0.3);
+    user-select: none;
+}
+
+.arrow-btn:hover {
+    background: rgba(0, 242, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 242, 255, 0.5);
+}
+
+.arrow-btn:active,
+.arrow-btn.active {
+    transform: scale(0.95);
+    background: rgba(0, 242, 255, 0.7);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 1);
+}
+
+/* Canvas */
+.car-demo-3d canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .demo-title {
+        font-size: 1.75rem;
+    }
+
+    .controls-panel {
+        bottom: var(--spacing-md);
+        right: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+
+    .arrow-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}

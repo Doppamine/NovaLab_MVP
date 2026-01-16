@@ -1,0 +1,265 @@
+/* Part Component Styles */
+
+.part {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 39, 73, 0.9);
+    border: 2px solid rgba(0, 242, 255, 0.3);
+    border-radius: var(--radius-md);
+    cursor: grab;
+    user-select: none;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    z-index: var(--z-base);
+}
+
+.part:hover {
+    border-color: var(--color-accent-cyan);
+    box-shadow: 0 6px 20px rgba(0, 242, 255, 0.4);
+    transform: perspective(1000px) rotateY(-3deg) scale(1.02);
+    z-index: calc(var(--z-base) + 1);
+}
+
+.part:active {
+    cursor: grabbing;
+}
+
+.part.selected {
+    border-color: var(--color-accent-pink);
+    box-shadow: 0 0 30px rgba(255, 0, 110, 0.6);
+    z-index: calc(var(--z-base) + 2);
+}
+
+/* Remove background for propeller */
+.part[data-part-id*="propeller"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Part Visual Content */
+.part-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.part-icon-large {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 8px rgba(0, 242, 255, 0.3));
+    transition: all var(--transition-normal);
+}
+
+.part-icon-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.part:hover .part-icon-large {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 12px rgba(0, 242, 255, 0.6));
+}
+
+.part-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 0 var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-sm);
+}
+
+/* Propeller pure image */
+.propeller-pure-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.part.propeller-spinning .propeller-pure-image {
+    animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Connection Slots */
+.connection-slot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    pointer-events: auto;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.slot-inner {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.connection-slot:hover {
+    transform: scale(1.5);
+    z-index: 20;
+}
+
+.connection-slot:hover .slot-inner {
+    width: 8px;
+    height: 8px;
+}
+
+/* Slot States */
+.connection-slot.highlighted {
+    animation: slot-pulse 1.5s ease-out infinite;
+}
+
+.connection-slot.compatible {
+    border-color: var(--color-accent-green) !important;
+    box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+.connection-slot.incompatible {
+    border-color: var(--color-accent-pink) !important;
+    box-shadow: 0 0 15px var(--color-accent-pink);
+    animation: slot-invalid 0.4s ease-out;
+}
+
+/* State: Powered */
+.part.powered {
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 25px rgba(0, 255, 159, 0.5);
+}
+
+.powered-indicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent-green);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--color-accent-green);
+    animation: pulse 1.5s infinite;
+}
+
+.power-glow {
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle, rgba(0, 255, 159, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+/* State: Bulb Powered */
+.part.bulb-powered .part-icon-large {
+    filter: drop-shadow(0 0 20px rgba(255, 223, 0, 1));
+    animation: bulb-glow 1.5s ease-in-out infinite;
+}
+
+.part.bulb-powered {
+    box-shadow: 0 0 40px rgba(255, 223, 0, 0.8);
+}
+
+/* State: Motor Active */
+.part.motor-active {
+    animation: motor-vibrate 0.1s infinite;
+}
+
+@keyframes motor-vibrate {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(-1px, 0);
+    }
+
+    75% {
+        transform: translate(1px, 0);
+    }
+}
+
+/* State: Battery Active */
+.part.battery-active {
+    animation: battery-charge 2s ease-in-out infinite;
+}
+
+/* Dragging State */
+.part.dragging {
+    opacity: 0.8;
+    transform: scale(1.1);
+    cursor: grabbing;
+    z-index: 1000;
+    filter: drop-shadow(0 10px 30px rgba(0, 242, 255, 0.6));
+}
+
+/* Snapping Animation */
+.part.snapping {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Part Size Variants */
+.part.size-small {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.part.size-medium {
+    min-width: 60px;
+    min-height: 60px;
+}
+
+.part.size-large {
+    min-width: 100px;
+    min-height: 100px;
+}
+
+/* Entrance Animation */
+.part.part-enter {
+    animation: bounce-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .part-icon-large {
+        font-size: 2rem;
+    }
+
+    .part-label {
+        font-size: 0.7rem;
+    }
+
+    .connection-slot {
+        width: 14px;
+        height: 14px;
+    }
+}

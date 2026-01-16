@@ -1,0 +1,81 @@
+/* App Layout Styles */
+
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Mode Tabs Switcher */
+.mode-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.tab-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(0, 242, 255, 0.1);
+  border: 1px solid rgba(0, 242, 255, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn:hover {
+  background: rgba(0, 242, 255, 0.2);
+  border-color: var(--color-accent-cyan);
+  color: var(--color-text-primary);
+}
+
+.tab-btn.active {
+  background: var(--color-accent-cyan);
+  border-color: var(--color-accent-cyan);
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sub-tabs styling */
+.mode-tabs.sub-tabs {
+  margin-left: 1rem;
+  border-left: 1px solid rgba(0, 242, 255, 0.3);
+  padding-left: 1rem;
+}
+
+.tab-btn.sub {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.8rem;
+  background: rgba(157, 78, 221, 0.1);
+  border-color: rgba(157, 78, 221, 0.3);
+}
+
+.tab-btn.sub:hover {
+  background: rgba(157, 78, 221, 0.2);
+  border-color: #9d4edd;
+}
+
+.tab-btn.sub.active {
+  background: #9d4edd;
+  border-color: #9d4edd;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+}

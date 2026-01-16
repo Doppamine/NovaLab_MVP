@@ -1,0 +1,31 @@
+/* Connection Component Styles */
+
+.connection-wire {
+    position: absolute;
+    overflow: visible;
+    z-index: 0;
+    transition: all 0.2s ease;
+}
+
+.connection-wire.hovered {
+    z-index: 10;
+}
+
+.wire-main {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: wire-draw 0.5s ease-out forwards;
+    transition: stroke-width 0.2s ease;
+}
+
+.energy-particle {
+    filter: drop-shadow(0 0 4px currentColor);
+}
+
+.connection-wire:hover {
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.connection-wire:active {
+    opacity: 0.5;
+}
