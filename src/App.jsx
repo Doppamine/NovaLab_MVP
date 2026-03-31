@@ -5,6 +5,7 @@ import WorkArea from './components/WorkArea/WorkArea';
 import CarDemo3D from './components/CarDemo3D/CarDemo3D';
 import Car3DConstructor from './components/Car3DConstructor/Car3DConstructor';
 import RocketConstructor from './components/RocketConstructor/RocketConstructor';
+import WaterModuleRouter from './components/WaterModule/WaterModuleRouter';
 import './App.css';
 
 function App() {
@@ -58,6 +59,12 @@ function App() {
                 >
                   🚀 Ракета
                 </button>
+                <button
+                  className={`tab-btn sub ${mode3d === 'water' ? 'active' : ''}`}
+                  onClick={() => setMode3d('water')}
+                >
+                  💧 Вода
+                </button>
               </div>
             )}
           </Header>
@@ -69,8 +76,10 @@ function App() {
             </div>
           ) : mode3d === 'car' ? (
             <Car3DConstructor onCarLaunch={handleCarLaunch} />
-          ) : (
+          ) : mode3d === 'rocket' ? (
             <RocketConstructor onLaunch={() => alert('Полет на Луну скоро!')} />
+          ) : (
+            <WaterModuleRouter />
           )}
         </>
       )}

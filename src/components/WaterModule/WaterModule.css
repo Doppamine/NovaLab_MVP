@@ -1,0 +1,538 @@
+.water-module-container {
+    display: flex;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    /* Минус Header */
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+}
+
+.panel {
+    width: 300px;
+    background-color: #1e1e1e;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-right: 1px solid #333;
+    border-left: 1px solid #333;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.panel h2 {
+    font-size: 1.2rem;
+    margin: 0 0 10px 0;
+    color: #4a90e2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Инвентарь */
+.parts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.part-card {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.part-card:hover {
+    background: #333;
+    border-color: #666;
+    transform: translateY(-2px);
+}
+
+.part-card.assembled {
+    background: #1a2f1c;
+    /* Зеленоватый оттенок */
+    border-color: #2e7d32;
+    opacity: 0.8;
+}
+
+.part-icon {
+    font-size: 24px;
+    background: #111;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.part-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.part-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.part-desc {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.status-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #2e7d32;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 3D Сцена */
+.center-workspace {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, #2a2a2a 0%, #111 100%);
+}
+
+.error-banner {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(211, 47, 47, 0.9);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        top: -50px;
+        opacity: 0;
+    }
+
+    to {
+        top: 20px;
+        opacity: 1;
+    }
+}
+
+.simulation-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+}
+
+.sim-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    color: white;
+}
+
+.sim-btn.start {
+    background: linear-gradient(135deg, #0288d1, #01579b);
+}
+
+.sim-btn.start:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(2, 136, 209, 0.5);
+}
+
+.sim-btn.stop {
+    background: linear-gradient(135deg, #d32f2f, #c62828);
+}
+
+.sim-btn.stop:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5);
+}
+
+/* Настройки и Метрики */
+.sliders-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: #222;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.slider-group label {
+    font-size: 0.85rem;
+    color: #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+
+input[type=range] {
+    width: 100%;
+    accent-color: #4a90e2;
+    background: #444;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.metrics-dashboard {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.metric-box {
+    background: #252525;
+    border-left: 4px solid #555;
+    padding: 12px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-box.danger {
+    border-left-color: #ff3d00;
+    animation: pulse-border 1.5s infinite;
+}
+
+@keyframes pulse-border {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(255, 61, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 61, 0, 0);
+    }
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.metric-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.metric-value.blue {
+    color: #4fc3f7;
+}
+
+.metric-value.orange {
+    color: #ffb74d;
+}
+
+.metric-value.green {
+    color: #81c784;
+}
+
+/* Виньетка усталости — красное свечение по краям */
+.fatigue-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center,
+            transparent 40%,
+            rgba(211, 47, 47, 0.4) 80%,
+            rgba(211, 47, 47, 0.7) 100%);
+    animation: fatigue-pulse 1.5s ease-in-out infinite;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes fatigue-pulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Полоска усталости в метрике */
+.fatigue-bar {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.fatigue-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #ffb74d 0%, #ff5722 60%, #d32f2f 100%);
+    transition: width 0.3s ease;
+}
+
+/* Выделенные метрики (стоимость, люди) */
+.metric-box.highlight {
+    border-left-color: #4a90e2;
+    background: linear-gradient(135deg, #1a2a3a 0%, #252525 100%);
+}
+
+.metric-box.highlight .metric-label {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.right-panel {
+    overflow-y: auto;
+}
+
+/* Подметрика (стоимость за человека) */
+.metric-sub {
+    display: block;
+    font-size: 0.75rem;
+    color: #8bc34a;
+    margin-top: 2px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* Danger-стиль для перегрузки */
+.metric-box.danger {
+    border-left-color: #f44336;
+    background: linear-gradient(135deg, #3a1a1a 0%, #2a1515 100%);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* Миссия выполнена — оверлей                        */
+/* ═══════════════════════════════════════════════════ */
+.mission-complete-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+}
+
+.mission-complete-card {
+    position: relative;
+    background: linear-gradient(145deg, #1a3a2a 0%, #0d1f15 100%);
+    border: 2px solid #4caf50;
+    border-radius: 20px;
+    padding: 40px 50px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(76, 175, 80, 0.3), 0 0 120px rgba(76, 175, 80, 0.1);
+    max-width: 480px;
+    overflow: hidden;
+}
+
+.mission-complete-card h1 {
+    font-size: 2rem;
+    color: #4caf50;
+    margin: 0 0 8px;
+    text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+.mission-subtitle {
+    color: #a5d6a7;
+    font-size: 1rem;
+    margin-bottom: 24px;
+}
+
+.mission-stats {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.mission-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 20px;
+    min-width: 100px;
+}
+
+.mission-stat-icon {
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+}
+
+.mission-stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.mission-cost-per {
+    color: #a5d6a7;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.mission-cost-per strong {
+    color: #8bc34a;
+    font-size: 1.3rem;
+}
+
+.mission-dismiss {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mission-dismiss:hover {
+    background: #66bb6a;
+}
+
+/* Конфетти */
+.confetti-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -30px;
+    font-size: 1.6rem;
+    animation: confettiFall linear infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(500px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* Water Module Router — sub-tabs                    */
+/* ═══════════════════════════════════════════════════ */
+.water-router {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 60px);
+}
+
+.water-sub-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #1a1a2e;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+}
+
+.water-tab-btn {
+    padding: 6px 18px;
+    border: 1px solid #444;
+    border-radius: 8px 8px 0 0;
+    background: #252540;
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.water-tab-btn:hover {
+    background: #2d2d4a;
+    color: #ccc;
+}
+
+.water-tab-btn.active {
+    background: #121212;
+    color: #4FC3F7;
+    border-bottom-color: #121212;
+}
+
+/* Когда внутри router — подстроить контейнер */
+.water-router .water-module-container {
+    height: 100%;
+    flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* Filter-specific metrics                           */
+/* ═══════════════════════════════════════════════════ */
+.metric-value.red {
+    color: #f44336;
+}
+
+.metric-value.orange {
+    color: #ff9800;
+}
+
+/* Checklist (что фильтр удаляет) */
+.filter-checklist .checklist-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 0.82rem;
+}
+
+.check-ok {
+    color: #4caf50;
+}
+
+.check-no {
+    color: #777;
+}
