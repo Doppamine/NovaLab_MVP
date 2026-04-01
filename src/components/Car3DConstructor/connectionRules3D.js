@@ -73,10 +73,25 @@ export function getSocketsFromParts(parts, partModelsData) {
     return allSockets;
 }
 
+/**
+ * Проверяет, занят ли конкретный сокет на детали
+ * @param {Array} connections - массив текущих соединений
+ * @param {string} targetPartId - ID детали, чей сокет проверяем
+ * @param {string} socketId - ID сокета
+ * @returns {boolean} true если сокет занят
+ */
+export function isSocketOccupied(connections, targetPartId, socketId) {
+    return connections.some(c =>
+        c.socketId === socketId &&
+        (c.part2 === targetPartId || c.hostPartId === targetPartId)
+    );
+}
+
 export default {
     SNAP_RADIUS,
     canConnect,
     calculateDistance3D,
     findNearestSocket,
-    getSocketsFromParts
+    getSocketsFromParts,
+    isSocketOccupied
 };

@@ -243,7 +243,7 @@ function CarDemo3D({ onComplete }) {
 
             <div className="demo-overlay">
                 <h2 className="demo-title">🚗 Машинка запущена!</h2>
-                <p className="demo-subtitle">Используйте WASD или стрелки</p>
+                <p className="demo-subtitle">Используйте стрелки для управления, пробел для включения/выключения фар</p>
 
             </div>
 

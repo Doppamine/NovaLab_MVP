@@ -1,15 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getPartsByCategory } from '../../utils/partsData';
 import RocketScene3D from './RocketScene3D';
 import DraggablePart3D from '../Car3DConstructor/DraggablePart3D';
 import RocketPartModels from './RocketPart3DModel';
 import LaunchSequence from './LaunchSequence';
-import { ROCKET_SOCKETS_DATA, canConnect, calculateDistance3D, SNAP_RADIUS } from './rocketConnectionRules';
+import { ROCKET_SOCKETS_DATA, canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './rocketConnectionRules';
+import SoundManager from '../../utils/SoundManager';
 import './RocketConstructor.css';
-
-// Snap sound
-const snapSound = new Audio('/sounds/snap.mp3');
-snapSound.volume = 0.5;
 
 /**
  * RocketConstructor - копия логики Car3DConstructor с ракетными моделями
@@ -19,7 +16,9 @@ function RocketConstructor({ onLaunch }) {
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
     const [selectedPart, setSelectedPart] = useState(null);
-    const [isLaunching, setIsLaunching] = useState(false); // Launch animation state
+    const [isLaunching, setIsLaunching] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(true);
+    const [onboardingStep, setOnboardingStep] = useState(0);
 
     const rocketParts = getPartsByCategory('rocket');
 
@@ -28,12 +27,49 @@ function RocketConstructor({ onLaunch }) {
         return acc;
     }, {});
 
+    // Progress calculation
+    const connectedPartsCount = partsOnField.filter(p => p.connectedTo.length > 0).length;
+    const totalRequired = 10; // engine_cluster + first_stage + inter_stage + second_stage + command_module + fairing + 4 boosters
+    const progressPercent = Math.min(100, Math.round((connectedPartsCount / totalRequired) * 100));
+
+    // Dismiss onboarding after first part is placed
+    useEffect(() => {
+        if (partsOnField.length > 0 && showOnboarding) {
+            const timer = setTimeout(() => setShowOnboarding(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [partsOnField.length, showOnboarding]);
+
+    // Cycle onboarding tips
+    useEffect(() => {
+        if (!showOnboarding) return;
+        const interval = setInterval(() => {
+            setOnboardingStep(prev => (prev + 1) % 3);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [showOnboarding]);
+
+    // Reset everything
+    const handleReset = () => {
+        setPartsOnField([]);
+        setConnections([]);
+        setHighlightedSockets([]);
+        setSelectedPart(null);
+        setShowOnboarding(true);
+        setOnboardingStep(0);
+    };
+
     // Добавить деталь
     const handlePartAdd = (partType) => {
+        // Разносим стартовые позиции чтобы детали не накладывались
+        const existingCount = partsOnField.length;
+        const offsetX = ((existingCount % 4) - 1.5) * 3;
+        const offsetZ = Math.floor(existingCount / 4) * 3 - 4;
+
         const newPart = {
             id: `${partType}-${Date.now()}`,
             type: partType,
-            position: [0, 5, 0],
+            position: [offsetX, 5, offsetZ],
             connectedTo: []
         };
         setPartsOnField(prev => [...prev, newPart]);
@@ -75,6 +111,9 @@ function RocketConstructor({ onLaunch }) {
 
             otherSockets.forEach(socket => {
                 if (!canConnect(draggedPart.type, socket.type)) return;
+
+                // Проверяем: занят ли этот конкретный слот другой деталью
+                if (isSocketOccupied(connections, otherPart.id, socket.id)) return;
 
                 const socketWorldPos = [
                     otherPart.position[0] + socket.position[0],
@@ -266,19 +305,35 @@ function RocketConstructor({ onLaunch }) {
             setConnections(prev => [...prev, {
                 id: `conn-${Date.now()}`,
                 part1: partId,
-                part2: match.targetPart.id
+                part2: match.targetPart.id,
+                socketId: match.socketData.id,
+                hostPartId: match.targetPart.id
             }]);
 
             // Log при новом соединении
             console.log(`✅ Соединено: ${part.type} → ${match.targetPart.type}`);
 
             // Воспроизводим звук snap
-            snapSound.currentTime = 0;
-            snapSound.play().catch(() => { });
+            SoundManager.playSnap();
         } else {
-            setPartsOnField(prev => prev.map(p =>
-                p.id === partId ? { ...p, position: [position.x, position.y, position.z] } : p
-            ));
+            // Защита от залипания в начальной позиции (баг с центром)
+            const pos = [position.x, position.y, position.z];
+            const isNearCenter = Math.abs(pos[0]) < 0.5 && Math.abs(pos[2]) < 0.5;
+            const partData = partsOnField.find(p => p.id === partId);
+            const isUnconnected = partData && partData.connectedTo.length === 0;
+
+            if (isNearCenter && isUnconnected) {
+                // Сдвигаем от центра чтобы не перекрывала другие детали
+                const safeX = (Math.random() - 0.5) * 8;
+                const safeZ = (Math.random() - 0.5) * 8;
+                setPartsOnField(prev => prev.map(p =>
+                    p.id === partId ? { ...p, position: [safeX, 5, safeZ] } : p
+                ));
+            } else {
+                setPartsOnField(prev => prev.map(p =>
+                    p.id === partId ? { ...p, position: pos } : p
+                ));
+            }
         }
 
         setHighlightedSockets([]);
@@ -338,6 +393,12 @@ function RocketConstructor({ onLaunch }) {
         );
     }
 
+    const onboardingTips = [
+        { icon: '👆', text: 'Нажми на деталь слева для добавления' },
+        { icon: '✋', text: 'Перетащи деталь к светящейся точке' },
+        { icon: '🚀', text: 'Собери ракету и запусти её в космос!' }
+    ];
+
     return (
         <div className="rocket-constructor">
             {/* Панель деталей */}
@@ -373,6 +434,35 @@ function RocketConstructor({ onLaunch }) {
 
             {/* Сцена */}
             <div className="rocket-workspace">
+                {/* Progress Bar */}
+                <div className="progress-bar-container rocket-progress">
+                    <div className="progress-info">
+                        <span className="progress-label">🚀 Прогресс сборки</span>
+                        <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
+                    </div>
+                    <div className="progress-track">
+                        <div
+                            className="progress-fill rocket-fill"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                </div>
+
+                {/* Onboarding Overlay */}
+                {showOnboarding && partsOnField.length === 0 && (
+                    <div className="onboarding-overlay">
+                        <div className="onboarding-card rocket-onboarding">
+                            <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
+                            <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
+                            <div className="onboarding-dots">
+                                {onboardingTips.map((_, i) => (
+                                    <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <RocketScene3D>
                     {partsOnField.map(part => (
                         <DraggablePart3D
@@ -385,24 +475,34 @@ function RocketConstructor({ onLaunch }) {
                             onSelect={() => setSelectedPart(part.id)}
                             onPositionChange={(pos) => handlePartDrag(part.id, pos)}
                             onDrop={(pos) => handlePartDrop(part.id, pos)}
-                            // Передаем кастомную модель
                             customModel={RocketPartModels[part.type]}
                         />
                     ))}
                 </RocketScene3D>
 
                 <div className="scene-hint">
-                    <p>ЛКМ: Drag | ПКМ: Rotate | СКМ: Pan | Колесо: Zoom</p>
+                    <p>ЛКМ: Перетащить | ПКМ: Вращать | Колёсико: Масштаб</p>
                 </div>
 
-                {selectedPart && (
-                    <button
-                        className="btn-delete"
-                        onClick={() => handlePartDelete(selectedPart)}
-                    >
-                        🗑️ Удалить деталь
-                    </button>
-                )}
+                {/* Action Buttons */}
+                <div className="action-buttons">
+                    {selectedPart && (
+                        <button
+                            className="btn-delete"
+                            onClick={() => handlePartDelete(selectedPart)}
+                        >
+                            🗑️ Удалить деталь
+                        </button>
+                    )}
+                    {partsOnField.length > 0 && (
+                        <button
+                            className="btn-reset"
+                            onClick={handleReset}
+                        >
+                            🔄 Начать заново
+                        </button>
+                    )}
+                </div>
 
                 <div className="launch-controls">
                     <button

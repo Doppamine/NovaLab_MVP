@@ -8,21 +8,21 @@ export const PART_SOCKETS_DATA = {
         connectionOffset: { y: 0 },
         sockets: [
             // 4 слота для колес по углам
-            { type: 'wheel', position: [-1.8, -0.15, 2.8] },
-            { type: 'wheel', position: [1.8, -0.15, 2.8] },
-            { type: 'wheel', position: [-1.8, -0.15, -2.8] },
-            { type: 'wheel', position: [1.8, -0.15, -2.8] },
+            { id: 'wheel-fl', type: 'wheel', position: [-1.8, -0.15, 2.8] },
+            { id: 'wheel-fr', type: 'wheel', position: [1.8, -0.15, 2.8] },
+            { id: 'wheel-rl', type: 'wheel', position: [-1.8, -0.15, -2.8] },
+            { id: 'wheel-rr', type: 'wheel', position: [1.8, -0.15, -2.8] },
             // Слот для двигателя (СПЕРЕДИ, НА шасси)
-            { type: 'engine', position: [0, 0.3, 1.5] },
+            { id: 'engine-slot', type: 'engine', position: [0, 0.3, 1.5] },
             // Слот для кузова (строго СВЕРХУ, центр)
-            { type: 'body', position: [0, 0.8, 0] }
+            { id: 'body-slot', type: 'body', position: [0, 0.8, 0] }
         ]
     },
 
     wheel: {
         connectionOffset: { y: 0 },
         sockets: [
-            { type: 'chassis', position: [0, 0, 0] }
+            { id: 'to-chassis', type: 'chassis', position: [0, 0, 0] }
         ]
     },
 
@@ -31,9 +31,9 @@ export const PART_SOCKETS_DATA = {
         connectionOffset: { y: -0.5 },
         sockets: [
             // Слот к шасси (снизу двигателя)
-            { type: 'chassis', position: [0, -0.5, 0] },
+            { id: 'to-chassis', type: 'chassis', position: [0, -0.5, 0] },
             // Слот к аккумулятору (СБОКУ справа от двигателя)
-            { type: 'carBattery', position: [1.0, 0, 0] }
+            { id: 'battery-slot', type: 'carBattery', position: [1.0, 0, 0] }
             // Пульт не крепится - просто выкладываем на поле
         ]
     },
@@ -43,7 +43,7 @@ export const PART_SOCKETS_DATA = {
         connectionOffset: { x: -0.5 },
         sockets: [
             // Слот к двигателю (слева от аккумулятора)
-            { type: 'engine', position: [-0.5, 0, 0] }
+            { id: 'to-engine', type: 'engine', position: [-0.5, 0, 0] }
         ]
     },
 
@@ -52,7 +52,7 @@ export const PART_SOCKETS_DATA = {
         connectionOffset: { y: -0.75 },
         sockets: [
             // Слот к шасси (снизу кузова, центр)
-            { type: 'chassis', position: [0, -0.75, 0] }
+            { id: 'to-chassis', type: 'chassis', position: [0, -0.75, 0] }
         ]
     },
 

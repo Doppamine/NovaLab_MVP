@@ -18,7 +18,7 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: 0 },
         sockets: [
             // Верх платформы - для first_stage
-            { type: 'first_stage', position: [0, 0.5, 0] }
+            { id: 'to-first-stage', type: 'first_stage', position: [0, 0.5, 0] }
         ]
     },
 
@@ -31,16 +31,16 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: -4.15 }, // Низ крепится к engine_cluster
         sockets: [
             // Низ - к engine_cluster
-            { type: 'engine_cluster', position: [0, -4.15, 0] },
+            { id: 'to-engine-cluster', type: 'engine_cluster', position: [0, -4.15, 0] },
             // Верх - к inter_stage
-            { type: 'inter_stage', position: [0, 4.4, 0] },
+            { id: 'to-inter-stage', type: 'inter_stage', position: [0, 4.4, 0] },
             // 4 боковых слота для бустеров - снаружи корпуса
             // first_stage радиус = 1.2, бустер точка крепления внутрь на 0.55
             // Итого: 1.2 + 0.55 + небольшой зазор = ~1.8
-            { type: 'booster', position: [1.8, 0, 0] },
-            { type: 'booster', position: [-1.8, 0, 0] },
-            { type: 'booster', position: [0, 0, 1.8] },
-            { type: 'booster', position: [0, 0, -1.8] }
+            { id: 'booster-right', type: 'booster', position: [1.8, 0, 0] },
+            { id: 'booster-left', type: 'booster', position: [-1.8, 0, 0] },
+            { id: 'booster-front', type: 'booster', position: [0, 0, 1.8] },
+            { id: 'booster-back', type: 'booster', position: [0, 0, -1.8] }
         ]
     },
 
@@ -53,7 +53,7 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { x: 0.55 }, // Крепится боковой точкой
         sockets: [
             // Точка крепления сбоку (где черный квадрат)
-            { type: 'first_stage', position: [0.55, 0, 0] }
+            { id: 'to-first-stage', type: 'first_stage', position: [0.55, 0, 0] }
         ]
     },
 
@@ -65,9 +65,9 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: -0.75 },
         sockets: [
             // Низ - к first_stage
-            { type: 'first_stage', position: [0, -0.75, 0] },
+            { id: 'to-first-stage', type: 'first_stage', position: [0, -0.75, 0] },
             // Верх - к second_stage
-            { type: 'second_stage', position: [0, 0.75, 0] }
+            { id: 'to-second-stage', type: 'second_stage', position: [0, 0.75, 0] }
         ]
     },
 
@@ -79,9 +79,9 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: -2.6 }, // Низ (над соплом)
         sockets: [
             // Низ - к inter_stage
-            { type: 'inter_stage', position: [0, -2.6, 0] },
+            { id: 'to-inter-stage', type: 'inter_stage', position: [0, -2.6, 0] },
             // Верх - к command_module
-            { type: 'command_module', position: [0, 2.9, 0] }
+            { id: 'to-command-module', type: 'command_module', position: [0, 2.9, 0] }
         ]
     },
 
@@ -93,9 +93,9 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: -0.6 },
         sockets: [
             // Низ - к second_stage
-            { type: 'second_stage', position: [0, -0.6, 0] },
+            { id: 'to-second-stage', type: 'second_stage', position: [0, -0.6, 0] },
             // Верх - к fairing (на уровне верхнего кольца цилиндра, до конуса)
-            { type: 'fairing', position: [0, 0.6, 0] }
+            { id: 'to-fairing', type: 'fairing', position: [0, 0.6, 0] }
         ]
     },
 
@@ -107,7 +107,7 @@ export const ROCKET_SOCKETS_DATA = {
         connectionOffset: { y: -1.5 },
         sockets: [
             // Низ - к command_module
-            { type: 'command_module', position: [0, -1.5, 0] }
+            { id: 'to-command-module', type: 'command_module', position: [0, -1.5, 0] }
         ]
     }
 };
@@ -129,9 +129,25 @@ export function calculateDistance3D(pos1, pos2) {
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
+/**
+ * Проверяет, занят ли конкретный сокет на детали
+ * @param {Array} connections - массив текущих соединений
+ * @param {string} targetPartId - ID детали, чей сокет проверяем
+ * @param {string} socketId - ID сокета
+ * @returns {boolean} true если сокет занят
+ */
+export function isSocketOccupied(connections, targetPartId, socketId) {
+    return connections.some(c =>
+        c.socketId === socketId &&
+        (c.part2 === targetPartId || c.hostPartId === targetPartId)
+    );
+}
+
 export default {
     SNAP_RADIUS,
     ROCKET_SOCKETS_DATA,
     canConnect,
-    calculateDistance3D
+    calculateDistance3D,
+    isSocketOccupied
 };
+

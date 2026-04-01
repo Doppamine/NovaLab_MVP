@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Scene3D from './Scene3D';
 import DraggablePart3D from './DraggablePart3D';
 import PartsPanel3D from './PartsPanel3D';
 import { PART_SOCKETS_DATA } from './partSocketsData';
-import { canConnect, calculateDistance3D, SNAP_RADIUS } from './connectionRules3D';
+import { canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
 import './Car3DConstructor.css';
 
@@ -12,17 +12,56 @@ function Car3DConstructor({ onCarLaunch }) {
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
     const [selectedPart, setSelectedPart] = useState(null);
+    const [showOnboarding, setShowOnboarding] = useState(true);
+    const [onboardingStep, setOnboardingStep] = useState(0);
 
     const partCounts = partsOnField.reduce((acc, part) => {
         acc[part.type] = (acc[part.type] || 0) + 1;
         return acc;
     }, {});
 
+    // Progress calculation
+    const connectedPartsCount = partsOnField.filter(p => p.connectedTo.length > 0).length;
+    const totalRequired = 8; // chassis + 4 wheels + engine + battery + body
+    const progressPercent = Math.min(100, Math.round((connectedPartsCount / totalRequired) * 100));
+
+    // Dismiss onboarding after first part is placed
+    useEffect(() => {
+        if (partsOnField.length > 0 && showOnboarding) {
+            const timer = setTimeout(() => setShowOnboarding(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [partsOnField.length, showOnboarding]);
+
+    // Cycle onboarding tips
+    useEffect(() => {
+        if (!showOnboarding) return;
+        const interval = setInterval(() => {
+            setOnboardingStep(prev => (prev + 1) % 3);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [showOnboarding]);
+
+    // Reset everything
+    const handleReset = () => {
+        setPartsOnField([]);
+        setConnections([]);
+        setHighlightedSockets([]);
+        setSelectedPart(null);
+        setShowOnboarding(true);
+        setOnboardingStep(0);
+    };
+
     const handlePartAdd = (partType) => {
+        // Разносим стартовые позиции чтобы детали не накладывались
+        const existingCount = partsOnField.length;
+        const offsetX = ((existingCount % 4) - 1.5) * 2.5;
+        const offsetZ = Math.floor(existingCount / 4) * 2.5 - 3;
+
         const newPart = {
             id: `${partType}-${Date.now()}`,
             type: partType,
-            position: [0, 2, 0],
+            position: [offsetX, 2, offsetZ],
             connectedTo: []
         };
         setPartsOnField(prev => [...prev, newPart]);
@@ -51,6 +90,9 @@ function Car3DConstructor({ onCarLaunch }) {
 
             otherSockets.forEach(socket => {
                 if (!canConnect(draggedPart.type, socket.type)) return;
+
+                // Проверяем: занят ли этот конкретный слот другой деталью
+                if (isSocketOccupied(connections, otherPart.id, socket.id)) return;
 
                 const socketWorldPos = [
                     otherPart.position[0] + socket.position[0],
@@ -174,16 +216,33 @@ function Car3DConstructor({ onCarLaunch }) {
             setConnections(prev => [...prev, {
                 id: `conn-${Date.now()}`,
                 part1: partId,
-                part2: match.targetPart.id
+                part2: match.targetPart.id,
+                socketId: match.socketData.id,
+                hostPartId: match.targetPart.id
             }]);
 
             // Play snap sound
             SoundManager.playSnap();
             console.log(`✅ Connected ${part.type} to ${match.targetPart.type}`);
         } else {
-            setPartsOnField(prev => prev.map(p =>
-                p.id === partId ? { ...p, position: [position.x, position.y, position.z] } : p
-            ));
+            // Защита от залипания в начальной позиции (баг с центром)
+            const pos = [position.x, position.y, position.z];
+            const isNearCenter = Math.abs(pos[0]) < 0.3 && Math.abs(pos[2]) < 0.3;
+            const partData = partsOnField.find(p => p.id === partId);
+            const isUnconnected = partData && partData.connectedTo.length === 0;
+
+            if (isNearCenter && isUnconnected) {
+                // Сдвигаем от центра чтобы не перекрывала шасси
+                const safeX = (Math.random() - 0.5) * 6;
+                const safeZ = (Math.random() - 0.5) * 6;
+                setPartsOnField(prev => prev.map(p =>
+                    p.id === partId ? { ...p, position: [safeX, 2, safeZ] } : p
+                ));
+            } else {
+                setPartsOnField(prev => prev.map(p =>
+                    p.id === partId ? { ...p, position: pos } : p
+                ));
+            }
         }
 
         setHighlightedSockets([]);
@@ -225,6 +284,12 @@ function Car3DConstructor({ onCarLaunch }) {
             batteryConnected;
     };
 
+    const onboardingTips = [
+        { icon: '👆', text: 'Нажми на деталь слева, чтобы добавить её' },
+        { icon: '✋', text: 'Перетащи деталь к светящейся точке' },
+        { icon: '🔗', text: 'Детали соединятся автоматически!' }
+    ];
+
     return (
         <div className="car-3d-constructor">
             <PartsPanel3D
@@ -233,6 +298,35 @@ function Car3DConstructor({ onCarLaunch }) {
             />
 
             <div className="scene-container">
+                {/* Progress Bar */}
+                <div className="progress-bar-container">
+                    <div className="progress-info">
+                        <span className="progress-label">🚗 Прогресс сборки</span>
+                        <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
+                    </div>
+                    <div className="progress-track">
+                        <div
+                            className="progress-fill"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                </div>
+
+                {/* Onboarding Overlay */}
+                {showOnboarding && partsOnField.length === 0 && (
+                    <div className="onboarding-overlay">
+                        <div className="onboarding-card">
+                            <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
+                            <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
+                            <div className="onboarding-dots">
+                                {onboardingTips.map((_, i) => (
+                                    <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <Scene3D>
                     {partsOnField.map(part => (
                         <DraggablePart3D
@@ -250,20 +344,28 @@ function Car3DConstructor({ onCarLaunch }) {
                 </Scene3D>
 
                 <div className="scene-hint">
-                    <p>Left Click: Drag | Right Click: Rotate | Middle: Pan | Wheel: Zoom</p>
-                    <p style={{ fontSize: '0.75rem', marginTop: '4px', opacity: 0.7 }}>
-                        Bring parts close to glowing points to snap
-                    </p>
+                    <p>ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб</p>
                 </div>
 
-                {selectedPart && (
-                    <button
-                        className="btn-delete"
-                        onClick={() => handlePartDelete(selectedPart)}
-                    >
-                        🗑️ Удалить деталь
-                    </button>
-                )}
+                {/* Action Buttons */}
+                <div className="action-buttons">
+                    {selectedPart && (
+                        <button
+                            className="btn-delete"
+                            onClick={() => handlePartDelete(selectedPart)}
+                        >
+                            🗑️ Удалить деталь
+                        </button>
+                    )}
+                    {partsOnField.length > 0 && (
+                        <button
+                            className="btn-reset"
+                            onClick={handleReset}
+                        >
+                            🔄 Начать заново
+                        </button>
+                    )}
+                </div>
 
                 {isCarComplete() && (
                     <div className="success-notification">
