@@ -12,9 +12,6 @@ function Header({ children }) {
                     </h1>
                 </div>
 
-                <div className="header-subtitle">
-                    Интерактивный конструктор механизмов
-                </div>
 
                 <div className="header-actions">
                     {children || (
