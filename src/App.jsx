@@ -5,6 +5,7 @@ import WorkArea from './components/WorkArea/WorkArea';
 import CarDemo3D from './components/CarDemo3D/CarDemo3D';
 import Car3DConstructor from './components/Car3DConstructor/Car3DConstructor';
 import RocketConstructor from './components/RocketConstructor/RocketConstructor';
+import CarVRConstructor from './features/car-vr-constructor/CarVRConstructor';
 import WaterModuleRouter from './components/WaterModule/WaterModuleRouter';
 import PhysicsRouter from './components/PhysicsModule/PhysicsRouter';
 
@@ -21,6 +22,7 @@ function App() {
 
   const [mode, setMode] = useState('2d');
   const [mode3d, setMode3d] = useState('car');
+  const [isVRMode, setIsVRMode] = useState(false);
 
   const handleCarLaunch = () => setShowCarDemo(true);
   const handleCarDemoComplete = () => setShowCarDemo(false);
@@ -106,6 +108,15 @@ function App() {
                     <button className={`tab-btn sub ${mode3d === 'car' ? 'active' : ''}`} onClick={() => setMode3d('car')}>🚗 Машина</button>
                     <button className={`tab-btn sub ${mode3d === 'rocket' ? 'active' : ''}`} onClick={() => setMode3d('rocket')}>🚀 Ракета</button>
                     <button className={`tab-btn sub ${mode3d === 'water' ? 'active' : ''}`} onClick={() => setMode3d('water')}>💧 Вода</button>
+                    {mode3d === 'car' && (
+                      <button 
+                        className={`tab-btn sub ${isVRMode ? 'active' : ''}`}
+                        onClick={() => setIsVRMode(!isVRMode)}
+                        style={{ background: isVRMode ? '#9d4edd' : 'rgba(157,78,221,0.1)' }}
+                      >
+                        🥽 VR Режим
+                      </button>
+                    )}
                   </div>
                 )}
               </Header>
@@ -119,7 +130,11 @@ function App() {
                     <WorkArea onCarLaunch={handleCarLaunch} />
                   </div>
                 ) : mode3d === 'car' ? (
-                  <Car3DConstructor onCarLaunch={handleCarLaunch} />
+                  isVRMode ? (
+                    <CarVRConstructor onCarLaunch={handleCarLaunch} />
+                  ) : (
+                    <Car3DConstructor onCarLaunch={handleCarLaunch} />
+                  )
                 ) : mode3d === 'rocket' ? (
                   <RocketConstructor onLaunch={() => alert('Полет на Луну скоро!')} />
                 ) : (

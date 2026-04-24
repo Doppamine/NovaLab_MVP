@@ -22,3 +22,13 @@ These rules are strict boundaries to prevent regressions when non-technical team
 * Use clear, descriptive variable names.
 * Add standard comments explaining the "why" behind complex Three.js mathematics, camera movements, or object interactions.
 * Ensure all components return semantic HTML elements where applicable.
+
+## 6. VR Mode Rules
+* **Strict Component Isolation:** NEVER modify the existing `src/components/Car3DConstructor/Car3DConstructor.jsx`. 
+* **New Directory:** All VR logic (imports, scene setup, camera handling) must be created in a brand new folder: `src/features/car-vr-constructor/`.
+* **No Direct DOM Access:** Avoid using `document.getElementById` or direct DOM manipulation for the VR canvas. Use `react-xr` event handlers and refs.
+* **Performance:** Ensure `aframe` components are properly cleaned up when the VR mode is toggled off to prevent memory leaks.
+
+## 7. Workflow
+* **During Plan phase** Never ever write lines of code. This phase is only for planning and high level architecture decisions. 
+* **During Code phase** You MUST write lines of code.
