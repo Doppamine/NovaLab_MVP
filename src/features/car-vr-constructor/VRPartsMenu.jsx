@@ -41,7 +41,7 @@ export default function VRPartsMenu({ onPartAdd, partCounts }) {
 
     useFrame(() => {
         let isPressed = false;
-        if (leftController?.gamepad) {
+        if (leftController?.gamepad?.buttons) {
             // buttons[4] and [5] are usually X and Y on left controller
             isPressed = leftController.gamepad.buttons[4]?.pressed || leftController.gamepad.buttons[5]?.pressed;
         }

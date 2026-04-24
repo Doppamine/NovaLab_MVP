@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { TeleportTarget } from '@react-three/xr';
-import { Grid, OrbitControls } from '@react-three/drei';
+import { Grid } from '@react-three/drei';
 import * as THREE from 'three';
 
 export default function VRScene({ children }) {
@@ -13,9 +12,6 @@ export default function VRScene({ children }) {
     <>
       <color attach="background" args={['#0a1220']} />
       <fog attach="fog" args={['#0a1220', 10, 50]} />
-      
-      {/* Fallback controls so desktop users can look around before entering VR */}
-      <OrbitControls />
 
       {/* Lighting - slightly brighter for VR clarity */}
       <ambientLight intensity={1.1} />
@@ -41,13 +37,11 @@ export default function VRScene({ children }) {
         fadeStrength={1} 
       />
       
-      {/* Teleportable ground */}
-      <TeleportTarget>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-          <planeGeometry args={[100, 100]} />
-          <meshStandardMaterial color="#0a1220" metalness={0.1} roughness={0.9} />
-        </mesh>
-      </TeleportTarget>
+      {/* Floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow pointerEventsType={{ teleport: true }}>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#0a1220" metalness={0.1} roughness={0.9} />
+      </mesh>
       
       <axesHelper args={[5]} />
       {children}

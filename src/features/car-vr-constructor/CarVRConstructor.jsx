@@ -1,5 +1,7 @@
 import React, { useState, Suspense } from 'react';
+import { useStore } from 'zustand';
 import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { XR } from '@react-three/xr';
 import { carVRStore } from './carVRStore';
 import VRScene from './VRScene';
@@ -17,6 +19,8 @@ export default function CarVRConstructor({ onCarLaunch }) {
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
     const [selectedPartId, setSelectedPartId] = useState(null);
+
+    const session = useStore(carVRStore, state => state.session);
 
     const partCounts = partsOnField.reduce((acc, part) => {
         acc[part.type] = (acc[part.type] || 0) + 1;
@@ -196,61 +200,64 @@ export default function CarVRConstructor({ onCarLaunch }) {
             await carVRStore.enterVR();
         } catch (err) {
             console.error("Failed to enter VR:", err);
-            alert("VR режим не поддерживается на вашем устройстве или браузере.");
+            alert("Failed to enter VR: " + (err.message || err.toString()));
         }
     };
 
     return (
         <div className="car-vr-constructor">
-            <button className="enter-vr-btn" onClick={handleEnterVR}>
-                🥽 ВОЙТИ В VR
-            </button>
+            {!session && (
+                <button className="enter-vr-btn" onClick={handleEnterVR}>
+                    🥽 ВОЙТИ В VR
+                </button>
+            )}
 
-            <div className="vr-hud-overlay">
-                <div style={{ background: 'rgba(0,0,0,0.7)', padding: '15px', borderRadius: '15px', color: 'white', textAlign: 'center', marginBottom: '20px' }}>
-                    <h3>🚗 Прогресс: {connectedPartsCount}/{totalRequired}</h3>
-                    <div style={{ width: '100%', height: '10px', background: '#333', borderRadius: '5px', marginTop: '10px' }}>
-                        <div style={{ width: `${progressPercent}%`, height: '100%', background: '#4cc9f0', borderRadius: '5px', transition: 'width 0.3s' }}></div>
+            {!session && (
+                <div className="vr-hud-overlay">
+                    <div style={{ background: 'rgba(0,0,0,0.7)', padding: '15px', borderRadius: '15px', color: 'white', textAlign: 'center', marginBottom: '20px' }}>
+                        <h3>🚗 Прогресс: {connectedPartsCount}/{totalRequired}</h3>
+                        <div style={{ width: '100%', height: '10px', background: '#333', borderRadius: '5px', marginTop: '10px' }}>
+                            <div style={{ width: `${progressPercent}%`, height: '100%', background: '#4cc9f0', borderRadius: '5px', transition: 'width 0.3s' }}></div>
+                        </div>
                     </div>
+                    
+                    {isCarComplete() && (
+                        <div style={{ background: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', color: 'white', textAlign: 'center', border: '2px solid #00f2ff' }}>
+                            <h2>🎉 Машина собрана!</h2>
+                            <button 
+                                onClick={onCarLaunch}
+                                style={{ padding: '10px 20px', background: '#00f2ff', color: '#000', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}
+                            >
+                                🚀 ЗАПУСТИТЬ
+                            </button>
+                        </div>
+                    )}
                 </div>
-                
-                {isCarComplete() && (
-                    <div style={{ background: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', color: 'white', textAlign: 'center', border: '2px solid #00f2ff' }}>
-                        <h2>🎉 Машина собрана!</h2>
-                        <button 
-                            onClick={onCarLaunch}
-                            style={{ padding: '10px 20px', background: '#00f2ff', color: '#000', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}
-                        >
-                            🚀 ЗАПУСТИТЬ
-                        </button>
-                    </div>
-                )}
-            </div>
+            )}
 
             <Canvas shadows dpr={[1, 1.6]} gl={{ antialias: true }} camera={{ position: [0, 1.6, 5] }} style={{ flex: 1, height: '100%' }}>
                 <color attach="background" args={['#0a1220']} />
-                <Suspense fallback={null}>
-                    <XR store={carVRStore}>
-                        <VRScene>
-                            <VRLocomotion isPartSelected={selectedPartId !== null} />
-                            <Suspense fallback={null}>
-                                <VRPartsMenu onPartAdd={handlePartAdd} partCounts={partCounts} />
-                            </Suspense>
-                            {partsOnField.map(part => (
-                                <VRDraggablePart
-                                    key={part.id}
-                                    part={part}
-                                    highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
-                                    isSelected={selectedPartId === part.id}
-                                    onSelect={() => setSelectedPartId(part.id)}
-                                    onDelete={handlePartDelete}
-                                    onPositionChange={(pos) => handlePartPositionChange(part.id, pos)}
-                                    onDrop={(pos) => handlePartDrop(part.id, pos)}
-                                />
-                            ))}
-                        </VRScene>
-                    </XR>
-                </Suspense>
+                <OrbitControls enableDamping={false} />
+                <XR store={carVRStore}>
+                    <VRScene>
+                        <VRLocomotion isPartSelected={selectedPartId !== null} />
+                        <Suspense fallback={null}>
+                            <VRPartsMenu onPartAdd={handlePartAdd} partCounts={partCounts} />
+                        </Suspense>
+                        {partsOnField.map(part => (
+                            <VRDraggablePart
+                                key={part.id}
+                                part={part}
+                                highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
+                                isSelected={selectedPartId === part.id}
+                                onSelect={() => setSelectedPartId(part.id)}
+                                onDelete={handlePartDelete}
+                                onPositionChange={(pos) => handlePartPositionChange(part.id, pos)}
+                                onDrop={(pos) => handlePartDrop(part.id, pos)}
+                            />
+                        ))}
+                    </VRScene>
+                </XR>
             </Canvas>
         </div>
     );
