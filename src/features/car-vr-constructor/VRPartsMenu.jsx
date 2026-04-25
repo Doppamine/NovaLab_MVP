@@ -39,9 +39,11 @@ export default function VRPartsMenu({ onPartAdd, partCounts }) {
     const [isOpen, setIsOpen] = useState(true);
     const prevButton = useRef(false);
 
-    // Reusable vectors to avoid allocations every frame
+    // Reusable objects to avoid per-frame garbage collection
     const _targetPos = useRef(new THREE.Vector3());
     const _lookTarget = useRef(new THREE.Vector3());
+    const _camWorldPos = useRef(new THREE.Vector3());
+    const _camWorldQuat = useRef(new THREE.Quaternion());
 
     useFrame(() => {
         // --- Button toggle logic ---
@@ -64,22 +66,28 @@ export default function VRPartsMenu({ onPartAdd, partCounts }) {
         prevButton.current = isPressed;
 
         // --- Continuously follow the camera while the menu is open ---
+        // Use WORLD transforms — in VR, the camera is a child of XROrigin,
+        // so camera.position / camera.quaternion are local to the origin.
+        // World transforms give us the actual headset position and facing.
         if (isOpen && groupRef.current) {
-            // Calculate a target position 1.5m in front of the camera
+            camera.getWorldPosition(_camWorldPos.current);
+            camera.getWorldQuaternion(_camWorldQuat.current);
+
+            // Calculate target: 1.5m in front of where the user is looking
             const forward = _targetPos.current.set(0, 0, -1.5);
-            forward.applyQuaternion(camera.quaternion);
-            // Lock to roughly eye-level so the menu doesn't tilt up/down wildly
+            forward.applyQuaternion(_camWorldQuat.current);
+            // Lock Y so the menu stays at eye-level, not tilted up/down
             forward.y = 0;
-            forward.add(camera.position);
+            forward.add(_camWorldPos.current);
 
-            // Smooth lerp so the menu glides instead of snapping rigidly
-            groupRef.current.position.lerp(forward, 0.05);
+            // Lerp at 0.15 for responsive but smooth tracking
+            groupRef.current.position.lerp(forward, 0.15);
 
-            // Always face the camera (billboard style, yaw only)
+            // Billboard: always face the user (yaw only, stays upright)
             _lookTarget.current.set(
-                camera.position.x,
+                _camWorldPos.current.x,
                 groupRef.current.position.y,
-                camera.position.z
+                _camWorldPos.current.z
             );
             groupRef.current.lookAt(_lookTarget.current);
         }

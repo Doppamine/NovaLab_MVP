@@ -5,14 +5,18 @@ import * as THREE from 'three';
 
 export default function VRLocomotion({ isPartSelected }) {
   const leftController = useXRInputSourceState('controller', 'left');
-  const rightController = useXRInputSourceState('controller', 'right');
   const originRef = useRef(null);
   const camera = useThree((state) => state.camera);
   const SPEED = 3; // meters per second
 
+  // Reusable objects to avoid per-frame allocations
+  const _worldQuat = useRef(new THREE.Quaternion());
+  const _euler = useRef(new THREE.Euler());
+  const _moveVec = useRef(new THREE.Vector3());
+
   const getThumbstick = (gamepad) => {
     if (!gamepad || !gamepad.axes) return { x: 0, y: 0 };
-    // Usually Meta Quest / standard WebXR has thumbstick on axes 2 and 3
+    // Meta Quest xr-standard: thumbstick on axes 2 (X) and 3 (Y)
     if (gamepad.axes.length >= 4) return { x: gamepad.axes[2], y: gamepad.axes[3] };
     if (gamepad.axes.length >= 2) return { x: gamepad.axes[0], y: gamepad.axes[1] };
     return { x: 0, y: 0 };
@@ -22,25 +26,28 @@ export default function VRLocomotion({ isPartSelected }) {
     if (isPartSelected) return; // Don't walk if a part is selected
     if (!originRef.current) return;
 
-    // Access the raw XRInputSource's gamepad via .inputSource.gamepad
+    // Only use the LEFT thumbstick for movement — right thumbstick is intentionally ignored
     const leftGamepad = leftController?.inputSource?.gamepad;
-    const rightGamepad = rightController?.inputSource?.gamepad;
-    
-    let ts = getThumbstick(leftGamepad);
-    if (Math.abs(ts.x) < 0.1 && Math.abs(ts.y) < 0.1) {
-        ts = getThumbstick(rightGamepad); // fallback to right if left not touched
-    }
+    const ts = getThumbstick(leftGamepad);
 
     // Deadzone
     if (Math.abs(ts.x) > 0.1 || Math.abs(ts.y) > 0.1) {
-      // Calculate forward vector from camera yaw
-      const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
-      const yaw = euler.y;
-      
-      const localMove = new THREE.Vector3(ts.x, 0, ts.y);
-      localMove.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-      
-      originRef.current.position.add(localMove.multiplyScalar(SPEED * delta));
+      // Get camera's WORLD quaternion — in VR the camera is a child of XROrigin,
+      // so camera.quaternion is only the local (headset-tracked) rotation.
+      // We need the world rotation to compute the correct forward direction.
+      camera.getWorldQuaternion(_worldQuat.current);
+
+      // Extract only the yaw (horizontal rotation) so movement stays on the ground plane
+      _euler.current.setFromQuaternion(_worldQuat.current, 'YXZ');
+      const yaw = _euler.current.y;
+
+      // Build movement vector: ts.x = strafe, ts.y = forward/back
+      // Thumbstick Y: -1 = push forward, +1 = pull back → maps to -Z (Three.js forward)
+      const move = _moveVec.current.set(ts.x, 0, ts.y);
+      move.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+      move.multiplyScalar(SPEED * delta);
+
+      originRef.current.position.add(move);
     }
   });
 
