@@ -22,9 +22,9 @@ export default function VRLocomotion({ isPartSelected }) {
     if (isPartSelected) return; // Don't walk if a part is selected
     if (!originRef.current) return;
 
-    // Use left or right thumbstick for walking (fallback if left isn't available)
-    const leftGamepad = leftController?.gamepad;
-    const rightGamepad = rightController?.gamepad;
+    // Access the raw XRInputSource's gamepad via .inputSource.gamepad
+    const leftGamepad = leftController?.inputSource?.gamepad;
+    const rightGamepad = rightController?.inputSource?.gamepad;
     
     let ts = getThumbstick(leftGamepad);
     if (Math.abs(ts.x) < 0.1 && Math.abs(ts.y) < 0.1) {

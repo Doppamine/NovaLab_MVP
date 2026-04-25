@@ -39,34 +39,50 @@ export default function VRPartsMenu({ onPartAdd, partCounts }) {
     const [isOpen, setIsOpen] = useState(true);
     const prevButton = useRef(false);
 
+    // Reusable vectors to avoid allocations every frame
+    const _targetPos = useRef(new THREE.Vector3());
+    const _lookTarget = useRef(new THREE.Vector3());
+
     useFrame(() => {
+        // --- Button toggle logic ---
+        const gamepad = leftController?.inputSource?.gamepad;
+
         let isPressed = false;
-        if (leftController?.gamepad?.buttons) {
-            // buttons[4] and [5] are usually X and Y on left controller
-            isPressed = leftController.gamepad.buttons[4]?.pressed || leftController.gamepad.buttons[5]?.pressed;
+        if (gamepad?.buttons) {
+            // buttons[4] = X, buttons[5] = Y on Meta Quest left controller (xr-standard)
+            isPressed = gamepad.buttons[4]?.pressed || gamepad.buttons[5]?.pressed;
+
+            // 🔍 Temporary debug — remove after verifying on real hardware
+            gamepad.buttons.forEach((btn, i) => {
+                if (btn.pressed) console.log(`[VRPartsMenu] Button ${i} pressed`);
+            });
         }
 
         if (isPressed && !prevButton.current) {
             setIsOpen(prev => !prev);
-            
-            if (!isOpen && groupRef.current) {
-                // Snap to front of camera when opening
-                const forward = new THREE.Vector3(0, 0, -1.5);
-                forward.applyQuaternion(camera.quaternion);
-                forward.y = 0; // Keep it at eye level but don't tilt up/down too much
-                
-                groupRef.current.position.copy(camera.position).add(forward);
-                
-                // Make it face the camera
-                const lookTarget = new THREE.Vector3(camera.position.x, groupRef.current.position.y, camera.position.z);
-                groupRef.current.lookAt(lookTarget);
-            }
         }
         prevButton.current = isPressed;
-        
-        // If it's the first time and it's open, keep it in front of the camera loosely
-        // Or we just let it sit where it was placed initially.
-        // Initial placement is handled by the group's default position or the first toggle.
+
+        // --- Continuously follow the camera while the menu is open ---
+        if (isOpen && groupRef.current) {
+            // Calculate a target position 1.5m in front of the camera
+            const forward = _targetPos.current.set(0, 0, -1.5);
+            forward.applyQuaternion(camera.quaternion);
+            // Lock to roughly eye-level so the menu doesn't tilt up/down wildly
+            forward.y = 0;
+            forward.add(camera.position);
+
+            // Smooth lerp so the menu glides instead of snapping rigidly
+            groupRef.current.position.lerp(forward, 0.05);
+
+            // Always face the camera (billboard style, yaw only)
+            _lookTarget.current.set(
+                camera.position.x,
+                groupRef.current.position.y,
+                camera.position.z
+            );
+            groupRef.current.lookAt(_lookTarget.current);
+        }
     });
 
     if (!isOpen) return null;

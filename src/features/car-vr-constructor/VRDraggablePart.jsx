@@ -52,8 +52,9 @@ export default function VRDraggablePart({
 
         let moved = false;
 
+        // Access the raw XRInputSource's gamepad via .inputSource.gamepad
         // Left thumbstick: X/Y axes
-        const leftTS = getThumbstick(leftController?.gamepad);
+        const leftTS = getThumbstick(leftController?.inputSource?.gamepad);
         if (Math.abs(leftTS.x) > 0.1) {
             groupRef.current.position.x += leftTS.x * SPEED * delta;
             moved = true;
@@ -65,7 +66,7 @@ export default function VRDraggablePart({
         }
 
         // Right thumbstick: Z axis (depth) and Rotation (X axis of TS)
-        const rightTS = getThumbstick(rightController?.gamepad);
+        const rightTS = getThumbstick(rightController?.inputSource?.gamepad);
         if (Math.abs(rightTS.y) > 0.1) {
             groupRef.current.position.z += rightTS.y * SPEED * delta;
             moved = true;
