@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Scene3D from './Scene3D';
 import DraggablePart3D from './DraggablePart3D';
 import PartsPanel3D from './PartsPanel3D';
+import CarPhysicsLab from './CarPhysicsLab';
 import { PART_SOCKETS_DATA } from './partSocketsData';
 import { canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
@@ -14,6 +15,7 @@ function Car3DConstructor({ onCarLaunch }) {
     const [selectedPart, setSelectedPart] = useState(null);
     const [showOnboarding, setShowOnboarding] = useState(true);
     const [onboardingStep, setOnboardingStep] = useState(0);
+    const [carExperience, setCarExperience] = useState('physics');
 
     const partCounts = partsOnField.reduce((acc, part) => {
         acc[part.type] = (acc[part.type] || 0) + 1;
@@ -291,97 +293,120 @@ function Car3DConstructor({ onCarLaunch }) {
     ];
 
     return (
-        <div className="car-3d-constructor">
-            <PartsPanel3D
-                onPartAdd={handlePartAdd}
-                partCounts={partCounts}
-            />
+        <div className="car-module-wrapper">
+            <div className="car-module-switcher">
+                <button
+                    type="button"
+                    className={`car-module-switch ${carExperience === 'physics' ? 'active' : ''}`}
+                    onClick={() => setCarExperience('physics')}
+                >
+                    Physics Lab
+                </button>
+                <button
+                    type="button"
+                    className={`car-module-switch ${carExperience === 'assembly' ? 'active' : ''}`}
+                    onClick={() => setCarExperience('assembly')}
+                >
+                    Classic 3D Assembly
+                </button>
+            </div>
 
-            <div className="scene-container">
-                {/* Progress Bar */}
-                <div className="progress-bar-container">
-                    <div className="progress-info">
-                        <span className="progress-label">🚗 Прогресс сборки</span>
-                        <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
-                    </div>
-                    <div className="progress-track">
-                        <div
-                            className="progress-fill"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </div>
-                </div>
+            {carExperience === 'physics' ? (
+                <CarPhysicsLab onCarLaunch={onCarLaunch} />
+            ) : (
+                <div className="car-3d-constructor">
+                    <PartsPanel3D
+                        onPartAdd={handlePartAdd}
+                        partCounts={partCounts}
+                    />
 
-                {/* Onboarding Overlay */}
-                {showOnboarding && partsOnField.length === 0 && (
-                    <div className="onboarding-overlay">
-                        <div className="onboarding-card">
-                            <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
-                            <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
-                            <div className="onboarding-dots">
-                                {onboardingTips.map((_, i) => (
-                                    <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
-                                ))}
+                    <div className="scene-container">
+                        {/* Progress Bar */}
+                        <div className="progress-bar-container">
+                            <div className="progress-info">
+                                <span className="progress-label">🚗 Прогресс сборки</span>
+                                <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
+                            </div>
+                            <div className="progress-track">
+                                <div
+                                    className="progress-fill"
+                                    style={{ width: `${progressPercent}%` }}
+                                />
                             </div>
                         </div>
-                    </div>
-                )}
 
-                <Scene3D>
-                    {partsOnField.map(part => (
-                        <DraggablePart3D
-                            key={part.id}
-                            partType={part.type}
-                            initialPosition={part.position}
-                            connectedParts={part.connectedTo}
-                            highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
-                            isSelected={selectedPart === part.id}
-                            onSelect={() => setSelectedPart(part.id)}
-                            onPositionChange={(pos) => handlePartDrag(part.id, pos)}
-                            onDrop={(pos) => handlePartDrop(part.id, pos)}
-                        />
-                    ))}
-                </Scene3D>
+                        {/* Onboarding Overlay */}
+                        {showOnboarding && partsOnField.length === 0 && (
+                            <div className="onboarding-overlay">
+                                <div className="onboarding-card">
+                                    <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
+                                    <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
+                                    <div className="onboarding-dots">
+                                        {onboardingTips.map((_, i) => (
+                                            <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                <div className="scene-hint">
-                    <p>ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб</p>
-                </div>
+                        <Scene3D>
+                            {partsOnField.map(part => (
+                                <DraggablePart3D
+                                    key={part.id}
+                                    partType={part.type}
+                                    initialPosition={part.position}
+                                    connectedParts={part.connectedTo}
+                                    highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
+                                    isSelected={selectedPart === part.id}
+                                    onSelect={() => setSelectedPart(part.id)}
+                                    onPositionChange={(pos) => handlePartDrag(part.id, pos)}
+                                    onDrop={(pos) => handlePartDrop(part.id, pos)}
+                                />
+                            ))}
+                        </Scene3D>
 
-                {/* Action Buttons */}
-                <div className="action-buttons">
-                    {selectedPart && (
-                        <button
-                            className="btn-delete"
-                            onClick={() => handlePartDelete(selectedPart)}
-                        >
-                            🗑️ Удалить деталь
-                        </button>
-                    )}
-                    {partsOnField.length > 0 && (
-                        <button
-                            className="btn-reset"
-                            onClick={handleReset}
-                        >
-                            🔄 Начать заново
-                        </button>
-                    )}
-                </div>
-
-                {isCarComplete() && (
-                    <div className="success-notification">
-                        <div className="success-card">
-                            <h2>🎉 Поздравляем!</h2>
-                            <p>Машина собрана!</p>
-                            <button
-                                className="btn-launch"
-                                onClick={onCarLaunch}
-                            >
-                                🚀 ЗАПУСТИТЬ СИМУЛЯЦИЮ
-                            </button>
+                        <div className="scene-hint">
+                            <p>ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб</p>
                         </div>
+
+                        {/* Action Buttons */}
+                        <div className="action-buttons">
+                            {selectedPart && (
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => handlePartDelete(selectedPart)}
+                                >
+                                    🗑️ Удалить деталь
+                                </button>
+                            )}
+                            {partsOnField.length > 0 && (
+                                <button
+                                    className="btn-reset"
+                                    onClick={handleReset}
+                                >
+                                    🔄 Начать заново
+                                </button>
+                            )}
+                        </div>
+
+                        {isCarComplete() && (
+                            <div className="success-notification">
+                                <div className="success-card">
+                                    <h2>🎉 Поздравляем!</h2>
+                                    <p>Машина собрана!</p>
+                                    <button
+                                        className="btn-launch"
+                                        onClick={onCarLaunch}
+                                    >
+                                        🚀 ЗАПУСТИТЬ СИМУЛЯЦИЮ
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
