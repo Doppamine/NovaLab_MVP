@@ -143,8 +143,8 @@ function App() {
   };
 
   const handleCarLaunch = (assembly = null) => {
-    const cleanAssembly = assembly?.source ? assembly : null;
-    setCarDemoAssembly(cleanAssembly);
+    // assembly can be { hasEngine, hasBattery } from the constructor
+    setCarDemoAssembly(assembly);
     setShowCarDemo(true);
   };
 

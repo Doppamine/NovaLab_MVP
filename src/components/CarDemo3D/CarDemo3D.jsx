@@ -1,13 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import './CarDemo3D.css';
 import SoundManager from '../../utils/SoundManager';
 
-// 3D Car with proper movement physics
-function Car3D({ keysPressed, headlightsOn, carRef }) {
-    const wheelsRef = useRef([]);
+const CAR_FULL_MODEL = '/models/car_full.glb';
+
+// 3D Car using the full car_full.glb model with movement physics
+// canDrive controls whether the car responds to input
+function Car3D({ keysPressed, headlightsOn, carRef, canDrive, canUseHeadlights }) {
+    const { scene } = useGLTF(CAR_FULL_MODEL);
+    const wheelMeshes = useRef([]);
     const leftTargetRef = useRef();
     const rightTargetRef = useRef();
     const centerTargetRef = useRef();
@@ -19,8 +23,30 @@ function Car3D({ keysPressed, headlightsOn, carRef }) {
         friction: 0.92
     });
 
+    // Clone the scene so multiple instances don't conflict, and
+    // enable shadow casting on all meshes within the model
+    const clonedScene = useMemo(() => {
+        const clone = scene.clone();
+        const wheels = [];
+        clone.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                // Collect wheel meshes by name for rotation animation
+                if (child.name.toLowerCase().includes('wheel')) {
+                    wheels.push(child);
+                }
+            }
+        });
+        wheelMeshes.current = wheels;
+        return clone;
+    }, [scene]);
+
     useFrame((state, delta) => {
         if (!carRef.current) return;
+
+        // If car can't drive, skip all movement logic
+        if (!canDrive) return;
 
         let newSpeed = carState.speed;
 
@@ -57,46 +83,22 @@ function Car3D({ keysPressed, headlightsOn, carRef }) {
 
         carRef.current.position.add(forward);
 
-        // Rotate wheels
-        if (wheelsRef.current[0]) {
-            const wheelRotation = newSpeed * delta * 3;
-            wheelsRef.current.forEach(wheel => {
-                if (wheel) wheel.rotation.x += wheelRotation;
-            });
-        }
+        // Rotate wheels based on speed
+        const wheelRotation = newSpeed * delta * 3;
+        wheelMeshes.current.forEach(wheel => {
+            if (wheel) wheel.rotation.x += wheelRotation;
+        });
 
         setCarState(prev => ({ ...prev, speed: newSpeed }));
     });
 
+    // Only show headlights if the car has a battery (canUseHeadlights)
+    const showHeadlights = headlightsOn && canUseHeadlights;
+
     return (
         <group ref={carRef} position={[0, 0.5, 0]}>
-            <mesh position={[0, 0.6, 0]} castShadow>
-                <boxGeometry args={[1.8, 0.8, 3]} />
-                <meshStandardMaterial color="#ff006e" metalness={0.6} roughness={0.2} />
-            </mesh>
-
-            <mesh position={[0, 1.2, -0.3]} castShadow>
-                <boxGeometry args={[1.4, 0.6, 1.5]} />
-                <meshStandardMaterial color="#9d4edd" metalness={0.4} roughness={0.3} />
-            </mesh>
-
-            {[
-                [-0.8, 0, 1],
-                [0.8, 0, 1],
-                [-0.8, 0, -1],
-                [0.8, 0, -1]
-            ].map((pos, idx) => (
-                <mesh
-                    key={idx}
-                    position={pos}
-                    rotation={[0, 0, Math.PI / 2]}
-                    ref={el => wheelsRef.current[idx] = el}
-                    castShadow
-                >
-                    <cylinderGeometry args={[0.35, 0.35, 0.3, 16]} />
-                    <meshStandardMaterial color="#333333" metalness={0.8} roughness={0.2} />
-                </mesh>
-            ))}
+            {/* Full car GLB model replaces all primitive geometry */}
+            <primitive object={clonedScene} />
 
             <pointLight position={[0.5, 0.5, 1.6]} intensity={2} distance={5} color="#00f2ff" />
             <pointLight position={[-0.5, 0.5, 1.6]} intensity={2} distance={5} color="#00f2ff" />
@@ -104,8 +106,8 @@ function Car3D({ keysPressed, headlightsOn, carRef }) {
             <group ref={rightTargetRef} position={[0.4, 0, 10]} />
             <group ref={centerTargetRef} position={[0, 0, 15]} />
 
-            {/* High Beam Headlights */}
-            {headlightsOn && (
+            {/* High Beam Headlights — only when battery is present */}
+            {showHeadlights && (
                 <>
                     <spotLight
                         position={[-0.4, 0.3, 1.2]}
@@ -144,6 +146,9 @@ function Car3D({ keysPressed, headlightsOn, carRef }) {
         </group>
     );
 }
+
+// Preload car_full.glb to avoid runtime loading hitches
+useGLTF.preload(CAR_FULL_MODEL);
 
 function CameraFollower({ carRef }) {
     const controlsRef = useRef();
@@ -187,7 +192,27 @@ function Ground() {
     );
 }
 
-function CarDemo3D({ onComplete }) {
+function CarDemo3D({ onComplete, assembly }) {
+    // Derive capabilities from assembly info
+    // assembly = { hasEngine, hasBattery } or null (from physics lab launch)
+    const hasEngine = assembly?.hasEngine ?? true;
+    const hasBattery = assembly?.hasBattery ?? true;
+
+    // Car can drive only if both engine and battery are present
+    const canDrive = hasEngine && hasBattery;
+    // Headlights require battery
+    const canUseHeadlights = hasBattery;
+
+    // Determine the warning message to show
+    let warningMessage = null;
+    if (!hasBattery) {
+        // No battery = no power at all
+        warningMessage = '⚠️ Невозможно завести машину — нет аккумулятора!';
+    } else if (!hasEngine) {
+        // Battery but no engine = lights work, car can't move
+        warningMessage = '⚠️ Машина заведена, но не может ехать без двигателя!';
+    }
+
     const [keysPressed, setKeysPressed] = useState({
         up: false,
         down: false,
@@ -198,8 +223,10 @@ function CarDemo3D({ onComplete }) {
     const carRef = useRef();
 
     useEffect(() => {
-        // Start engine sound
-        SoundManager.startEngine();
+        // Only start engine sound if the car can actually drive (has engine + battery)
+        if (canDrive) {
+            SoundManager.startEngine();
+        }
 
         const handleKeyDown = (e) => {
             const key = e.key.toLowerCase();
@@ -207,7 +234,8 @@ function CarDemo3D({ onComplete }) {
             if (key === 's' || key === 'arrowdown') setKeysPressed(prev => ({ ...prev, down: true }));
             if (key === 'a' || key === 'arrowleft') setKeysPressed(prev => ({ ...prev, left: true }));
             if (key === 'd' || key === 'arrowright') setKeysPressed(prev => ({ ...prev, right: true }));
-            if (key === ' ') setHeadlightsOn(prev => !prev); // Toggle headlights
+            // Toggle headlights only if battery is present
+            if (key === ' ' && canUseHeadlights) setHeadlightsOn(prev => !prev);
         };
 
         const handleKeyUp = (e) => {
@@ -222,18 +250,22 @@ function CarDemo3D({ onComplete }) {
         window.addEventListener('keyup', handleKeyUp);
 
         return () => {
-            // Stop engine sound
-            SoundManager.stopEngine();
+            // Stop engine sound only if we started it
+            if (canDrive) {
+                SoundManager.stopEngine();
+            }
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [canDrive, canUseHeadlights]);
 
     const handleButtonDown = (direction) => setKeysPressed(prev => ({ ...prev, [direction]: true }));
     const handleButtonUp = (direction) => setKeysPressed(prev => ({ ...prev, [direction]: false }));
 
     const handleClose = () => {
-        SoundManager.stopEngine();
+        if (canDrive) {
+            SoundManager.stopEngine();
+        }
         onComplete();
     };
 
@@ -245,6 +277,10 @@ function CarDemo3D({ onComplete }) {
                 <h2 className="demo-title">🚗 Машинка запущена!</h2>
                 <p className="demo-subtitle">Используйте стрелки для управления, пробел для включения/выключения фар</p>
 
+                {/* Warning message for missing parts */}
+                {warningMessage && (
+                    <p className="demo-warning">{warningMessage}</p>
+                )}
             </div>
 
             <div className="controls-panel">
@@ -260,6 +296,7 @@ function CarDemo3D({ onComplete }) {
                             onTouchStart={() => handleButtonDown('up')}
                             onTouchEnd={() => handleButtonUp('up')}
                             title="Вперёд (W/↑)"
+                            disabled={!canDrive}
                         >↑</button>
                     </div>
                     <div className="arrow-row">
@@ -271,6 +308,7 @@ function CarDemo3D({ onComplete }) {
                             onTouchStart={() => handleButtonDown('left')}
                             onTouchEnd={() => handleButtonUp('left')}
                             title="Влево (A/←)"
+                            disabled={!canDrive}
                         >←</button>
                         <button
                             className={`arrow-btn down ${keysPressed.down ? 'active' : ''}`}
@@ -280,6 +318,7 @@ function CarDemo3D({ onComplete }) {
                             onTouchStart={() => handleButtonDown('down')}
                             onTouchEnd={() => handleButtonUp('down')}
                             title="Назад (S/↓)"
+                            disabled={!canDrive}
                         >↓</button>
                         <button
                             className={`arrow-btn right ${keysPressed.right ? 'active' : ''}`}
@@ -289,6 +328,7 @@ function CarDemo3D({ onComplete }) {
                             onTouchStart={() => handleButtonDown('right')}
                             onTouchEnd={() => handleButtonUp('right')}
                             title="Вправо (D/→)"
+                            disabled={!canDrive}
                         >→</button>
                     </div>
                 </div>
@@ -319,7 +359,13 @@ function CarDemo3D({ onComplete }) {
                 />
 
                 <Ground />
-                <Car3D keysPressed={keysPressed} headlightsOn={headlightsOn} carRef={carRef} />
+                <Car3D
+                    keysPressed={keysPressed}
+                    headlightsOn={headlightsOn}
+                    carRef={carRef}
+                    canDrive={canDrive}
+                    canUseHeadlights={canUseHeadlights}
+                />
                 <CameraFollower carRef={carRef} />
             </Canvas>
         </div>

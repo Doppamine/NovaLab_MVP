@@ -40,13 +40,6 @@ const PARTS_DATA = [
         icon: '🚙',
         color: '#9d4edd',
         description: 'Корпус машины'
-    },
-    {
-        id: 'controller',
-        name: 'Пульт',
-        icon: '🎮',
-        color: '#00ff9f',
-        description: 'Управление'
     }
 ];
 

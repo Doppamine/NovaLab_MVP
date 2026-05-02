@@ -61,6 +61,20 @@
     animation: slideInDown 0.45s ease-out 0.1s both;
 }
 
+/* Red warning text for missing parts in simulation */
+.demo-warning {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ff4444;
+    margin: var(--spacing-sm) 0 0 0;
+    padding: 8px 16px;
+    background: rgba(255, 0, 0, 0.15);
+    border: 1px solid rgba(255, 68, 68, 0.4);
+    border-radius: var(--radius-md);
+    text-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+    animation: slideInDown 0.45s ease-out 0.2s both;
+}
+
 .telemetry-panel {
     position: absolute;
     top: var(--spacing-xl);
@@ -182,6 +196,12 @@
     border-color: #bae6fd;
     color: #082f49;
     box-shadow: 0 0 24px rgba(56, 189, 248, 0.56);
+}
+
+.arrow-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .demo-actions {

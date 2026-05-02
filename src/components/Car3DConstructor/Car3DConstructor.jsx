@@ -22,11 +22,6 @@ function Car3DConstructor({ onCarLaunch }) {
         return acc;
     }, {});
 
-    // Progress calculation
-    const connectedPartsCount = partsOnField.filter(p => p.connectedTo.length > 0).length;
-    const totalRequired = 8; // chassis + 4 wheels + engine + battery + body
-    const progressPercent = Math.min(100, Math.round((connectedPartsCount / totalRequired) * 100));
-
     // Dismiss onboarding after first part is placed
     useEffect(() => {
         if (partsOnField.length > 0 && showOnboarding) {
@@ -254,8 +249,6 @@ function Car3DConstructor({ onCarLaunch }) {
         const hasRequiredParts =
             partCounts.chassis >= 1 &&
             partCounts.wheel >= 4 &&
-            partCounts.engine >= 1 &&
-            partCounts.carBattery >= 1 &&
             partCounts.body >= 1;
 
         if (!hasRequiredParts) return false;
@@ -267,23 +260,28 @@ function Car3DConstructor({ onCarLaunch }) {
             p.type === 'wheel' && p.connectedTo.includes(chassisPart.id)
         );
 
-        const engineConnected = partsOnField.some(p =>
-            p.type === 'engine' && p.connectedTo.includes(chassisPart.id)
-        );
-
         const bodyConnected = partsOnField.some(p =>
             p.type === 'body' && p.connectedTo.includes(chassisPart.id)
         );
 
-        const enginePart = partsOnField.find(p => p.type === 'engine');
-        const batteryConnected = enginePart && partsOnField.some(p =>
-            p.type === 'carBattery' && p.connectedTo.includes(enginePart.id)
+        return connectedWheels.length === 4 && bodyConnected;
+    };
+
+    // Determines which optional parts are connected to the chassis
+    // This info is passed to the simulation to control behavior
+    const getAssemblyInfo = () => {
+        const chassisPart = partsOnField.find(p => p.type === 'chassis');
+        if (!chassisPart) return { hasEngine: false, hasBattery: false };
+
+        const hasEngine = partsOnField.some(p =>
+            p.type === 'engine' && p.connectedTo.includes(chassisPart.id)
         );
 
-        return connectedWheels.length === 4 &&
-            engineConnected &&
-            bodyConnected &&
-            batteryConnected;
+        const hasBattery = partsOnField.some(p =>
+            p.type === 'carBattery' && p.connectedTo.includes(chassisPart.id)
+        );
+
+        return { hasEngine, hasBattery };
     };
 
     const onboardingTips = [
@@ -321,19 +319,6 @@ function Car3DConstructor({ onCarLaunch }) {
                     />
 
                     <div className="scene-container">
-                        {/* Progress Bar */}
-                        <div className="progress-bar-container">
-                            <div className="progress-info">
-                                <span className="progress-label">🚗 Прогресс сборки</span>
-                                <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
-                            </div>
-                            <div className="progress-track">
-                                <div
-                                    className="progress-fill"
-                                    style={{ width: `${progressPercent}%` }}
-                                />
-                            </div>
-                        </div>
 
                         {/* Onboarding Overlay */}
                         {showOnboarding && partsOnField.length === 0 && (
@@ -397,7 +382,7 @@ function Car3DConstructor({ onCarLaunch }) {
                                     <p>Машина собрана!</p>
                                     <button
                                         className="btn-launch"
-                                        onClick={onCarLaunch}
+                                        onClick={() => onCarLaunch(getAssemblyInfo())}
                                     >
                                         🚀 ЗАПУСТИТЬ СИМУЛЯЦИЮ
                                     </button>
