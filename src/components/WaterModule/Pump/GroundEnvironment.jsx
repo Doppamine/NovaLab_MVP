@@ -124,7 +124,7 @@ export default function GroundEnvironment({ waterDepth, isSimulating }) {
                         </Text>
                         <mesh position={[0.8, -d, -0.01]}>
                             <boxGeometry args={[1, 0.02, 0.01]} />
-                            <meshBasicMaterial color="rgba(255,255,255,0.6)" transparent opacity={0.6} />
+                            <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
                         </mesh>
                     </group>
                 ))}
@@ -144,4 +144,3 @@ export default function GroundEnvironment({ waterDepth, isSimulating }) {
         </group>
     );
 }
-

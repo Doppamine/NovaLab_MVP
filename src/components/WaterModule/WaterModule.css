@@ -1,46 +1,49 @@
 .water-module-container {
     display: flex;
-    width: 100vw;
-    height: calc(100vh - 60px);
-    /* Минус Header */
-    background-color: #121212;
-    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background:
+        radial-gradient(circle at 70% 12%, color-mix(in srgb, #4fc3f7 12%, transparent), transparent 28rem),
+        linear-gradient(135deg, var(--canvas-bg), var(--color-bg-primary));
+    color: var(--color-text-primary);
     font-family: 'Inter', system-ui, sans-serif;
     overflow: hidden;
 }
 
-.panel {
+.water-module-container .panel {
     width: 300px;
-    background-color: #1e1e1e;
+    min-width: 280px;
+    background: var(--surface-panel-strong);
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border-right: 1px solid #333;
-    border-left: 1px solid #333;
+    border-right: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-subtle);
     z-index: 10;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-panel);
 }
 
-.panel h2 {
+.water-module-container .panel h2 {
     font-size: 1.2rem;
     margin: 0 0 10px 0;
-    color: #4a90e2;
+    color: var(--color-accent-cyan);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 /* Инвентарь */
-.parts-grid {
+.water-module-container .parts-grid {
     display: flex;
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
 }
 
-.part-card {
-    background: #2a2a2a;
-    border: 1px solid #444;
+.water-module-container .part-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 12px;
     display: flex;
@@ -51,42 +54,42 @@
     position: relative;
 }
 
-.part-card:hover {
-    background: #333;
-    border-color: #666;
+.water-module-container .part-card:hover {
+    background: var(--surface-card-hover);
+    border-color: var(--color-accent-cyan);
     transform: translateY(-2px);
 }
 
-.part-card.assembled {
-    background: #1a2f1c;
+.water-module-container .part-card.assembled {
+    background: color-mix(in srgb, var(--color-accent-green) 12%, var(--surface-card));
     /* Зеленоватый оттенок */
     border-color: #2e7d32;
     opacity: 0.8;
 }
 
-.part-icon {
+.water-module-container .part-icon {
     font-size: 24px;
-    background: #111;
+    background: var(--surface-inset);
     padding: 8px;
     border-radius: 6px;
 }
 
-.part-info {
+.water-module-container .part-info {
     display: flex;
     flex-direction: column;
 }
 
-.part-name {
+.water-module-container .part-name {
     font-weight: 600;
     font-size: 0.95rem;
 }
 
-.part-desc {
+.water-module-container .part-desc {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--color-text-muted);
 }
 
-.status-badge {
+.water-module-container .status-badge {
     position: absolute;
     top: -8px;
     right: -8px;
@@ -102,8 +105,13 @@
 /* 3D Сцена */
 .center-workspace {
     flex: 1;
+    min-width: 0;
     position: relative;
-    background: radial-gradient(circle at center, #2a2a2a 0%, #111 100%);
+    background: radial-gradient(circle at center, var(--canvas-bg-elevated) 0%, var(--canvas-bg) 100%);
+}
+
+.water-module-container.details-hidden .center-workspace {
+    width: 100%;
 }
 
 .error-banner {
@@ -139,16 +147,23 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: min(720px, calc(100% - 32px));
 }
 
 .sim-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
+    min-height: 44px;
+    padding: 0 22px;
+    font-size: 0.95rem;
     font-weight: bold;
     border: none;
-    border-radius: 30px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--transition-fast);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     color: white;
 }
@@ -171,6 +186,31 @@
     box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5);
 }
 
+.sim-btn.reset {
+    background: var(--control-bg);
+    border: 1px solid var(--border-subtle);
+    color: var(--color-text-primary);
+}
+
+.sim-btn.reset:hover {
+    transform: translateY(-1px);
+    border-color: var(--border-accent);
+    background: var(--control-bg-hover);
+}
+
+.water-user-feedback {
+    flex: 1 1 100%;
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-panel);
+    color: var(--color-text-secondary);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    line-height: 1.45;
+}
+
 /* Настройки и Метрики */
 .sliders-container {
     display: flex;
@@ -178,26 +218,26 @@
     gap: 15px;
 }
 
-.slider-group {
+.water-module-container .slider-group {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    background: #222;
+    background: var(--surface-card);
     padding: 10px;
     border-radius: 6px;
 }
 
-.slider-group label {
+.water-module-container .slider-group label {
     font-size: 0.85rem;
-    color: #ccc;
+    color: var(--color-text-secondary);
     display: flex;
     justify-content: space-between;
 }
 
 input[type=range] {
     width: 100%;
-    accent-color: #4a90e2;
-    background: #444;
+    accent-color: var(--color-accent-cyan);
+    background: var(--surface-inset);
     height: 4px;
     border-radius: 2px;
     outline: none;
@@ -209,9 +249,9 @@ input[type=range] {
     gap: 12px;
 }
 
-.metric-box {
-    background: #252525;
-    border-left: 4px solid #555;
+.water-module-container .metric-box {
+    background: var(--surface-card);
+    border-left: 4px solid var(--border-subtle);
     padding: 12px;
     border-radius: 4px;
     display: flex;
@@ -219,7 +259,7 @@ input[type=range] {
     gap: 4px;
 }
 
-.metric-box.danger {
+.water-module-container .metric-box.danger {
     border-left-color: #ff3d00;
     animation: pulse-border 1.5s infinite;
 }
@@ -238,26 +278,26 @@ input[type=range] {
     }
 }
 
-.metric-label {
+.water-module-container .metric-label {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--color-text-muted);
     text-transform: uppercase;
 }
 
-.metric-value {
+.water-module-container .metric-value {
     font-size: 1.4rem;
     font-weight: 800;
 }
 
-.metric-value.blue {
+.water-module-container .metric-value.blue {
     color: #4fc3f7;
 }
 
-.metric-value.orange {
+.water-module-container .metric-value.orange {
     color: #ffb74d;
 }
 
-.metric-value.green {
+.water-module-container .metric-value.green {
     color: #81c784;
 }
 
@@ -305,13 +345,13 @@ input[type=range] {
 }
 
 /* Выделенные метрики (стоимость, люди) */
-.metric-box.highlight {
-    border-left-color: #4a90e2;
-    background: linear-gradient(135deg, #1a2a3a 0%, #252525 100%);
+.water-module-container .metric-box.highlight {
+    border-left-color: var(--color-accent-cyan);
+    background: color-mix(in srgb, var(--color-accent-cyan) 10%, var(--surface-card));
 }
 
-.metric-box.highlight .metric-label {
-    color: #aaa;
+.water-module-container .metric-box.highlight .metric-label {
+    color: var(--color-text-secondary);
     font-size: 0.85rem;
 }
 
@@ -320,7 +360,7 @@ input[type=range] {
 }
 
 /* Подметрика (стоимость за человека) */
-.metric-sub {
+.water-module-container .metric-sub {
     display: block;
     font-size: 0.75rem;
     color: #8bc34a;
@@ -330,7 +370,7 @@ input[type=range] {
 }
 
 /* Danger-стиль для перегрузки */
-.metric-box.danger {
+.water-module-container .metric-box.danger {
     border-left-color: #f44336;
     background: linear-gradient(135deg, #3a1a1a 0%, #2a1515 100%);
 }
@@ -468,24 +508,25 @@ input[type=range] {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: calc(100vh - 60px);
+    height: 100%;
+    min-height: 0;
 }
 
 .water-sub-tabs {
     display: flex;
     gap: 4px;
     padding: 6px 12px;
-    background: #1a1a2e;
-    border-bottom: 1px solid #333;
+    background: var(--surface-panel-strong);
+    border-bottom: 1px solid var(--border-subtle);
     flex-shrink: 0;
 }
 
 .water-tab-btn {
     padding: 6px 18px;
-    border: 1px solid #444;
-    border-radius: 8px 8px 0 0;
-    background: #252540;
-    color: #888;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--control-bg);
+    color: var(--color-text-secondary);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -493,30 +534,31 @@ input[type=range] {
 }
 
 .water-tab-btn:hover {
-    background: #2d2d4a;
-    color: #ccc;
+    background: var(--control-bg-hover);
+    color: var(--color-text-primary);
 }
 
 .water-tab-btn.active {
-    background: #121212;
-    color: #4FC3F7;
-    border-bottom-color: #121212;
+    background: color-mix(in srgb, var(--color-accent-cyan) 15%, var(--surface-card));
+    color: var(--color-accent-cyan);
+    border-color: var(--color-accent-cyan);
 }
 
 /* Когда внутри router — подстроить контейнер */
 .water-router .water-module-container {
     height: 100%;
     flex: 1;
+    min-height: 0;
 }
 
 /* ═══════════════════════════════════════════════════ */
 /* Filter-specific metrics                           */
 /* ═══════════════════════════════════════════════════ */
-.metric-value.red {
+.water-module-container .metric-value.red {
     color: #f44336;
 }
 
-.metric-value.orange {
+.water-module-container .metric-value.orange {
     color: #ff9800;
 }
 
@@ -535,4 +577,69 @@ input[type=range] {
 
 .check-no {
     color: #777;
+}
+
+@media (max-width: 1100px) {
+    .water-module-container {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        grid-template-rows: minmax(420px, 1fr) auto;
+    }
+
+    .water-module-container .left-panel {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        width: auto;
+        min-width: 0;
+    }
+
+    .water-module-container .center-workspace {
+        grid-column: 2;
+        grid-row: 1;
+        min-height: 420px;
+    }
+
+    .water-module-container .right-panel {
+        grid-column: 2;
+        grid-row: 2;
+        width: auto;
+        min-width: 0;
+        max-height: 240px;
+        border-left: 0;
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .water-module-container.details-hidden {
+        display: flex;
+    }
+}
+
+@media (max-width: 760px) {
+    .water-module-container {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .water-module-container .panel {
+        width: 100%;
+        min-width: 0;
+        max-height: none;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .water-module-container .center-workspace {
+        min-height: 520px;
+        flex: 0 0 520px;
+    }
+
+    .simulation-controls {
+        bottom: 14px;
+        width: calc(100% - 20px);
+    }
+
+    .sim-btn {
+        flex: 1;
+    }
 }

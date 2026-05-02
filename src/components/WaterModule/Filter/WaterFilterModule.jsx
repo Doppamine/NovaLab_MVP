@@ -11,22 +11,22 @@ import {
 import FilterScene from './FilterScene';
 import AnimatedCounter from '../Pump/AnimatedCounter';
 
-// Детали биопесчаного фильтра
 const AVAILABLE_PARTS = [
-    { id: 'bucket', name: 'Корпус (ведро)', icon: '🪣', desc: 'Контейнер фильтра', baseCost: 8, purification: 0 },
-    { id: 'gravelCoarse', name: 'Гравий крупный', icon: '🪨', desc: 'Дренажный слой', baseCost: 2, purification: 5 },
-    { id: 'gravelFine', name: 'Гравий мелкий', icon: '🪨', desc: 'Предфильтрация', baseCost: 2, purification: 10 },
-    { id: 'sandCoarse', name: 'Песок крупный', icon: '🏖️', desc: 'Переходный слой', baseCost: 2, purification: 15 },
-    { id: 'sandFine', name: 'Песок мелкий', icon: '🏖️', desc: 'Основной фильтр', baseCost: 3, purification: 40 },
-    { id: 'diffuser', name: 'Диффузор', icon: '🔲', desc: 'Защита биослоя', baseCost: 3, purification: 0 },
-    { id: 'outlet', name: 'Трубка выхода', icon: '🚰', desc: 'Вывод чистой воды', baseCost: 2, purification: 0 },
+    { id: 'bucket', name: 'Filter body', icon: '🪣', desc: 'Main container', baseCost: 8, purification: 0 },
+    { id: 'gravelCoarse', name: 'Coarse gravel', icon: '🪨', desc: 'Drainage layer', baseCost: 2, purification: 5 },
+    { id: 'gravelFine', name: 'Fine gravel', icon: '🪨', desc: 'Pre-filter layer', baseCost: 2, purification: 10 },
+    { id: 'sandCoarse', name: 'Coarse sand', icon: '🏖️', desc: 'Transition layer', baseCost: 2, purification: 15 },
+    { id: 'sandFine', name: 'Fine sand', icon: '🏖️', desc: 'Main filter layer', baseCost: 3, purification: 40 },
+    { id: 'diffuser', name: 'Diffuser', icon: '🔲', desc: 'Protects the bio-layer', baseCost: 3, purification: 0 },
+    { id: 'outlet', name: 'Outlet tube', icon: '🚰', desc: 'Clean water exit', baseCost: 2, purification: 0 },
 ];
 
 const FILTER_LAYERS = ['gravelCoarse', 'gravelFine', 'sandCoarse', 'sandFine'];
 
-export default function WaterFilterModule() {
+export default function WaterFilterModule({ showDetails = true }) {
     const [assembledParts, setAssembledParts] = useState([]);
     const [isFiltering, setIsFiltering] = useState(false);
+    const [userMessage, setUserMessage] = useState('Select the filter body, outlet tube, and at least one filter layer. Then start filtering.');
 
     const [metrics, setMetrics] = useState({
         purification: 0,
@@ -52,30 +52,50 @@ export default function WaterFilterModule() {
         return '—';
     }, [buildCost, metrics.peopleServed]);
 
-    // Собрать
     const handleAssemble = (partId) => {
         if (!assembledParts.includes(partId)) {
             setAssembledParts([...assembledParts, partId]);
+            setUserMessage(`${getWaterPartName(AVAILABLE_PARTS, partId)} added to the filter.`);
             playAssembleClick();
         }
     };
 
-    // Убрать
     const handleRemove = (partId) => {
         setAssembledParts(assembledParts.filter(id => id !== partId));
         setIsFiltering(false);
         stopFilterDrip();
+        setUserMessage(`${getWaterPartName(AVAILABLE_PARTS, partId)} removed. Rebuild the filter before testing.`);
         playRemoveClick();
     };
 
-    // Запуск/стоп
+    const resetFilter = () => {
+        setAssembledParts([]);
+        setIsFiltering(false);
+        stopFilterDrip();
+        setMetrics({
+            purification: 0,
+            flowRate: 0,
+            peopleServed: 0,
+            error: null,
+            removes: { bacteria: false, protozoa: false, turbidity: false, chemicals: false },
+        });
+        setUserMessage('Filter workspace reset. Build a new filter and test the result.');
+    };
+
     const toggleFiltering = () => {
         const hasBucket = assembledParts.includes('bucket');
         const hasOutlet = assembledParts.includes('outlet');
         const hasLayers = FILTER_LAYERS.some(l => assembledParts.includes(l));
 
         if (!isFiltering && !(hasBucket && hasOutlet && hasLayers)) {
-            setMetrics(m => ({ ...m, error: 'Нужен корпус, хотя бы один фильтрующий слой и трубка выхода!' }));
+            const missing = [
+                !hasBucket ? 'filter body' : '',
+                !hasOutlet ? 'outlet tube' : '',
+                !hasLayers ? 'at least one filter layer' : '',
+            ].filter(Boolean).join(', ');
+            const message = `Required components are missing: ${missing}.`;
+            setMetrics(m => ({ ...m, error: message }));
+            setUserMessage(message);
             playError();
             return;
         }
@@ -83,18 +103,18 @@ export default function WaterFilterModule() {
         if (!isFiltering) {
             setMetrics(m => ({ ...m, error: null }));
             setIsFiltering(true);
+            setUserMessage('Filtering started. Watch purification, flow rate, and removed contaminants.');
             playWaterPour();
             startFilterDrip();
         } else {
             setIsFiltering(false);
+            setUserMessage('Filtering paused. Add or remove layers, then test again.');
             stopFilterDrip();
         }
     };
 
-    // Пересчёт метрик
     useEffect(() => {
         if (isFiltering) {
-            // Очистка = сумма слоёв + бонус за диффузор
             let purification = 0;
             let layerCount = 0;
             FILTER_LAYERS.forEach(layerId => {
@@ -105,21 +125,17 @@ export default function WaterFilterModule() {
                 }
             });
 
-            // Диффузор добавляет +3% (защищает биослой)
             if (assembledParts.includes('diffuser')) {
                 purification += 3;
             }
 
-            purification = Math.min(purification, 98); // Макс 98%
+            purification = Math.min(purification, 98);
 
-            // Скорость: базовая 12 л/час, уменьшается с каждым слоем
             const flowRate = Math.max(2, 12 - layerCount * 2.5);
 
-            // Люди: л/час × 8 часов / 20 л/чел/день
             const dailyLiters = flowRate * 8;
             const peopleServed = Math.floor(dailyLiters / 20);
 
-            // Что удаляет
             const hasSandFine = assembledParts.includes('sandFine');
             const hasSandCoarse = assembledParts.includes('sandCoarse');
             const hasGravelFine = assembledParts.includes('gravelFine');
@@ -130,12 +146,15 @@ export default function WaterFilterModule() {
                 peopleServed,
                 error: null,
                 removes: {
-                    bacteria: hasSandFine,              // Мелкий песок ловит бактерии
-                    protozoa: hasSandFine || hasSandCoarse, // Песок ловит простейших
-                    turbidity: hasGravelFine || hasSandCoarse, // Гравий + песок — мутность
-                    chemicals: false,                    // BSF не убирает химию (нужен уголь)
+                    bacteria: hasSandFine,
+                    protozoa: hasSandFine || hasSandCoarse,
+                    turbidity: hasGravelFine || hasSandCoarse,
+                    chemicals: false,
                 },
             });
+            setUserMessage(purification >= 50
+                ? 'The filter is working. Purification improves as more layers are added.'
+                : 'The filter runs, but purification is limited. Add sand or gravel layers to improve the result.');
         } else {
             setMetrics({
                 purification: 0,
@@ -148,10 +167,10 @@ export default function WaterFilterModule() {
     }, [assembledParts, isFiltering]);
 
     return (
-        <div className="water-module-container">
-            {/* ЛЕВАЯ ПАНЕЛЬ: Инвентарь */}
+        <div className={`water-module-container ${showDetails ? '' : 'details-hidden'}`}>
+            {showDetails ? (
             <div className="panel left-panel">
-                <h2>Инвентарь (Биофильтр)</h2>
+                <h2>Filter components</h2>
                 <div className="parts-grid">
                     {AVAILABLE_PARTS.map(part => {
                         const isAssembled = assembledParts.includes(part.id);
@@ -179,7 +198,7 @@ export default function WaterFilterModule() {
                                             exit={{ scale: 0 }}
                                             className="status-badge"
                                         >
-                                            Установлено ✓
+                                            Installed
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -188,8 +207,8 @@ export default function WaterFilterModule() {
                     })}
                 </div>
             </div>
+            ) : null}
 
-            {/* ЦЕНТР: 3D Сцена */}
             <div className="center-workspace">
                 <AnimatePresence>
                     {metrics.error && (
@@ -224,61 +243,69 @@ export default function WaterFilterModule() {
                 </Canvas>
 
                 <div className="simulation-controls">
+                    <div className="water-user-feedback" role="status">{userMessage}</div>
                     <button
                         className={`sim-btn ${isFiltering ? 'stop' : 'start'}`}
                         onClick={toggleFiltering}
                     >
-                        {isFiltering ? '⏹ ОСТАНОВИТЬ' : '▶ ФИЛЬТРОВАТЬ'}
+                        {isFiltering ? 'Stop filtering' : 'Start filter test'}
+                    </button>
+                    <button className="sim-btn reset" onClick={resetFilter}>
+                        Reset
                     </button>
                 </div>
             </div>
 
-            {/* ПРАВАЯ ПАНЕЛЬ: Настройки и Метрики */}
+            {showDetails ? (
             <div className="panel right-panel">
-                <h2>Бизнес-метрики</h2>
+                <h2>Results</h2>
                 <div className="metrics-dashboard">
                     <div className="metric-box highlight">
-                        <span className="metric-label">💰 Стоимость сборки</span>
+                        <span className="metric-label">Build cost</span>
                         <span className="metric-value green"><AnimatedCounter value={buildCost} prefix="$" /></span>
                     </div>
                     <div className="metric-box highlight">
-                        <span className="metric-label">🧪 Степень очистки</span>
+                        <span className="metric-label">Purification</span>
                         <span className={`metric-value ${metrics.purification > 70 ? 'green' : metrics.purification > 30 ? 'orange' : 'red'}`}>
                             <AnimatedCounter value={metrics.purification} suffix="%" />
                         </span>
                     </div>
                     <div className="metric-box">
-                        <span className="metric-label">⏱️ Скорость</span>
-                        <span className="metric-value blue"><AnimatedCounter value={metrics.flowRate} suffix=" л/час" /></span>
+                        <span className="metric-label">Flow rate</span>
+                        <span className="metric-value blue"><AnimatedCounter value={metrics.flowRate} suffix=" L/hour" /></span>
                     </div>
                     <div className="metric-box highlight">
-                        <span className="metric-label">👥 Обеспечивает водой</span>
-                        <span className="metric-value blue"><AnimatedCounter value={metrics.peopleServed} suffix=" чел/день" /></span>
+                        <span className="metric-label">People served</span>
+                        <span className="metric-value blue"><AnimatedCounter value={metrics.peopleServed} suffix=" people/day" /></span>
                         {metrics.peopleServed > 0 && (
-                            <span className="metric-sub">${costPerPerson} / чел / день</span>
+                            <span className="metric-sub">${costPerPerson} / person / day</span>
                         )}
                     </div>
 
-                    {/* Чеклист: что удаляет */}
                     <div className="metric-box filter-checklist">
-                        <span className="metric-label">🦠 Удаляет</span>
+                        <span className="metric-label">Removes</span>
                         <div className="checklist-items">
                             <span className={metrics.removes.bacteria ? 'check-ok' : 'check-no'}>
-                                {metrics.removes.bacteria ? '✅' : '❌'} Бактерии
+                                {metrics.removes.bacteria ? 'Yes' : 'No'} bacteria
                             </span>
                             <span className={metrics.removes.protozoa ? 'check-ok' : 'check-no'}>
-                                {metrics.removes.protozoa ? '✅' : '❌'} Простейшие
+                                {metrics.removes.protozoa ? 'Yes' : 'No'} protozoa
                             </span>
                             <span className={metrics.removes.turbidity ? 'check-ok' : 'check-no'}>
-                                {metrics.removes.turbidity ? '✅' : '❌'} Мутность
+                                {metrics.removes.turbidity ? 'Yes' : 'No'} turbidity
                             </span>
                             <span className="check-no">
-                                ❌ Химия (нужен уголь)
+                                No chemicals without carbon
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
+            ) : null}
         </div>
     );
+}
+
+function getWaterPartName(parts, partId) {
+    return parts.find(part => part.id === partId)?.name || 'Component';
 }

@@ -7,12 +7,9 @@ import burningStickScenario from '../../scenarios/burning_stick_lab_v1.json';
 import './PhysicsLab.css';
 
 /**
- * PhysicsLab — корневой компонент модуля.
+ * PhysicsLab - root component for the simulation catalog.
  *
- * Пока жёстко подхватывает сценарий apollo15. В M2 сюда прилетит
- * пропс `scenarioId` и список сценариев, чтобы учитель мог выбирать из каталога.
- *
- * Использование:
+ * Usage:
  *   import PhysicsLab from './components/PhysicsLab/PhysicsLab.jsx';
  *   <PhysicsLab />
  */
@@ -22,23 +19,23 @@ export default function PhysicsLab() {
   const simulations = useMemo(() => ([
     {
       id: 'apollo15',
-      kicker: 'Механика · RK4',
-      status: 'Готово',
+      kicker: 'Mechanics - RK4',
+      status: 'Demo ready',
       theme: 'apollo',
-      title: apolloScenario.title,
-      description: 'Исторический эксперимент Дэвида Скотта: молоток и перо, сопротивление воздуха, сравнение Земли и Луны.',
-      highlights: ['молоток vs перо', 'вакуум и атмосфера', 'траектории и графики'],
-      cta: 'Открыть Apollo 15',
+      title: 'Apollo 15: Hammer and Feather',
+      description: 'Compare the historic hammer and feather experiment with clear visual feedback for gravity and air resistance.',
+      highlights: ['hammer vs feather', 'vacuum and atmosphere', 'trajectories and charts'],
+      cta: 'Open Apollo 15',
     },
     {
       id: 'burning-stick',
-      kicker: 'Горение · RK4',
-      status: 'Новое',
+      kicker: 'Combustion - RK4',
+      status: 'Pilot demo',
       theme: 'burn',
-      title: burningStickScenario.title,
-      description: 'Новый стенд по горению: фронт пламени, влажность, кислород, обдув, толщина и поджиг с одного или двух концов.',
-      highlights: ['фронт горения', 'кислород и влага', 'материалы и режимы'],
-      cta: 'Зажечь стенд',
+      title: 'Burn Lab: Burning Stick',
+      description: 'Observe how oxygen, moisture, airflow, material thickness, and ignition points affect a burning stick.',
+      highlights: ['flame front', 'oxygen and moisture', 'material conditions'],
+      cta: 'Open burn lab',
     },
   ]), []);
 

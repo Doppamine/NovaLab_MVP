@@ -3,7 +3,7 @@ import WaterPumpModule from './Pump/WaterPumpModule';
 import WaterFilterModule from './Filter/WaterFilterModule';
 import './WaterModule.css';
 
-export default function WaterModuleRouter() {
+export default function WaterModuleRouter({ showDetails = true }) {
     const [activeTab, setActiveTab] = useState('pump');
 
     return (
@@ -13,16 +13,18 @@ export default function WaterModuleRouter() {
                     className={`water-tab-btn ${activeTab === 'pump' ? 'active' : ''}`}
                     onClick={() => setActiveTab('pump')}
                 >
-                    ⛽ Насос
+                    Pump system
                 </button>
                 <button
                     className={`water-tab-btn ${activeTab === 'filter' ? 'active' : ''}`}
                     onClick={() => setActiveTab('filter')}
                 >
-                    🧪 Фильтр
+                    Filter system
                 </button>
             </div>
-            {activeTab === 'pump' ? <WaterPumpModule /> : <WaterFilterModule />}
+            {activeTab === 'pump'
+                ? <WaterPumpModule showDetails={showDetails} />
+                : <WaterFilterModule showDetails={showDetails} />}
         </div>
     );
 }
