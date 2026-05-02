@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SectionManager from './Grade7/Section1/SectionManager';
+import './PhysicsRouter.css';
 
 export default function PhysicsRouter() {
   const [grade, setGrade] = useState(null);
@@ -10,25 +11,29 @@ export default function PhysicsRouter() {
   }
 
   return (
-    <div style={{ padding: '40px', color: 'white', background: '#050a15', minHeight: '90vh' }}>
-      <h1>🎓 NovaLab: Академия Физики</h1>
+    <div className="physics-router">
+      <div className="physics-router-header">
+        <span className="physics-eyebrow">Physics curriculum</span>
+        <h1>NovaLab Academy</h1>
+      </div>
       {!grade ? (
-        <div style={{ display: 'flex', gap: '20px', marginTop: '40px' }}>
-          <div onClick={() => setGrade(7)} style={{ padding: '40px', background: '#1e293b', borderRadius: '20px', cursor: 'pointer', border: '2px solid #38bdf8' }}>
+        <div className="physics-grade-grid">
+          <button className="physics-grade-card" onClick={() => setGrade(7)}>
+            <span className="grade-index">Grade</span>
             <h2>7 КЛАСС</h2>
             <p>Введение, Движение, Давление</p>
-          </div>
+          </button>
         </div>
       ) : (
-        <div style={{ marginTop: '30px' }}>
-           <button onClick={() => setGrade(null)} style={{ color: '#38bdf8', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '20px' }}>← К выбору класса</button>
+        <div className="physics-section-picker">
+           <button className="physics-back-btn" onClick={() => setGrade(null)}>← К выбору класса</button>
            <h2>7 КЛАСС: РАЗДЕЛ 1</h2>
-           <div 
+           <button
+             className="physics-section-card"
              onClick={() => setSection(1)}
-             style={{ padding: '20px', background: '#38bdf8', color: '#000', borderRadius: '10px', display: 'inline-block', cursor: 'pointer', fontWeight: 'bold', marginTop: '20px' }}
            >
              Введение в физику (9 уроков)
-           </div>
+           </button>
         </div>
       )}
     </div>

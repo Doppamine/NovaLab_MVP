@@ -1,0 +1,319 @@
+.thermo-level1 {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--spacing-md);
+    height: 100%;
+    min-height: 0;
+    padding: var(--spacing-md);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    overflow: hidden;
+}
+
+.thermo-scene-wrap {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(0, 242, 255, 0.18);
+    background: #050818;
+    box-shadow: var(--shadow-lg), inset 0 0 60px rgba(0, 242, 255, 0.05);
+}
+
+.thermo-temps-panel {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    background: rgba(10, 14, 39, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-width: 220px;
+    z-index: 10;
+}
+
+.thermo-temps-panel h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-accent-cyan);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 0.04em;
+}
+
+.thermo-temp-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 4px 0;
+    font-size: 0.85rem;
+}
+
+.thermo-temp-row.equilibrium {
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    font-weight: 700;
+}
+
+.thermo-temp-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.thermo-temp-label {
+    flex: 1;
+    color: var(--color-text-secondary);
+}
+
+.thermo-temp-value {
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+/* Sidebar */
+
+.thermo-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.thermo-prompt-card,
+.thermo-bodies-card,
+.thermo-answer-card {
+    background: rgba(21, 27, 61, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 242, 255, 0.18);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+}
+
+.thermo-prompt-badge {
+    display: inline-block;
+    background: var(--gradient-primary);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.thermo-prompt-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
+.thermo-prompt-card p {
+    font-size: 0.88rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.thermo-formula-display {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: rgba(0, 242, 255, 0.08);
+    border: 1px dashed rgba(0, 242, 255, 0.3);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.thermo-formula-text {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--color-accent-cyan);
+}
+
+.thermo-bodies-card h3 {
+    font-size: 1rem;
+    color: var(--color-accent-purple);
+    margin-bottom: var(--spacing-sm);
+}
+
+.thermo-body-spec {
+    padding: 8px 10px;
+    background: rgba(10, 14, 39, 0.6);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+}
+
+.thermo-body-spec-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.thermo-body-spec-c {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.thermo-thermal-weight {
+    height: 6px;
+    margin: 6px 0 5px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.thermo-thermal-weight span {
+    display: block;
+    height: 100%;
+    min-width: 8px;
+    border-radius: inherit;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.thermo-answer-card label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.thermo-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.thermo-input-wrap input {
+    width: 100%;
+    padding: 10px 50px 10px 12px;
+    background: rgba(10, 14, 39, 0.9);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+    transition: all var(--transition-fast);
+}
+
+.thermo-input-wrap input:focus {
+    outline: none;
+    border-color: var(--color-accent-cyan);
+    box-shadow: 0 0 12px rgba(0, 242, 255, 0.4);
+}
+
+.thermo-unit {
+    position: absolute;
+    right: 12px;
+    color: var(--color-accent-cyan);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.thermo-submit-btn,
+.thermo-reset-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 8px;
+    transition: all var(--transition-fast);
+}
+
+.thermo-submit-btn {
+    background: var(--gradient-primary);
+    color: #000;
+    box-shadow: var(--glow-cyan);
+}
+
+.thermo-submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 0 24px rgba(0, 242, 255, 0.6);
+}
+
+.thermo-submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.thermo-reset-btn {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.thermo-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary);
+}
+
+/* Body labels in 3D scene */
+
+.thermo-body-label {
+    background: rgba(10, 14, 39, 0.85);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Scene overlay (drop-everything CTA) */
+
+.thermo-overlay-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: auto;
+}
+
+.thermo-overlay-hint p {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    background: rgba(10, 14, 39, 0.7);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.thermo-cta {
+    background: var(--gradient-primary);
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--glow-cyan);
+    animation: glow 2s infinite;
+}
+
+.thermo-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.7);
+}
+
+.thermo-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}

@@ -6,19 +6,18 @@ export default function SimulationCatalog({ simulations, onSelect }) {
       <div className="lab-container">
         <header className="lab-header">
           <div className="lab-title">
-            <span className="eyebrow">NovaLab · Physics Catalog</span>
-            <h1 style={{ fontSize: '1.7rem' }}>Каталог симуляций</h1>
+            <span className="eyebrow">NovaLab - Physics Catalog</span>
+            <h1 style={{ fontSize: '1.7rem' }}>Simulation catalog</h1>
           </div>
         </header>
 
         <section className="catalog-hero card">
-          <div className="eyebrow">Новая категория</div>
-          <h2 style={{ marginTop: 10, marginBottom: 14 }}>Выбирай стенд, а не просто урок</h2>
+          <div className="eyebrow">Teacher-ready demos</div>
+          <h2 style={{ marginTop: 10, marginBottom: 14 }}>Choose an experiment students can observe.</h2>
           <p style={{ maxWidth: 760, lineHeight: 1.65, fontSize: '1rem' }}>
-            Здесь PhysicsLab становится полноценной витриной инженерных симуляций.
-            Apollo 15 остаётся как эксперимент по механике, а рядом появляется новая
-            лаборатория по горению. Дальше в эту же категорию можно будет добавлять
-            маятник, ракетный стенд, теплопередачу и другие модули без переписывания текущих.
+            PhysicsLab presents the existing simulation stands in a clear pilot format.
+            Open a demo, adjust the setup, run the simulation, and use the result to
+            connect observation with physics vocabulary.
           </p>
         </section>
 

@@ -6,7 +6,7 @@ function Header({ children }) {
         <header className="header">
             <div className="header-content">
                 <div className="logo-section">
-                    <div className="logo-icon">🚀</div>
+                    <div className="logo-icon">NL</div>
                     <h1 className="logo-text">
                         Nova<span className="logo-accent">Lab</span>
                     </h1>
@@ -16,8 +16,7 @@ function Header({ children }) {
                 <div className="header-actions">
                     {children || (
                         <button className="btn btn-primary">
-                            <span>💡</span>
-                            <span>Помощь</span>
+                            <span>Help</span>
                         </button>
                     )}
                 </div>

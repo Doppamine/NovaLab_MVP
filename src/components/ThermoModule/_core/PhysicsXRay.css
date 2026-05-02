@@ -1,0 +1,393 @@
+/* Physics X-Ray — visual formula diff */
+
+.xray {
+    background: rgba(21, 27, 61, 0.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(0, 242, 255, 0.28);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    color: var(--color-text-primary);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.15), var(--shadow-lg);
+    font-family: 'Inter', sans-serif;
+    animation: fadeIn 0.35s ease-out;
+}
+
+.xray.xray-success {
+    border-color: rgba(0, 255, 159, 0.5);
+    box-shadow: 0 0 40px rgba(0, 255, 159, 0.25), var(--shadow-lg);
+}
+
+.xray-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-accent-cyan);
+    letter-spacing: 0.02em;
+}
+
+.xray-icon {
+    font-size: 1.3rem;
+}
+
+.xray-formula-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.xray-truth {
+    background: rgba(0, 255, 159, 0.07);
+    border: 1px solid rgba(0, 255, 159, 0.2);
+}
+
+.xray-student {
+    background: rgba(255, 0, 110, 0.05);
+    border: 1px solid rgba(255, 0, 110, 0.18);
+}
+
+.xray-lhs {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    min-width: 44px;
+    color: var(--color-accent-green);
+}
+
+.xray-lhs.lhs-student {
+    color: var(--color-accent-pink);
+    font-style: normal;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.xray-eq,
+.xray-op,
+.xray-arrow {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    font-family: 'Georgia', serif;
+}
+
+.xray-arrow {
+    color: var(--color-accent-cyan);
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+}
+
+/* Variable Tiles */
+
+.xray-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 74px;
+    padding: 6px 10px;
+    background: rgba(10, 14, 39, 0.7);
+    border: 1px solid rgba(0, 242, 255, 0.25);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.xray-tile-truth {
+    border-color: rgba(0, 255, 159, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 159, 0.12);
+}
+
+.xray-tile-student {
+    border-color: rgba(0, 242, 255, 0.4);
+}
+
+.xray-tile.wrong {
+    border-color: var(--color-accent-pink);
+    background: rgba(255, 0, 110, 0.08);
+    box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
+}
+
+.xray-tile.shake {
+    animation: xrayShake 0.5s ease-in-out infinite;
+}
+
+@keyframes xrayShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px) rotate(-1deg); }
+    75% { transform: translateX(3px) rotate(1deg); }
+}
+
+.xray-tile-symbol {
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--color-accent-cyan);
+    margin-bottom: 2px;
+}
+
+.xray-tile-truth .xray-tile-symbol {
+    color: var(--color-accent-green);
+}
+
+.xray-tile.wrong .xray-tile-symbol {
+    color: var(--color-accent-pink);
+}
+
+.xray-tile-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+}
+
+.xray-tile-unit {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.xray-tile-correction {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--color-accent-green);
+    background: rgba(10, 14, 39, 0.9);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.xray-tile-info {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-accent-purple);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 18px;
+    text-align: center;
+}
+
+.xray-tile-info:hover {
+    background: var(--color-accent-cyan);
+    color: #000;
+}
+
+.xray-tile-tooltip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    max-width: 280px;
+    padding: 10px 12px;
+    background: rgba(10, 14, 39, 0.97);
+    border: 1px solid var(--color-accent-purple);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Heat Seesaw */
+
+.xray-seesaw {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: rgba(10, 14, 39, 0.6);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(157, 78, 221, 0.25);
+}
+
+.xray-seesaw-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-accent-purple);
+    margin-bottom: var(--spacing-sm);
+}
+
+.xray-seesaw-stage {
+    position: relative;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.xray-seesaw-pivot {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 38px solid var(--color-accent-purple);
+    z-index: 1;
+    filter: drop-shadow(0 0 6px rgba(157, 78, 221, 0.6));
+}
+
+.xray-seesaw-beam {
+    position: relative;
+    width: 360px;
+    max-width: 95%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--color-accent-cyan), var(--color-accent-purple), var(--color-accent-pink));
+    border-radius: 3px;
+    transform-origin: center center;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+    margin-bottom: 30px;
+}
+
+.xray-pan {
+    position: absolute;
+    top: -4px;
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.xray-pan.left { left: -40px; }
+.xray-pan.right { right: -40px; }
+
+.xray-pan-weight {
+    width: 80px;
+    min-height: 6px;
+    background: linear-gradient(180deg, var(--color-accent-pink), rgba(255, 0, 110, 0.3));
+    border: 1px solid rgba(255, 0, 110, 0.6);
+    border-radius: 4px 4px 2px 2px;
+    transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 12px rgba(255, 0, 110, 0.4);
+}
+
+.xray-pan.right .xray-pan-weight {
+    background: linear-gradient(180deg, var(--color-accent-cyan), rgba(0, 242, 255, 0.3));
+    border-color: rgba(0, 242, 255, 0.6);
+    box-shadow: 0 0 12px rgba(0, 242, 255, 0.4);
+}
+
+.xray-pan-label {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.xray-pan-label strong {
+    color: var(--color-text-primary);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.xray-seesaw-hint {
+    margin-top: var(--spacing-sm);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* Loss Bar (Level 3) */
+
+.xray-lossbar {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: rgba(10, 14, 39, 0.6);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 242, 255, 0.25);
+}
+
+.xray-lossbar-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-accent-cyan);
+    margin-bottom: var(--spacing-sm);
+}
+
+.xray-lossbar-track {
+    display: flex;
+    height: 34px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.xray-lossbar-useful {
+    background: linear-gradient(90deg, #00e0ff, #00ff9f);
+    color: #001020;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.5s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.xray-lossbar-loss {
+    background: linear-gradient(90deg, #ff5a1f, #ff006e);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.5s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.xray-lossbar-eta {
+    margin-top: var(--spacing-sm);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Summary */
+
+.xray-summary {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: rgba(255, 0, 110, 0.08);
+    border-left: 3px solid var(--color-accent-pink);
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+}
+
+.xray-summary.success {
+    background: rgba(0, 255, 159, 0.1);
+    border-left-color: var(--color-accent-green);
+}

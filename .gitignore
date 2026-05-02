@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+certs/*.pem
+!certs/.gitkeep
 
 # Editor directories and files
 .vscode/*

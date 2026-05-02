@@ -2,11 +2,11 @@
 
 .header {
     width: 100%;
-    height: 70px;
-    background: rgba(15, 23, 42, 0.8);
+    min-height: 70px;
+    background: color-mix(in srgb, var(--color-bg-secondary) 84%, transparent);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent-cyan) 20%, transparent);
+    box-shadow: var(--shadow-md);
     position: relative;
     z-index: var(--z-panel);
 }
@@ -24,11 +24,14 @@
 
 .header-content {
     height: 100%;
-    padding: 0 var(--spacing-lg);
+    min-height: 70px;
+    padding: var(--spacing-sm) var(--spacing-lg);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 100%;
+    gap: var(--spacing-lg);
+    max-width: 1440px;
+    margin: 0 auto;
 }
 
 .logo-section {
@@ -38,9 +41,18 @@
 }
 
 .logo-icon {
-    font-size: 2rem;
-    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.6));
-    animation: float 3s ease-in-out infinite;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in srgb, var(--color-accent-cyan) 40%, transparent);
+    background: color-mix(in srgb, var(--color-accent-cyan) 14%, transparent);
+    color: var(--color-text-primary);
+    font-size: 0.88rem;
+    font-weight: 900;
+    box-shadow: var(--shadow-sm);
 }
 
 .logo-text {
@@ -50,7 +62,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.5px;
+    letter-spacing: 0;
     margin: 0;
 }
 
@@ -71,8 +83,11 @@
 
 .header-actions {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: var(--spacing-sm);
     align-items: center;
+    min-width: 0;
 }
 
 .header-actions .btn {
@@ -91,7 +106,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .header {
-        height: 60px;
+        min-height: 60px;
     }
 
     .header-subtitle {
@@ -103,6 +118,20 @@
     }
 
     .logo-icon {
-        font-size: 1.5rem;
+        width: 36px;
+        height: 36px;
+        font-size: 0.78rem;
+    }
+
+    .header-content {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
     }
 }

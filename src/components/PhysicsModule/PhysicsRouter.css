@@ -1,0 +1,92 @@
+.physics-router {
+    flex: 1;
+    min-height: 0;
+    padding: clamp(24px, 5vw, 48px);
+    background:
+        radial-gradient(circle at 80% 16%, color-mix(in srgb, var(--color-accent-cyan) 12%, transparent), transparent 30rem),
+        linear-gradient(135deg, var(--canvas-bg), var(--color-bg-primary));
+    color: var(--color-text-primary);
+    overflow: auto;
+}
+
+.physics-router-header {
+    max-width: 780px;
+}
+
+.physics-eyebrow,
+.grade-index {
+    display: inline-block;
+    color: var(--color-accent-cyan);
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.physics-router h1 {
+    margin: 6px 0 0;
+    font-size: clamp(2rem, 6vw, 4.2rem);
+    color: var(--color-text-primary);
+}
+
+.physics-grade-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.physics-grade-card,
+.physics-section-card {
+    text-align: left;
+    padding: var(--spacing-xl);
+    background: var(--surface-panel);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-panel);
+    transition: all var(--transition-normal);
+}
+
+.physics-grade-card:hover,
+.physics-section-card:hover {
+    transform: translateY(-3px);
+    background: var(--surface-panel-strong);
+    box-shadow: var(--shadow-panel), var(--glow-cyan);
+}
+
+.physics-grade-card h2 {
+    margin: var(--spacing-md) 0 var(--spacing-xs);
+    font-size: 1.65rem;
+}
+
+.physics-grade-card p,
+.physics-section-card {
+    color: var(--color-text-secondary);
+}
+
+.physics-section-picker {
+    margin-top: var(--spacing-xl);
+    max-width: 780px;
+}
+
+.physics-back-btn {
+    margin-bottom: var(--spacing-lg);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--color-accent-cyan);
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.physics-section-picker h2 {
+    margin-bottom: var(--spacing-md);
+}
+
+.physics-section-card {
+    display: inline-flex;
+    color: var(--color-text-primary);
+    font-weight: 900;
+}
