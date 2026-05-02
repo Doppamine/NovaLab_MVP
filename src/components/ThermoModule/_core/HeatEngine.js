@@ -73,6 +73,7 @@ export function solveEquilibrium(bodies) {
         numerator += C * b.temperature;
         denominator += C;
     }
+    if (denominator == 0) denominator = 1;
     const T_eq = numerator / denominator;
 
     const contributions = bodies.map(b => {
