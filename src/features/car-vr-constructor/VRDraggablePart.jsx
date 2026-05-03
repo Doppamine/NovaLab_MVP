@@ -1,6 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { useXRInputSourceState } from '@react-three/xr';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { Text } from '@react-three/drei';
 import {
     ChassisModel,
@@ -11,25 +9,33 @@ import {
     ControllerModel
 } from '../../components/Car3DConstructor/Part3DModel';
 
+/**
+ * VRDraggablePart — pure visual component for a single part on the VR field.
+ *
+ * All grab/move/drop logic is handled externally by VRGrabController.
+ * This component only:
+ *   1. Renders the 3D model
+ *   2. Shows hover/selection highlights
+ *   3. Shows a delete button when the part (or its group) is selected
+ *   4. Exposes a ref so the grab controller can read/write world position
+ */
 export default function VRDraggablePart({
     part,
     highlightedSockets,
     isSelected,
-    onSelect,
-    onDrop,
     onDelete,
-    onPositionChange
+    onRefReady  // Callback: (refNode) => void — registers the THREE.Group with the parent
 }) {
     const groupRef = useRef();
-    const [hovered, setHovered] = useState(false);
-    
-    const leftController = useXRInputSourceState('controller', 'left');
-    const rightController = useXRInputSourceState('controller', 'right');
-    
-    const SPEED = 2; // m/s
-    const ROTATION_SPEED = 2; // rad/s
 
-    // Sync position with state when not selected
+    // Merge: store ref locally AND notify parent via callback
+    const setRef = useCallback((node) => {
+        groupRef.current = node;
+        if (onRefReady) onRefReady(node);
+    }, [onRefReady]);
+
+    // Sync mesh position with state whenever state changes and the part is NOT
+    // currently being held (held parts are positioned by VRGrabController).
     useEffect(() => {
         if (groupRef.current && !isSelected) {
             groupRef.current.position.set(
@@ -39,50 +45,6 @@ export default function VRDraggablePart({
             );
         }
     }, [part.position, isSelected]);
-
-    const getThumbstick = (gamepad) => {
-        if (!gamepad || !gamepad.axes) return { x: 0, y: 0 };
-        if (gamepad.axes.length >= 4) return { x: gamepad.axes[2], y: gamepad.axes[3] };
-        if (gamepad.axes.length >= 2) return { x: gamepad.axes[0], y: gamepad.axes[1] };
-        return { x: 0, y: 0 };
-    };
-
-    useFrame((_, delta) => {
-        if (!isSelected || !groupRef.current) return;
-
-        let moved = false;
-
-        // Access the raw XRInputSource's gamepad via .inputSource.gamepad
-        // Left thumbstick: X/Y axes
-        const leftTS = getThumbstick(leftController?.inputSource?.gamepad);
-        if (Math.abs(leftTS.x) > 0.1) {
-            groupRef.current.position.x += leftTS.x * SPEED * delta;
-            moved = true;
-        }
-        if (Math.abs(leftTS.y) > 0.1) {
-            // yAxis is -1 forward (up), 1 backward (down)
-            groupRef.current.position.y -= leftTS.y * SPEED * delta;
-            moved = true;
-        }
-
-        // Right thumbstick: Z axis (depth) and Rotation (X axis of TS)
-        const rightTS = getThumbstick(rightController?.inputSource?.gamepad);
-        if (Math.abs(rightTS.y) > 0.1) {
-            groupRef.current.position.z += rightTS.y * SPEED * delta;
-            moved = true;
-        }
-        if (Math.abs(rightTS.x) > 0.1) {
-            groupRef.current.rotation.y -= rightTS.x * ROTATION_SPEED * delta;
-        }
-
-        if (moved && onPositionChange) {
-            onPositionChange({
-                x: groupRef.current.position.x,
-                y: groupRef.current.position.y,
-                z: groupRef.current.position.z
-            });
-        }
-    });
 
     const getModelComponent = () => {
         const models = {
@@ -102,41 +64,14 @@ export default function VRDraggablePart({
         ) : null;
     };
 
-    const handlePointerDown = (e) => {
-        e.stopPropagation();
-        if (isSelected) {
-            // Deselect and drop
-            if (onDrop && groupRef.current) {
-                onDrop({
-                    x: groupRef.current.position.x,
-                    y: groupRef.current.position.y,
-                    z: groupRef.current.position.z
-                });
-            }
-        } else {
-            if (onSelect) onSelect();
-        }
-    };
-
     return (
         <group
-            ref={groupRef}
+            ref={setRef}
             position={part.position}
-            onPointerEnter={(e) => { e.stopPropagation(); setHovered(true); }}
-            onPointerLeave={(e) => { e.stopPropagation(); setHovered(false); }}
-            onPointerDown={handlePointerDown}
         >
             {getModelComponent()}
 
-            {/* Hover highlight */}
-            {hovered && !isSelected && (
-                <mesh scale={1.05}>
-                    <boxGeometry args={[1.2, 1.2, 1.2]} />
-                    <meshBasicMaterial color="#4cc9f0" wireframe transparent opacity={0.5} />
-                </mesh>
-            )}
-
-            {/* Selection outline */}
+            {/* Selection outline — shown when this part (or its group) is grabbed */}
             {isSelected && (
                 <mesh scale={1.1}>
                     <boxGeometry args={[1.2, 1.2, 1.2]} />
@@ -144,7 +79,7 @@ export default function VRDraggablePart({
                 </mesh>
             )}
 
-            {/* Delete Button - floats next to the part when selected */}
+            {/* Delete Button — floats next to the part when selected */}
             {isSelected && (
                 <group position={[1.5, 0, 0]} onPointerDown={(e) => { e.stopPropagation(); onDelete(part.id); }}>
                     <mesh>

@@ -1,0 +1,398 @@
+/* ============================================
+   Crash Test Facility - Styles
+   Uses NovaLab global design tokens from global.css
+   ============================================ */
+
+.crash-test-lab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Top Bar ── */
+.crash-lab-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-panel);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+.crash-lab-topbar .crash-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-accent-cyan) 14%, transparent);
+  color: color-mix(in srgb, var(--color-accent-cyan) 82%, var(--color-text-primary));
+  border: 1px solid color-mix(in srgb, var(--color-accent-cyan) 30%, transparent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.crash-lab-topbar h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color-text-primary);
+}
+
+.crash-lab-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* ── Buttons ── */
+.crash-btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.crash-btn:hover {
+  transform: translateY(-1px);
+}
+
+.crash-btn:active {
+  transform: translateY(0);
+}
+
+.crash-btn-launch {
+  background: var(--gradient-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--glow-cyan);
+}
+
+.crash-btn-launch:hover {
+  box-shadow: 0 0 30px rgba(0, 242, 255, 0.7);
+}
+
+.crash-btn-reset {
+  background: var(--control-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.crash-btn-reset:hover {
+  border-color: var(--border-accent);
+  background: var(--control-bg-hover);
+}
+
+.crash-btn-exit {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.crash-btn-exit:hover {
+  color: var(--color-text-primary);
+  border-color: var(--border-accent);
+}
+
+/* ── Main Grid ── */
+.crash-lab-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  grid-template-areas: "controls stage telemetry";
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Side Panels ── */
+.crash-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  background: var(--surface-panel);
+  backdrop-filter: blur(10px);
+}
+
+.controls-panel {
+  grid-area: controls;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.telemetry-panel {
+  grid-area: telemetry;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.crash-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crash-panel-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+.crash-panel-header p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ── Controls ── */
+.crash-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.crash-control-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.crash-control-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-cyan);
+}
+
+.crash-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--surface-inset);
+  outline: none;
+  transition: background var(--transition-fast);
+}
+
+.crash-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.crash-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.crash-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.crash-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+/* Bumper selector */
+.crash-bumper-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crash-bumper-btn {
+  padding: 10px 12px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.crash-bumper-btn:hover:not(:disabled) {
+  border-color: var(--border-accent);
+  color: var(--color-text-primary);
+  background: var(--control-bg-hover);
+}
+
+.crash-bumper-btn.active {
+  background: color-mix(in srgb, var(--color-accent-cyan) 16%, transparent);
+  color: var(--color-text-primary);
+  border-color: var(--color-accent-cyan);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent-cyan) 20%, transparent);
+}
+
+.crash-bumper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── 3D Stage ── */
+.crash-stage {
+  grid-area: stage;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas-bg);
+  min-height: 0;
+}
+
+/* ── Telemetry Stats ── */
+.crash-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-md);
+  background: var(--surface-inset);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent-cyan);
+  transition: border-color var(--transition-fast);
+}
+
+.crash-stat .crash-stat-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crash-stat .crash-stat-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.crash-stat .crash-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  margin-top: 2px;
+}
+
+.crash-stat-safe {
+  border-left-color: var(--color-accent-green);
+}
+
+.crash-stat-safe .crash-stat-value {
+  color: var(--color-accent-green);
+}
+
+.crash-stat-danger {
+  border-left-color: var(--color-accent-pink);
+  animation: dangerPulse 1.5s ease-in-out infinite;
+}
+
+.crash-stat-danger .crash-stat-value {
+  color: var(--color-accent-pink);
+}
+
+/* ── Force Meter Bar ── */
+.crash-force-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crash-meter-track {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-inset);
+  overflow: hidden;
+  position: relative;
+}
+
+.crash-meter-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease-out, background 0.3s ease;
+  max-width: 100%;
+}
+
+.crash-meter-fill.safe {
+  background: linear-gradient(90deg, var(--color-accent-green), var(--color-accent-cyan));
+  box-shadow: 0 0 8px rgba(0, 255, 159, 0.4);
+}
+
+.crash-meter-fill.danger {
+  background: linear-gradient(90deg, var(--color-accent-pink), #ff4444);
+  box-shadow: 0 0 8px rgba(255, 0, 110, 0.4);
+}
+
+.crash-meter-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Status Banner ── */
+.crash-status-banner {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  text-align: center;
+  font-size: 0.9rem;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.crash-status-banner.passed {
+  background: color-mix(in srgb, var(--color-accent-green) 14%, transparent);
+  color: var(--color-accent-green);
+  border: 1px solid color-mix(in srgb, var(--color-accent-green) 40%, transparent);
+  box-shadow: 0 0 20px rgba(0, 255, 159, 0.15);
+}
+
+.crash-status-banner.failed {
+  background: color-mix(in srgb, var(--color-accent-pink) 14%, transparent);
+  color: var(--color-accent-pink);
+  border: 1px solid color-mix(in srgb, var(--color-accent-pink) 40%, transparent);
+  box-shadow: 0 0 20px rgba(255, 0, 110, 0.15);
+}
+
+/* ── Separator ── */
+.crash-separator {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--spacing-xs) 0;
+}
+
+/* ── Animations ── */
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: inset 0 0 12px rgba(255, 0, 110, 0.15); }
+}

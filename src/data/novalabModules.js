@@ -41,6 +41,23 @@ export const novalabModules = [
     ],
   },
   {
+    id: 'crash-test',
+    title: 'Crash Test Facility',
+    category: 'Engineering physics',
+    description: 'Act as a safety engineer and configure a vehicle to crash into a wall without breaking the fragile payload.',
+    grade: 'Grades 7-9',
+    level: 'Intermediate',
+    status: moduleStatuses.demoReady,
+    actionLabel: 'Open crash lab',
+    learningGoal: 'Understand Kinetic Energy, Momentum, and how crumple zones reduce impact forces.',
+    teacherUse: 'Perfect for demonstrating E_k = 1/2mv^2 and F = E/d with satisfying visual results.',
+    instructions: [
+      'Adjust the car mass, speed, and bumper type.',
+      'Check the real-time telemetry panel to see the calculated impact force.',
+      'Launch the car and see if the payload survives the crash.',
+    ],
+  },
+  {
     id: 'car-vr-constructor',
     title: 'VR Vehicle Constructor',
     category: 'Engineering physics and XR',
