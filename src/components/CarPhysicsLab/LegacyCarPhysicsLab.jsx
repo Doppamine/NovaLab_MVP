@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
-import './CarPhysicsLab.css';
+import '../Car3DConstructor/CarPhysicsLab.css';
 import {
   ALL_TASKS,
   BATTERY_TYPES,
@@ -15,7 +15,7 @@ import {
   LIGHT_TYPES,
   ROAD_BIOMES,
   TIRE_TYPES
-} from './data/carPhysicsData';
+} from '../Car3DConstructor/data/carPhysicsData';
 import {
   byId,
   calculateBatteryLoad,
@@ -29,7 +29,7 @@ import {
   round,
   safeNumber,
   validateAnswer
-} from './utils/carPhysicsCalculations';
+} from '../Car3DConstructor/utils/carPhysicsCalculations';
 
 const LAB_COPY = {
   constructor: {
@@ -78,7 +78,7 @@ const DASHBOARD_POWER_W = 18;
 const SCREEN_POWER_W = 22;
 const MOTOR_CONTROLLER_POWER_W = 36;
 
-function CarPhysicsLab({ onCarLaunch }) {
+function LegacyCarPhysicsLab({ onCarLaunch }) {
   const [selectedLab, setSelectedLab] = useState('constructor');
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
   const [speedParams, setSpeedParams] = useState({
@@ -1898,4 +1898,4 @@ function getSceneDuration(lab, speedCalc, twoCarParams) {
   return 3800;
 }
 
-export default CarPhysicsLab;
+export default LegacyCarPhysicsLab;

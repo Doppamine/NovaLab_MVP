@@ -11,45 +11,7 @@
   overflow: hidden;
 }
 
-/* ── Top Bar ── */
-.crash-lab-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-panel);
-  backdrop-filter: blur(12px);
-  flex-shrink: 0;
-}
 
-.crash-lab-topbar .crash-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 24px;
-  padding: 0 10px;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-accent-cyan) 14%, transparent);
-  color: color-mix(in srgb, var(--color-accent-cyan) 82%, var(--color-text-primary));
-  border: 1px solid color-mix(in srgb, var(--color-accent-cyan) 30%, transparent);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.crash-lab-topbar h2 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: var(--color-text-primary);
-}
-
-.crash-lab-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-}
 
 /* ── Buttons ── */
 .crash-btn {
@@ -111,8 +73,8 @@
 /* ── Main Grid ── */
 .crash-lab-grid {
   display: grid;
-  grid-template-columns: 280px 1fr 280px;
-  grid-template-areas: "controls stage telemetry";
+  grid-template-columns: 280px 1fr;
+  grid-template-areas: "controls stage";
   gap: 0;
   flex: 1;
   min-height: 0;
@@ -133,11 +95,6 @@
 .controls-panel {
   grid-area: controls;
   border-right: 1px solid var(--border-subtle);
-}
-
-.telemetry-panel {
-  grid-area: telemetry;
-  border-left: 1px solid var(--border-subtle);
 }
 
 .crash-panel-header {
@@ -316,44 +273,7 @@
   color: var(--color-accent-pink);
 }
 
-/* ── Force Meter Bar ── */
-.crash-force-meter {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
 
-.crash-meter-track {
-  height: 8px;
-  border-radius: var(--radius-full);
-  background: var(--surface-inset);
-  overflow: hidden;
-  position: relative;
-}
-
-.crash-meter-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 0.4s ease-out, background 0.3s ease;
-  max-width: 100%;
-}
-
-.crash-meter-fill.safe {
-  background: linear-gradient(90deg, var(--color-accent-green), var(--color-accent-cyan));
-  box-shadow: 0 0 8px rgba(0, 255, 159, 0.4);
-}
-
-.crash-meter-fill.danger {
-  background: linear-gradient(90deg, var(--color-accent-pink), #ff4444);
-  box-shadow: 0 0 8px rgba(255, 0, 110, 0.4);
-}
-
-.crash-meter-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-}
 
 /* ── Status Banner ── */
 .crash-status-banner {
@@ -386,10 +306,137 @@
   margin: var(--spacing-xs) 0;
 }
 
+/* ── Floating Stage Actions ── */
+.crash-stage-actions {
+  position: absolute;
+  bottom: var(--spacing-xl, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-md);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.crash-stage-actions > * {
+  pointer-events: auto;
+}
+
+.crash-btn-floating {
+  min-height: 52px;
+  padding: 0 28px;
+  font-size: 1rem;
+  border-radius: var(--radius-full, 999px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), var(--glow-cyan);
+  backdrop-filter: blur(8px);
+}
+
+.crash-btn-floating.crash-btn-reset {
+  background: rgba(20, 24, 36, 0.7);
+}
+
+/* ── Results Overlay ── */
+.crash-results-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 16, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+  animation: fadeIn 0.3s ease-out;
+  padding: var(--spacing-lg);
+}
+
+.crash-results-modal {
+  width: min(640px, 100%);
+  max-height: 90%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl, 28px);
+  background: var(--surface-panel);
+  border-radius: var(--radius-lg, 16px);
+  border: 2px solid transparent;
+  animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.crash-results-modal.passed {
+  border-color: var(--color-accent-green);
+  box-shadow:
+    0 0 40px rgba(0, 255, 159, 0.45),
+    0 0 80px rgba(0, 255, 159, 0.25),
+    inset 0 0 24px rgba(0, 255, 159, 0.08);
+}
+
+.crash-results-modal.failed {
+  border-color: var(--color-accent-pink);
+  box-shadow:
+    0 0 40px rgba(255, 0, 110, 0.45),
+    0 0 80px rgba(255, 0, 110, 0.25),
+    inset 0 0 24px rgba(255, 0, 110, 0.08);
+}
+
+.crash-results-header {
+  margin: 0;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.crash-results-modal.passed .crash-results-header {
+  color: var(--color-accent-green);
+}
+
+.crash-results-modal.failed .crash-results-header {
+  color: var(--color-accent-pink);
+}
+
+.crash-results-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.crash-results-stats .crash-stat {
+  align-items: center;
+  text-align: center;
+  border-left: none;
+  border-top: 3px solid var(--color-accent-cyan);
+}
+
+.crash-results-stats .crash-stat-safe {
+  border-top-color: var(--color-accent-green);
+}
+
+.crash-results-stats .crash-stat-danger {
+  border-top-color: var(--color-accent-pink);
+}
+
+.crash-results-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.crash-btn-results-reset {
+  min-height: 52px;
+  padding: 0 36px;
+  font-size: 1rem;
+  border-radius: var(--radius-full, 999px);
+}
+
 /* ── Animations ── */
 @keyframes popIn {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes dangerPulse {

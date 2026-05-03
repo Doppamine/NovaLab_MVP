@@ -16,7 +16,7 @@ const PhysicsRouter = lazy(() => import('./components/PhysicsModule/PhysicsRoute
 const PhysicsLab = lazy(() => import('./components/PhysicsLab/PhysicsLab'));
 const AetherLabModule = lazy(() => import('./components/AetherLab/AetherLabModule'));
 const WildfireVRModule = lazy(() => import('./components/WildfireModule/WildfireVRModule'));
-const CrashTestLab = lazy(() => import('./components/CrashTestLab/CrashTestLab'));
+const CarPhysicsLab = lazy(() => import('./components/CarPhysicsLab/CarPhysicsLab'));
 
 const navItems = [
   { id: 'home', label: 'Home' },
@@ -223,8 +223,8 @@ function App() {
         return <PhysicsRouter />;
       case 'wildfire-vr':
         return <WildfireVRModule />;
-      case 'crash-test':
-        return <CrashTestLab onCarLaunch={handleCarLaunch} />;
+      case 'car-physics-lab':
+        return <CarPhysicsLab onCarLaunch={handleCarLaunch} />;
       default:
         return (
           <div className="product-empty-state">

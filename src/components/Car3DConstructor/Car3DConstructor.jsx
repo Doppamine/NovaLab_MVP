@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Scene3D from './Scene3D';
 import DraggablePart3D from './DraggablePart3D';
 import PartsPanel3D from './PartsPanel3D';
-import CarPhysicsLab from './CarPhysicsLab';
+
 import { PART_SOCKETS_DATA } from './partSocketsData';
 import { canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
@@ -15,7 +15,7 @@ function Car3DConstructor({ onCarLaunch }) {
     const [selectedPart, setSelectedPart] = useState(null);
     const [showOnboarding, setShowOnboarding] = useState(true);
     const [onboardingStep, setOnboardingStep] = useState(0);
-    const [carExperience, setCarExperience] = useState('physics');
+
 
     const partCounts = partsOnField.reduce((acc, part) => {
         acc[part.type] = (acc[part.type] || 0) + 1;
@@ -291,28 +291,7 @@ function Car3DConstructor({ onCarLaunch }) {
     ];
 
     return (
-        <div className="car-module-wrapper">
-            <div className="car-module-switcher">
-                <button
-                    type="button"
-                    className={`car-module-switch ${carExperience === 'physics' ? 'active' : ''}`}
-                    onClick={() => setCarExperience('physics')}
-                >
-                    Physics Lab
-                </button>
-                <button
-                    type="button"
-                    className={`car-module-switch ${carExperience === 'assembly' ? 'active' : ''}`}
-                    onClick={() => setCarExperience('assembly')}
-                >
-                    Classic 3D Assembly
-                </button>
-            </div>
-
-            {carExperience === 'physics' ? (
-                <CarPhysicsLab onCarLaunch={onCarLaunch} />
-            ) : (
-                <div className="car-3d-constructor">
+        <div className="car-3d-constructor">
                     <PartsPanel3D
                         onPartAdd={handlePartAdd}
                         partCounts={partCounts}
@@ -391,8 +370,6 @@ function Car3DConstructor({ onCarLaunch }) {
                         )}
                     </div>
                 </div>
-            )}
-        </div>
     );
 }
 

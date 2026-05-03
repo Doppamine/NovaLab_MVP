@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './CrashTestLab.css';
 import CrashTestScene from './CrashTestScene';
+import ForceGraph from './ForceGraph';
 
 const BUMPERS = {
   rigid:    { name: 'Rigid Steel',      crumpleZone: 0.1, emoji: '🧱' },
@@ -22,9 +23,6 @@ export default function CrashTestLab({ onCarLaunch }) {
   const impactForce = kineticEnergy / bumper.crumpleZone;
   const isSafe = impactForce <= EGG_FORCE_LIMIT;
 
-  // Force meter percentage (capped at 200% of limit for visual scale)
-  const forcePct = Math.min(100, (impactForce / (EGG_FORCE_LIMIT * 2)) * 100);
-
   const handleLaunch = () => {
     setSimulationState('running');
     setSimKey((prev) => prev + 1);
@@ -37,31 +35,7 @@ export default function CrashTestLab({ onCarLaunch }) {
 
   return (
     <div className="crash-test-lab">
-      {/* ── Top Bar ── */}
-      <header className="crash-lab-topbar">
-        <div>
-          <span className="crash-eyebrow">Kinematics & Momentum</span>
-          <h2>Crash Test Facility</h2>
-        </div>
-        <div className="crash-lab-actions">
-          {simulationState === 'idle' ? (
-            <button className="crash-btn crash-btn-launch" onClick={handleLaunch}>
-              🚀 Launch Test
-            </button>
-          ) : (
-            <button className="crash-btn crash-btn-reset" onClick={handleReset}>
-              ↺ Reset
-            </button>
-          )}
-          {onCarLaunch && (
-            <button className="crash-btn crash-btn-exit" onClick={onCarLaunch}>
-              Exit
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* ── Three-Column Layout ── */}
+      {/* ── Two-Column Layout ── */}
       <main className="crash-lab-grid">
         {/* Left: Controls */}
         <section className="crash-panel controls-panel">
@@ -123,9 +97,20 @@ export default function CrashTestLab({ onCarLaunch }) {
               ))}
             </div>
           </div>
+
+          {onCarLaunch && (
+            <>
+              <div className="crash-separator" />
+              <div className="crash-control-actions" style={{ marginTop: 'auto' }}>
+                <button className="crash-btn crash-btn-exit" onClick={onCarLaunch} style={{ width: '100%' }}>
+                  Exit
+                </button>
+              </div>
+            </>
+          )}
         </section>
 
-        {/* Center: 3D Scene */}
+        {/* Right: 3D Scene with floating actions + results overlay */}
         <section className="crash-stage">
           <CrashTestScene
             speed={speed}
@@ -135,56 +120,63 @@ export default function CrashTestLab({ onCarLaunch }) {
             onFinish={() => setSimulationState('finished')}
             simKey={simKey}
           />
-        </section>
 
-        {/* Right: Telemetry */}
-        <aside className="crash-panel telemetry-panel">
-          <div className="crash-panel-header">
-            <h3>Telemetry</h3>
-          </div>
-
-          <div className="crash-stat">
-            <span className="crash-stat-label">Kinetic Energy (E_k)</span>
-            <span className="crash-stat-formula">E_k = ½ × m × v²</span>
-            <span className="crash-stat-value">{kineticEnergy.toLocaleString()} J</span>
-          </div>
-
-          <div className="crash-stat">
-            <span className="crash-stat-label">Crumple Zone (d)</span>
-            <span className="crash-stat-value">{bumper.crumpleZone} m</span>
-          </div>
-
-          <div className={`crash-stat ${isSafe ? 'crash-stat-safe' : 'crash-stat-danger'}`}>
-            <span className="crash-stat-label">Impact Force (F)</span>
-            <span className="crash-stat-formula">F = E_k ÷ d</span>
-            <span className="crash-stat-value">{Math.round(impactForce).toLocaleString()} N</span>
-          </div>
-
-          {/* Visual force meter */}
-          <div className="crash-force-meter">
-            <div className="crash-meter-track">
-              <div
-                className={`crash-meter-fill ${isSafe ? 'safe' : 'danger'}`}
-                style={{ width: `${forcePct}%` }}
-              />
-            </div>
-            <div className="crash-meter-labels">
-              <span>0 N</span>
-              <span>{EGG_FORCE_LIMIT.toLocaleString()} N (limit)</span>
-            </div>
-          </div>
-
-          <div className="crash-separator" />
-
-          {/* Result banner */}
-          {simulationState === 'finished' && (
-            <div className={`crash-status-banner ${isSafe ? 'passed' : 'failed'}`}>
-              {isSafe
-                ? '✅ Test Passed! The egg survived.'
-                : '💥 Test Failed! Impact force too high.'}
+          {simulationState === 'idle' && (
+            <div className="crash-stage-actions">
+              <button className="crash-btn crash-btn-launch crash-btn-floating" onClick={handleLaunch}>
+                🚀 Launch Test
+              </button>
             </div>
           )}
-        </aside>
+
+          {simulationState === 'finished' && (
+            <div className="crash-results-overlay">
+              <div className={`crash-results-modal ${isSafe ? 'passed' : 'failed'}`}>
+                <h2 className="crash-results-header">
+                  {isSafe
+                    ? '✅ Test Passed! The egg survived.'
+                    : '💥 Test Failed! Impact force too high.'}
+                </h2>
+
+                <ForceGraph
+                  impactForce={impactForce}
+                  crumpleZone={bumper.crumpleZone}
+                  speed={speed}
+                  isSafe={isSafe}
+                  forceLimit={EGG_FORCE_LIMIT}
+                />
+
+                <div className="crash-results-stats">
+                  <div className="crash-stat">
+                    <span className="crash-stat-label">Kinetic Energy (E_k)</span>
+                    <span className="crash-stat-formula">E_k = ½ × m × v²</span>
+                    <span className="crash-stat-value">{kineticEnergy.toLocaleString()} J</span>
+                  </div>
+
+                  <div className="crash-stat">
+                    <span className="crash-stat-label">Crumple Zone (d)</span>
+                    <span className="crash-stat-value">{bumper.crumpleZone} m</span>
+                  </div>
+
+                  <div className={`crash-stat ${isSafe ? 'crash-stat-safe' : 'crash-stat-danger'}`}>
+                    <span className="crash-stat-label">Impact Force (F)</span>
+                    <span className="crash-stat-formula">F = E_k ÷ d</span>
+                    <span className="crash-stat-value">{Math.round(impactForce).toLocaleString()} N</span>
+                  </div>
+                </div>
+
+                <div className="crash-results-actions">
+                  <button
+                    className="crash-btn crash-btn-reset crash-btn-results-reset"
+                    onClick={handleReset}
+                  >
+                    ↺ Reset Test
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
