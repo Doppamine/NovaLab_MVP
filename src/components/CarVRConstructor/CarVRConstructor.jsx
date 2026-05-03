@@ -15,6 +15,7 @@ import VRDraggablePart from './VRDraggablePart';
 import { PART_SOCKETS_DATA } from '../Car3DConstructor/partSocketsData';
 import { canConnect, calculateDistance3D, isSocketOccupied } from '../Car3DConstructor/connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './CarVRConstructor.css';
 
 // ── VR-specific snap radius (larger than desktop for comfort) ───────────
@@ -238,6 +239,7 @@ function VRGrabController({
 //  CarVRConstructor — main orchestrator
 // ────────────────────────────────────────────────────────────────────────
 export default function CarVRConstructor({ onCarLaunch }) {
+    const { t } = useLocale();
     const [partsOnField, setPartsOnField] = useState([]);
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
@@ -463,14 +465,14 @@ export default function CarVRConstructor({ onCarLaunch }) {
         <div className="car-vr-constructor">
             {!session && (
                 <button className="enter-vr-btn" onClick={handleEnterVR}>
-                    🥽 ВОЙТИ В VR
+                    🥽 {t('ВОЙТИ В VR')}
                 </button>
             )}
 
             {!session && (
                 <div className="vr-hud-overlay">
                     <div style={{ background: 'rgba(0,0,0,0.7)', padding: '15px', borderRadius: '15px', color: 'white', textAlign: 'center', marginBottom: '20px' }}>
-                        <h3>🚗 Прогресс: {connectedPartsCount}/{totalRequired}</h3>
+                        <h3>🚗 {t('Прогресс')}: {connectedPartsCount}/{totalRequired}</h3>
                         <div style={{ width: '100%', height: '10px', background: '#333', borderRadius: '5px', marginTop: '10px' }}>
                             <div style={{ width: `${progressPercent}%`, height: '100%', background: '#4cc9f0', borderRadius: '5px', transition: 'width 0.3s' }}></div>
                         </div>
@@ -478,12 +480,12 @@ export default function CarVRConstructor({ onCarLaunch }) {
                     
                     {isCarComplete() && (
                         <div style={{ background: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', color: 'white', textAlign: 'center', border: '2px solid #00f2ff' }}>
-                            <h2>🎉 Машина собрана!</h2>
+                            <h2>🎉 {t('Машина собрана!')}</h2>
                             <button 
                                 onClick={onCarLaunch}
                                 style={{ padding: '10px 20px', background: '#00f2ff', color: '#000', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}
                             >
-                                🚀 ЗАПУСТИТЬ
+                                🚀 {t('ЗАПУСТИТЬ')}
                             </button>
                         </div>
                     )}

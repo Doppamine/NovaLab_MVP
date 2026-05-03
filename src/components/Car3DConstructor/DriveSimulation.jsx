@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { PerspectiveCamera, Sky, Stars, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { BODIES, MOTORS, WHEELS, ENVIRONMENTS } from './carPartsData';
+import { useLocale } from '../../i18n/LocalizationContext';
 
 function useKeyboard() {
   const keys = useRef({ w: false, a: false, s: false, d: false });
@@ -93,6 +94,7 @@ function PhysicsCar({ config, setTelemetry }) {
 }
 
 export default function DriveSimulation({ config, setPhase }) {
+  const { t } = useLocale();
   const [telemetry, setTelemetry] = useState({ speed: 0 });
 
   return (
@@ -105,12 +107,12 @@ export default function DriveSimulation({ config, setPhase }) {
         border: '1px solid #38bdf8', color: 'white', pointerEvents: 'none'
       }}>
         <h1 style={{fontSize: '2.2rem', margin: 0, color: '#38bdf8', fontFamily: 'monospace'}}>
-          {telemetry.speed} <small style={{fontSize: '0.9rem', color: '#fff'}}>КМ/Ч</small>
+          {telemetry.speed} <small style={{fontSize: '0.9rem', color: '#fff'}}>{t('КМ/Ч')}</small>
         </h1>
       </div>
 
-      <button onClick={() => setPhase('build')} style={{position: 'absolute', bottom: '30px', left: '30px', zIndex: 9999, padding: '12px 24px', background: '#334155', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'}}>🔙 В ГАРАЖ</button>
-      <button onClick={() => setPhase('aero')} style={{position: 'absolute', bottom: '30px', right: '30px', zIndex: 9999, padding: '12px 24px', background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'}}>🌪️ АЭРОДИНАМИКА</button>
+      <button onClick={() => setPhase('build')} style={{position: 'absolute', bottom: '30px', left: '30px', zIndex: 9999, padding: '12px 24px', background: '#334155', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'}}>🔙 {t('В ГАРАЖ')}</button>
+      <button onClick={() => setPhase('aero')} style={{position: 'absolute', bottom: '30px', right: '30px', zIndex: 9999, padding: '12px 24px', background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'}}>🌪️ {t('АЭРОДИНАМИКА')}</button>
 
       <div style={{width: '100%', height: '100%'}}>
         <Canvas shadows>

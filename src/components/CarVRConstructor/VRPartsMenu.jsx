@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useXRInputSourceState } from '@react-three/xr';
+import { useLocale } from '../../i18n/LocalizationContext';
 
 const PARTS = [
     { id: 'chassis', name: 'Шасси', color: '#888', icon: '🚗' },
@@ -13,6 +14,7 @@ const PARTS = [
 ];
 
 function VRPartCard({ part, position, count, onClick }) {
+    const { t } = useLocale();
     const [hovered, setHovered] = useState(false);
     return (
         <group position={position} onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onClick={onClick}>
@@ -24,13 +26,14 @@ function VRPartCard({ part, position, count, onClick }) {
                 {part.icon}
             </Text>
             <Text position={[0.1, 0, 0.01]} fontSize={0.08} color="#fff" anchorX="left">
-                {part.name} ({count})
+                {t(part.name)} ({count})
             </Text>
         </group>
     );
 }
 
 export default function VRPartsMenu({ onPartAdd, partCounts }) {
+    const { t } = useLocale();
     const groupRef = useRef();
     const camera = useThree(s => s.camera);
     const leftController = useXRInputSourceState('controller', 'left');
@@ -102,7 +105,7 @@ export default function VRPartsMenu({ onPartAdd, partCounts }) {
                 <meshStandardMaterial color="#0a0e27" transparent opacity={0.85} />
             </mesh>
             <Text position={[0, 1.2, 0]} fontSize={0.10} color="#00f2ff">
-                ДЕТАЛИ (Нажми X/Y скрыть)
+                {t('ДЕТАЛИ (Нажми X/Y скрыть)')}
             </Text>
             {PARTS.map((part, i) => (
                 <VRPartCard

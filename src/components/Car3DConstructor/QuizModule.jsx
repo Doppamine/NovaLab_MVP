@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocale } from '../../i18n/LocalizationContext';
 
 const QUESTIONS = [
   {
@@ -19,6 +20,7 @@ const QUESTIONS = [
 ];
 
 export default function QuizModule({ setPhase, onComplete }) {
+  const { t } = useLocale();
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
@@ -34,21 +36,21 @@ export default function QuizModule({ setPhase, onComplete }) {
       <div className="quiz-card">
         {!done ? (
           <>
-            <h2>🧪 Проверка Физики ({current + 1}/{QUESTIONS.length})</h2>
-            <p className="question-text">{QUESTIONS[current].q}</p>
+            <h2>🧪 {t('Проверка Физики')} ({current + 1}/{QUESTIONS.length})</h2>
+            <p className="question-text">{t(QUESTIONS[current].q)}</p>
             <div className="options">
               {QUESTIONS[current].options.map((opt, i) => (
-                <button key={i} onClick={() => handleAnswer(i)}>{opt}</button>
+                <button key={i} onClick={() => handleAnswer(i)}>{t(opt)}</button>
               ))}
             </div>
           </>
         ) : (
           <>
-            <h2>🎉 Модуль успешно завершен!</h2>
-            <p>Твой балл по физике: {score} / {QUESTIONS.length}</p>
+            <h2>🎉 {t('Модуль успешно завершен!')}</h2>
+            <p>{t('Твой балл по физике:')} {score} / {QUESTIONS.length}</p>
             <div className="actions">
-              <button onClick={() => setPhase('build')}>Пересобрать машину</button>
-              <button onClick={onComplete} className="primary">Выйти в Главное Меню</button>
+              <button onClick={() => setPhase('build')}>{t('Пересобрать машину')}</button>
+              <button onClick={onComplete} className="primary">{t('Выйти в Главное Меню')}</button>
             </div>
           </>
         )}

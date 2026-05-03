@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './PartsPanel3D.css';
 
 /**
@@ -44,11 +45,13 @@ const PARTS_DATA = [
 ];
 
 function PartsPanel3D({ onPartAdd, partCounts = {} }) {
+    const { t } = useLocale();
+
     return (
         <div className="parts-panel-3d">
             <div className="panel-header">
-                <h3 className="panel-title">🔧 Детали</h3>
-                <p className="panel-subtitle">Кликните чтобы добавить</p>
+                <h3 className="panel-title">🔧 {t('Детали')}</h3>
+                <p className="panel-subtitle">{t('Кликните чтобы добавить')}</p>
             </div>
 
             <div className="parts-grid">
@@ -64,8 +67,8 @@ function PartsPanel3D({ onPartAdd, partCounts = {} }) {
                         >
                             <div className="part-icon">{part.icon}</div>
                             <div className="part-info">
-                                <div className="part-name">{part.name}</div>
-                                <div className="part-description">{part.description}</div>
+                                <div className="part-name">{t(part.name)}</div>
+                                <div className="part-description">{t(part.description)}</div>
                             </div>
                             {count > 0 && (
                                 <div className="part-count">{count}</div>
@@ -78,11 +81,11 @@ function PartsPanel3D({ onPartAdd, partCounts = {} }) {
             <div className="panel-footer">
                 <div className="hint-item">
                     <span className="hint-icon">✋</span>
-                    <span className="hint-text">ЛКМ: Перетащить</span>
+                    <span className="hint-text">{t('ЛКМ: Перетащить')}</span>
                 </div>
                 <div className="hint-item">
                     <span className="hint-icon">🖱️</span>
-                    <span className="hint-text">ПКМ: Вращать</span>
+                    <span className="hint-text">{t('ПКМ: Вращать')}</span>
                 </div>
             </div>
         </div>

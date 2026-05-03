@@ -6,9 +6,11 @@ import PartsPanel3D from './PartsPanel3D';
 import { PART_SOCKETS_DATA } from './partSocketsData';
 import { canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './Car3DConstructor.css';
 
 function Car3DConstructor({ onCarLaunch }) {
+    const { t } = useLocale();
     const [partsOnField, setPartsOnField] = useState([]);
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
@@ -285,9 +287,9 @@ function Car3DConstructor({ onCarLaunch }) {
     };
 
     const onboardingTips = [
-        { icon: '👆', text: 'Нажми на деталь слева, чтобы добавить её' },
-        { icon: '✋', text: 'Перетащи деталь к светящейся точке' },
-        { icon: '🔗', text: 'Детали соединятся автоматически!' }
+        { icon: '👆', text: t('Нажми на деталь слева, чтобы добавить её') },
+        { icon: '✋', text: t('Перетащи деталь к светящейся точке') },
+        { icon: '🔗', text: t('Детали соединятся автоматически!') }
     ];
 
     return (
@@ -331,7 +333,7 @@ function Car3DConstructor({ onCarLaunch }) {
                         </Scene3D>
 
                         <div className="scene-hint">
-                            <p>ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб</p>
+                            <p>{t('ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб')}</p>
                         </div>
 
                         {/* Action Buttons */}
@@ -341,7 +343,7 @@ function Car3DConstructor({ onCarLaunch }) {
                                     className="btn-delete"
                                     onClick={() => handlePartDelete(selectedPart)}
                                 >
-                                    🗑️ Удалить деталь
+                                    🗑️ {t('Удалить деталь')}
                                 </button>
                             )}
                             {partsOnField.length > 0 && (
@@ -349,7 +351,7 @@ function Car3DConstructor({ onCarLaunch }) {
                                     className="btn-reset"
                                     onClick={handleReset}
                                 >
-                                    🔄 Начать заново
+                                    🔄 {t('Начать заново')}
                                 </button>
                             )}
                         </div>
@@ -357,13 +359,13 @@ function Car3DConstructor({ onCarLaunch }) {
                         {isCarComplete() && (
                             <div className="success-notification">
                                 <div className="success-card">
-                                    <h2>🎉 Поздравляем!</h2>
-                                    <p>Машина собрана!</p>
+                                    <h2>🎉 {t('Поздравляем!')}</h2>
+                                    <p>{t('Машина собрана!')}</p>
                                     <button
                                         className="btn-launch"
                                         onClick={() => onCarLaunch(getAssemblyInfo())}
                                     >
-                                        🚀 ЗАПУСТИТЬ СИМУЛЯЦИЮ
+                                        🚀 {t('ЗАПУСТИТЬ СИМУЛЯЦИЮ')}
                                     </button>
                                 </div>
                             </div>
