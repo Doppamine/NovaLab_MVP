@@ -2,18 +2,19 @@ import React, { useMemo, useState } from 'react';
 import './StuntJumpLab.css';
 import StuntJumpScene from './StuntJumpScene';
 import { simulateStuntJump, GRAVITY_PRESETS } from '../../../physics';
+import { useLocale } from '../../../i18n/LocalizationContext';
 
 const LESSONS = {
   conservation: {
     id: 'conservation',
-    label: '🔋 Conservation',
-    title: 'Lesson A — Energy Conservation',
+    label: 'Conservation',
+    title: 'Lesson A - Energy Conservation',
     blurb: 'Watch potential energy turn into kinetic energy as the car rolls down. Total energy never changes.',
   },
   mystery: {
     id: 'mystery',
-    label: '⚖️ Mass Mystery',
-    title: 'Lesson B — Does Mass Matter?',
+    label: 'Mass Mystery',
+    title: 'Lesson B - Does Mass Matter?',
     blurb: 'Predict before you launch. Will a heavier car jump further? Same? Shorter?',
   },
 };
@@ -34,6 +35,7 @@ function expectedPrediction(prevRange, nextRange) {
 }
 
 export default function StuntJumpLab({ onExit }) {
+  const { t } = useLocale();
   const [lesson, setLesson] = useState('conservation');
   const [height, setHeight] = useState(20);            // metres
   const [mass, setMass] = useState(1500);              // kg
@@ -113,8 +115,8 @@ export default function StuntJumpLab({ onExit }) {
         {/* Left: Controls */}
         <section className="stunt-panel controls-panel">
           <div className="stunt-panel-header">
-            <h3>{LESSONS[lesson].title}</h3>
-            <p>{LESSONS[lesson].blurb}</p>
+            <h3>{t(LESSONS[lesson].title)}</h3>
+            <p>{t(LESSONS[lesson].blurb)}</p>
           </div>
 
           <div className="stunt-lesson-tabs">
@@ -125,19 +127,19 @@ export default function StuntJumpLab({ onExit }) {
                 className={`stunt-lesson-tab ${lesson === l.id ? 'active' : ''}`}
                 onClick={() => handleLessonSwitch(l.id)}
               >
-                {l.label}
+                {l.id === 'conservation' ? '🔋 ' : '⚖️ '}{t(l.label)}
               </button>
             ))}
           </div>
 
           <div className="stunt-assumption-callout">
-            <span className="stunt-assumption-pill">Idealized</span>
-            Frictionless track · No air drag
+            <span className="stunt-assumption-pill">{t('Idealized')}</span>
+            {t('Frictionless track · No air drag')}
           </div>
 
           <div className="stunt-control-group">
             <div className="stunt-control-label">
-              <span>Starting Height (h)</span>
+              <span>{t('Starting Height (h)')}</span>
               <span className="stunt-control-value">{height} m</span>
             </div>
             <input
@@ -154,7 +156,7 @@ export default function StuntJumpLab({ onExit }) {
 
           <div className="stunt-control-group">
             <div className="stunt-control-label">
-              <span>Canyon Gap</span>
+              <span>{t('Canyon Gap')}</span>
               <span className="stunt-control-value">{canyonWidth} m</span>
             </div>
             <input
@@ -170,7 +172,7 @@ export default function StuntJumpLab({ onExit }) {
           </div>
 
           <div className="stunt-control-group">
-            <div className="stunt-control-label"><span>Gravity (g)</span></div>
+            <div className="stunt-control-label"><span>{t('Gravity (g)')}</span></div>
             <div className="stunt-gravity-options">
               {Object.values(GRAVITY_PRESETS).map((g) => (
                 <button
@@ -191,7 +193,7 @@ export default function StuntJumpLab({ onExit }) {
           {isMystery && (
             <div className="stunt-control-group">
               <div className="stunt-control-label">
-                <span>Car Mass (m)</span>
+                <span>{t('Car Mass (m)')}</span>
                 <span className="stunt-control-value">{mass} kg</span>
               </div>
               <input
@@ -210,7 +212,7 @@ export default function StuntJumpLab({ onExit }) {
           {isMystery && needsPrediction && (
             <div className="stunt-predict-card">
               <div className="stunt-predict-question">
-                You just changed mass {prevMass} kg → {mass} kg. Will the car land…
+                {t('You just changed mass')} {prevMass} kg → {mass} kg. {t('Will the car land...')}
               </div>
               <div className="stunt-predict-options">
                 {Object.entries(PREDICTIONS).map(([id, p]) => (
@@ -221,7 +223,7 @@ export default function StuntJumpLab({ onExit }) {
                     onClick={() => setPrediction(id)}
                   >
                     <span className="stunt-predict-symbol">{p.symbol}</span>
-                    {p.label}
+                    {t(p.label)}
                   </button>
                 ))}
               </div>
@@ -235,7 +237,7 @@ export default function StuntJumpLab({ onExit }) {
                 onClick={onExit}
                 style={{ width: '100%' }}
               >
-                Exit to Modules
+                {t('Exit to Modules')}
               </button>
             </div>
           )}
@@ -252,8 +254,8 @@ export default function StuntJumpLab({ onExit }) {
           />
 
           {/* Energy Bars HUD */}
-          <div className="stunt-energy-hud" aria-label="Energy bars">
-            <div className="stunt-energy-title">Energy</div>
+          <div className="stunt-energy-hud" aria-label={t('Energy bars')}>
+            <div className="stunt-energy-title">{t('Energy')}</div>
             <div className="stunt-energy-bars">
               <EnergyBar
                 label="PE"
@@ -288,9 +290,9 @@ export default function StuntJumpLab({ onExit }) {
                 className="stunt-btn stunt-btn-launch stunt-btn-floating"
                 onClick={handleLaunch}
                 disabled={needsPrediction}
-                title={needsPrediction ? 'Make a prediction first' : ''}
+                title={needsPrediction ? t('Make a prediction first') : ''}
               >
-                🚀 Launch Jump
+                🚀 {t('Launch Jump')}
               </button>
             </div>
           )}
@@ -305,20 +307,20 @@ export default function StuntJumpLab({ onExit }) {
               >
                 <h2 className="stunt-results-header">
                   {jumpResult.cleared
-                    ? '🏁 Cleared the canyon!'
-                    : '💥 Fell short — into the canyon!'}
+                    ? t('🏁 Cleared the canyon!')
+                    : t('💥 Fell short - into the canyon!')}
                 </h2>
 
                 <div className="stunt-results-stats">
                   <div className="stunt-stat">
-                    <span className="stunt-stat-label">Launch Speed (v)</span>
+                    <span className="stunt-stat-label">{t('Launch Speed (v)')}</span>
                     <span className="stunt-stat-formula">v = √(2·g·h)</span>
                     <span className="stunt-stat-value">
                       {jumpResult.launchSpeed.toFixed(1)} m/s
                     </span>
                   </div>
                   <div className="stunt-stat">
-                    <span className="stunt-stat-label">Total Energy</span>
+                    <span className="stunt-stat-label">{t('Total Energy')}</span>
                     <span className="stunt-stat-formula">E = m·g·h</span>
                     <span className="stunt-stat-value">
                       {Math.round(totalEnergy).toLocaleString()} J
@@ -329,7 +331,7 @@ export default function StuntJumpLab({ onExit }) {
                       jumpResult.cleared ? 'stunt-stat-safe' : 'stunt-stat-danger'
                     }`}
                   >
-                    <span className="stunt-stat-label">Range vs Canyon</span>
+                    <span className="stunt-stat-label">{t('Range vs Canyon')}</span>
                     <span className="stunt-stat-formula">R = 2·h·sin(2α)</span>
                     <span className="stunt-stat-value">
                       {jumpResult.range.toFixed(1)} m / {canyonWidth} m
@@ -344,24 +346,24 @@ export default function StuntJumpLab({ onExit }) {
                     }`}
                   >
                     <div className="stunt-mystery-line">
-                      You predicted: <strong>{PREDICTIONS[prediction]?.label || '—'}</strong>
+                      {t('You predicted:')} <strong>{t(PREDICTIONS[prediction]?.label || '—')}</strong>
                     </div>
                     <div className="stunt-mystery-line">
-                      Actual: <strong>{PREDICTIONS[actualOutcome].label}</strong>
+                      {t('Actual:')} <strong>{t(PREDICTIONS[actualOutcome].label)}</strong>
                     </div>
                     <p className="stunt-mystery-explain">
-                      Even though the car&apos;s energy changed by {Math.abs(prevMass - mass)} kg of
-                      mass, both PE = m·g·h and KE = ½·m·v² scale with m. The masses
-                      cancel: <code>v = √(2gh)</code>. The car always reaches the lip at the
-                      <strong> same speed</strong> — and lands in the <strong>same spot</strong>.
+                      {t("Even though the car's energy changed by")} {Math.abs(prevMass - mass)} kg of{' '}
+                      {t('mass, both PE = m·g·h and KE = ½·m·v² scale with m. The masses cancel:')}{' '}
+                      <code>v = √(2gh)</code>. {t('The car always reaches the lip at the')}{' '}
+                      <strong>{t('same speed')}</strong> - {t('and lands in the')}{' '}
+                      <strong>{t('same spot')}</strong>.
                     </p>
                   </div>
                 )}
 
                 {!isMystery && (
                   <p className="stunt-explain">
-                    PE turned into KE as the car rolled. The total energy bar never moved —
-                    energy didn&apos;t disappear, it just changed form.
+                    {t('PE turned into KE as the car rolled. The total energy bar never moved - energy did not disappear, it just changed form.')}
                   </p>
                 )}
 
@@ -371,7 +373,7 @@ export default function StuntJumpLab({ onExit }) {
                     className="stunt-btn stunt-btn-reset stunt-btn-results-reset"
                     onClick={handleReset}
                   >
-                    ↺ Reset Jump
+                    {t('↺ Reset Jump')}
                   </button>
                 </div>
               </div>

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useLocale } from '../../../i18n/LocalizationContext';
 
 export default function ForceGraph({ impactForce, crumpleZone, speed, isSafe, forceLimit }) {
+  const { t } = useLocale();
   // duration = distance / speed
   const duration = crumpleZone / speed; 
   
@@ -39,7 +41,7 @@ export default function ForceGraph({ impactForce, crumpleZone, speed, isSafe, fo
   return (
     <div className="crash-force-graph">
       <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: '#ccc' }}>
-        Force vs. Time
+        {t('Force vs. Time')}
       </div>
       <div style={{ position: 'relative', width: '100%', height: `${height}px`, background: 'rgba(0,0,0,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
         <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
@@ -56,7 +58,7 @@ export default function ForceGraph({ impactForce, crumpleZone, speed, isSafe, fo
           
           {/* Limit Line */}
           <line x1="0" y1={limitY} x2={width} y2={limitY} stroke="#ef4444" strokeWidth="2" strokeDasharray="5,5" opacity="0.6" />
-          <text x="5" y={limitY - 5} fill="#ef4444" fontSize="10" opacity="0.8">LIMIT: {forceLimit.toLocaleString()} N</text>
+          <text x="5" y={limitY - 5} fill="#ef4444" fontSize="10" opacity="0.8">{t('LIMIT')}: {forceLimit.toLocaleString()} N</text>
           
           {/* Impulse Graph */}
           <path d={`${basePath} Z`} fill={fillGradient} />
@@ -65,7 +67,7 @@ export default function ForceGraph({ impactForce, crumpleZone, speed, isSafe, fo
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#888', marginTop: '4px' }}>
         <span>0s</span>
-        <span>Collision Duration: {(duration * 1000).toFixed(1)} ms</span>
+        <span>{t('Collision Duration')}: {(duration * 1000).toFixed(1)} ms</span>
         <span>{(maxDisplayTime * 1000).toFixed(0)}ms</span>
       </div>
     </div>

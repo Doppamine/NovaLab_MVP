@@ -5,9 +5,11 @@ import { PARTS_DATA, areSlotTypesCompatible } from '../../utils/partsData';
 import { snapToGrid } from '../../utils/snapLogic';
 import { getPoweredComponents, checkPropellerSpinning } from '../../utils/connectionRules';
 import { validateCarAssembly } from '../../utils/mechanismValidator';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './WorkArea.css';
 
 function WorkArea({ onCarLaunch }) {
+    const { t } = useLocale();
     const [partsOnField, setPartsOnField] = useState([]);
     const [connections, setConnections] = useState([]);
     const [draggedPart, setDraggedPart] = useState(null);
@@ -219,8 +221,8 @@ function WorkArea({ onCarLaunch }) {
                 {partsOnField.length === 0 ? (
                     <div className="welcome-message">
                         <div className="welcome-icon animate-float">🚀</div>
-                        <h2>Добро пожаловать в NovaLab</h2>
-                        <p>Перетащите детали из панели слева для сборки машины</p>
+                        <h2>{t('Добро пожаловать в NovaLab')}</h2>
+                        <p>{t('Перетащите детали из панели слева для сборки машины')}</p>
                     </div>
                 ) : null}
 
@@ -257,9 +259,9 @@ function WorkArea({ onCarLaunch }) {
                 {/* Car Ready - NO HINTS */}
                 {carAssembly.complete && (
                     <div className="car-assembly-ready">
-                        <div className="ready-message">{carAssembly.message}</div>
+                        <div className="ready-message">{t(carAssembly.message)}</div>
                         <button className="btn btn-primary launch-button animate-pulse" onClick={handleLaunchCar}>
-                            🚀 ЗАПУСТИТЬ МАШИНКУ
+                            {t('🚀 ЗАПУСТИТЬ МАШИНКУ')}
                         </button>
                     </div>
                 )}

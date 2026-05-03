@@ -1,7 +1,10 @@
 import React from 'react';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './PartsPanel.css';
 
 function PartsPanel() {
+    const { t } = useLocale();
+
     const categories = [
         {
             id: 'electrical',
@@ -40,7 +43,7 @@ function PartsPanel() {
     return (
         <div className="parts-panel glass-strong">
             <div className="panel-header">
-                <h3>Детали</h3>
+                <h3>{t('Детали')}</h3>
                 <div className="panel-glow"></div>
             </div>
 
@@ -52,7 +55,7 @@ function PartsPanel() {
                         onClick={() => setActiveCategory(category.id)}
                     >
                         <span className="category-icon">{category.icon}</span>
-                        <span className="category-name">{category.name}</span>
+                        <span className="category-name">{t(category.name)}</span>
                     </button>
                 ))}
             </div>
@@ -68,7 +71,7 @@ function PartsPanel() {
                             onDragStart={(e) => handleDragStart(e, part.id)}
                         >
                             <div className="part-icon">{part.icon}</div>
-                            <div className="part-name">{part.name}</div>
+                            <div className="part-name">{t(part.name)}</div>
                         </div>
                     ))
                 }

@@ -3,6 +3,7 @@ import './DragRaceLab.css';
 import DragRaceScene from './DragRaceScene';
 import RaceGraph from './RaceGraph';
 import { simulateDragRace } from '../../../physics';
+import { useLocale } from '../../../i18n/LocalizationContext';
 
 const TRACK_LENGTH = 100; // metres — fixed for this lab
 
@@ -18,6 +19,7 @@ function formatNum(n, digits = 2) {
 }
 
 export default function DragRaceLab({ onExit }) {
+  const { t } = useLocale();
   // Defaults tuned so a = F/m matches → a clean tie out of the box (the "wow")
   // Car A (sports car): 3000 N / 1000 kg = 3.0 m/s²
   // Car B (truck):      6000 N / 2000 kg = 3.0 m/s²
@@ -77,17 +79,17 @@ export default function DragRaceLab({ onExit }) {
         {/* Left: Controls */}
         <section className="dr-panel controls-panel">
           <div className="dr-panel-header">
-            <h3>Newton's 2nd Law & Tie Mystery</h3>
-            <p>Predict the winner before each race. Even very different forces and masses can tie when F/m is equal.</p>
+            <h3>{t("Newton's 2nd Law & Tie Mystery")}</h3>
+            <p>{t('Predict the winner before each race. Even very different forces and masses can tie when F/m is equal.')}</p>
           </div>
 
           <div className="dr-assumption-callout">
-            <span className="dr-assumption-pill">Idealized</span>
-            Constant engine force · No friction · No air drag
+            <span className="dr-assumption-pill">{t('Idealized')}</span>
+            {t('Constant engine force · No friction · No air drag')}
           </div>
 
           <CarControls
-            label="Car"
+            label={t('Car')}
             symbol="🏎️"
             color="red"
             force={forceA}
@@ -98,7 +100,7 @@ export default function DragRaceLab({ onExit }) {
           />
 
           <CarControls
-            label="Truck"
+            label={t('Truck')}
             symbol="🚚"
             color="blue"
             force={forceB}
@@ -115,7 +117,7 @@ export default function DragRaceLab({ onExit }) {
                 onClick={onExit}
                 style={{ width: '100%' }}
               >
-                Exit to Modules
+                {t('Exit to Modules')}
               </button>
             </div>
           )}
@@ -132,16 +134,16 @@ export default function DragRaceLab({ onExit }) {
           />
 
           {/* Live HUD: graphs + accelerations */}
-          <div className="dr-hud" aria-label="Race telemetry">
+          <div className="dr-hud" aria-label={t('Race telemetry')}>
             <div className="dr-hud-row">
               <div className="dr-hud-tile dr-hud-tile-car">
-                <span className="dr-hud-label"><span style={{ color: '#ff5a5a' }}>●</span> Car</span>
+                <span className="dr-hud-label"><span style={{ color: '#ff5a5a' }}>●</span> {t('Car')}</span>
                 <span className="dr-hud-value" style={{ color: '#fff', fontWeight: 'bold', textShadow: '0 0 10px rgba(255,255,255,0.4)' }}>
                   v = {formatNum(liveSample.vA, 1)} m/s
                 </span>
               </div>
               <div className="dr-hud-tile dr-hud-tile-truck">
-                <span className="dr-hud-label"><span style={{ color: '#5ab4ff' }}>●</span> Truck</span>
+                <span className="dr-hud-label"><span style={{ color: '#5ab4ff' }}>●</span> {t('Truck')}</span>
                 <span className="dr-hud-value" style={{ color: '#fff', fontWeight: 'bold', textShadow: '0 0 10px rgba(255,255,255,0.4)' }}>
                   v = {formatNum(liveSample.vB, 1)} m/s
                 </span>
@@ -149,7 +151,7 @@ export default function DragRaceLab({ onExit }) {
             </div>
             <div className="dr-hud-graphs">
               <div className="dr-hud-graph-block">
-                <div className="dr-hud-graph-title">Distance vs time</div>
+                <div className="dr-hud-graph-title">{t('Distance vs time')}</div>
                 <RaceGraph
                   samples={raceResult.samples}
                   currentT={liveSample.t}
@@ -162,7 +164,7 @@ export default function DragRaceLab({ onExit }) {
                 />
               </div>
               <div className="dr-hud-graph-block">
-                <div className="dr-hud-graph-title">Velocity vs time</div>
+                <div className="dr-hud-graph-title">{t('Velocity vs time')}</div>
                 <RaceGraph
                   samples={raceResult.samples}
                   currentT={liveSample.t}
@@ -185,7 +187,7 @@ export default function DragRaceLab({ onExit }) {
                 className="dr-btn dr-btn-launch dr-btn-floating"
                 onClick={handleLaunchClick}
               >
-                🚦 Launch Race
+                🚦 {t('Launch Race')}
               </button>
             </div>
           )}
@@ -195,10 +197,10 @@ export default function DragRaceLab({ onExit }) {
             <div className="dr-results-overlay">
               <div className="dr-results-modal">
                 <h2 className="dr-results-header" style={{ marginBottom: '1.5rem', borderBottom: 'none' }}>
-                  Who will win?
+                  {t('Who will win?')}
                 </h2>
                 <p style={{ textAlign: 'center', marginBottom: '2.5rem', color: '#a1a1aa' }}>
-                  You must lock in your prediction based on the parameters you set before the simulation can begin.
+                  {t('You must lock in your prediction based on the parameters you set before the simulation can begin.')}
                 </p>
                 <div className="dr-predict-options" style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                   {Object.entries(PREDICTIONS).map(([id, p]) => (
@@ -210,7 +212,7 @@ export default function DragRaceLab({ onExit }) {
                       style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}
                     >
                       <span style={{ fontSize: '2.5rem' }}>{p.symbol}</span>
-                      <span style={{ fontWeight: '500' }}>{p.label}</span>
+                      <span style={{ fontWeight: '500' }}>{t(p.label)}</span>
                     </button>
                   ))}
                 </div>
@@ -220,7 +222,7 @@ export default function DragRaceLab({ onExit }) {
                     className="dr-btn dr-btn-reset dr-btn-results-reset"
                     onClick={handleReset}
                   >
-                    Cancel
+                    {t('Cancel')}
                   </button>
                 </div>
               </div>
@@ -237,38 +239,38 @@ export default function DragRaceLab({ onExit }) {
               >
                 <h2 className="dr-results-header">
                   {raceResult.winner === 'tie'
-                    ? '🎯 It\'s a tie!'
+                    ? t('🎯 It\'s a tie!')
                     : raceResult.winner === 'A'
-                    ? '🏎️ The Car wins!'
-                    : '🚚 The Truck wins!'}
+                    ? t('🏎️ The Car wins!')
+                    : t('🚚 The Truck wins!')}
                 </h2>
 
                 <div className="dr-results-stats">
                   <div className="dr-stat dr-stat-A">
-                    <span className="dr-stat-label">🏎️ Car</span>
+                    <span className="dr-stat-label">🏎️ {t('Car')}</span>
                     <span className="dr-stat-formula">a = F / m</span>
                     <span className="dr-stat-value">
                       {forceA} / {massA} = {formatNum(raceResult.aA)} m/s²
                     </span>
                     <span className="dr-stat-sub">
-                      finished in {formatNum(raceResult.tA_finish)} s
+                      {t('finished in')} {formatNum(raceResult.tA_finish)} s
                     </span>
                   </div>
                   <div className="dr-stat dr-stat-B">
-                    <span className="dr-stat-label">🚚 Truck</span>
+                    <span className="dr-stat-label">🚚 {t('Truck')}</span>
                     <span className="dr-stat-formula">a = F / m</span>
                     <span className="dr-stat-value">
                       {forceB} / {massB} = {formatNum(raceResult.aB)} m/s²
                     </span>
                     <span className="dr-stat-sub">
-                      finished in {formatNum(raceResult.tB_finish)} s
+                      {t('finished in')} {formatNum(raceResult.tB_finish)} s
                     </span>
                   </div>
                 </div>
 
                 <div className="dr-results-graphs">
                   <div className="dr-results-graph-block">
-                    <div className="dr-results-graph-title">Distance vs time (m)</div>
+                    <div className="dr-results-graph-title">{t('Distance vs time (m)')}</div>
                     <RaceGraph
                       samples={raceResult.samples}
                       currentT={raceResult.totalTime}
@@ -283,7 +285,7 @@ export default function DragRaceLab({ onExit }) {
                     />
                   </div>
                   <div className="dr-results-graph-block">
-                    <div className="dr-results-graph-title">Velocity vs time (m/s)</div>
+                    <div className="dr-results-graph-title">{t('Velocity vs time (m/s)')}</div>
                     <RaceGraph
                       samples={raceResult.samples}
                       currentT={raceResult.totalTime}
@@ -306,16 +308,13 @@ export default function DragRaceLab({ onExit }) {
                     }`}
                   >
                     <div className="dr-mystery-line">
-                      You predicted: <strong>{PREDICTIONS[prediction].label}</strong>
+                      {t('You predicted:')} <strong>{t(PREDICTIONS[prediction].label)}</strong>
                     </div>
                     <div className="dr-mystery-line">
-                      Actual: <strong>{PREDICTIONS[winnerKey].label}</strong>
+                      {t('Actual:')} <strong>{t(PREDICTIONS[winnerKey].label)}</strong>
                     </div>
                     <p className="dr-mystery-explain">
-                      The winner is whichever car has the larger <code>a = F / m</code>.
-                      The Truck's engine is bigger, but its mass is bigger too. When the
-                      ratio matches, accelerations match — and the race is a tie regardless of
-                      how big the numbers get.
+                      {t("The winner is whichever car has the larger a = F / m. The Truck's engine is bigger, but its mass is bigger too. When the ratio matches, accelerations match — and the race is a tie regardless of how big the numbers get.")}
                     </p>
                   </div>
                 )}
@@ -326,7 +325,7 @@ export default function DragRaceLab({ onExit }) {
                     className="dr-btn dr-btn-reset dr-btn-results-reset"
                     onClick={handleReset}
                   >
-                    ↺ Reset Race
+                    {t('↺ Reset Race')}
                   </button>
                 </div>
               </div>
@@ -339,6 +338,8 @@ export default function DragRaceLab({ onExit }) {
 }
 
 function CarControls({ label, symbol, color, force, mass, onForce, onMass, disabled }) {
+  const { t } = useLocale();
+
   return (
     <div className={`dr-car-block dr-car-block-${color}`}>
       <div className="dr-car-block-header">
@@ -348,7 +349,7 @@ function CarControls({ label, symbol, color, force, mass, onForce, onMass, disab
 
       <div className="dr-control-group">
         <div className="dr-control-label">
-          <span>Engine Force (F)</span>
+          <span>{t('Engine Force (F)')}</span>
           <span className="dr-control-value">{force} N</span>
         </div>
         <input
@@ -365,7 +366,7 @@ function CarControls({ label, symbol, color, force, mass, onForce, onMass, disab
 
       <div className="dr-control-group">
         <div className="dr-control-label">
-          <span>Mass (m)</span>
+          <span>{t('Mass (m)')}</span>
           <span className="dr-control-value">{mass} kg</span>
         </div>
         <input

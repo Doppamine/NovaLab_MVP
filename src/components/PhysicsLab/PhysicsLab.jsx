@@ -4,6 +4,7 @@ import BurningStickOrchestrator from './burning/BurningStickOrchestrator.jsx';
 import SimulationCatalog from './catalog/SimulationCatalog.jsx';
 import apolloScenario from '../../scenarios/apollo15_free_fall_v1.json';
 import burningStickScenario from '../../scenarios/burning_stick_lab_v1.json';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './PhysicsLab.css';
 
 /**
@@ -14,6 +15,7 @@ import './PhysicsLab.css';
  *   <PhysicsLab />
  */
 export default function PhysicsLab() {
+  const { localizeTree } = useLocale();
   const [activeSimulation, setActiveSimulation] = useState(null);
 
   const simulations = useMemo(() => ([
@@ -39,11 +41,15 @@ export default function PhysicsLab() {
     },
   ]), []);
 
+  const localizedSimulations = useMemo(() => localizeTree(simulations), [localizeTree, simulations]);
+  const localizedApolloScenario = useMemo(() => localizeTree(apolloScenario), [localizeTree]);
+  const localizedBurningScenario = useMemo(() => localizeTree(burningStickScenario), [localizeTree]);
+
   if (activeSimulation === 'apollo15') {
     return (
       <LessonOrchestrator
         key="apollo15"
-        scenario={apolloScenario}
+        scenario={localizedApolloScenario}
         onBackToCatalog={() => setActiveSimulation(null)}
       />
     );
@@ -53,7 +59,7 @@ export default function PhysicsLab() {
     return (
       <BurningStickOrchestrator
         key="burning-stick"
-        scenario={burningStickScenario}
+        scenario={localizedBurningScenario}
         onBackToCatalog={() => setActiveSimulation(null)}
       />
     );
@@ -61,7 +67,7 @@ export default function PhysicsLab() {
 
   return (
     <SimulationCatalog
-      simulations={simulations}
+      simulations={localizedSimulations}
       onSelect={setActiveSimulation}
     />
   );

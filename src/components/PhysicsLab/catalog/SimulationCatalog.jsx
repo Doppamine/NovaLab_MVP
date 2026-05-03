@@ -1,23 +1,24 @@
 import React from 'react';
+import { useLocale } from '../../../i18n/LocalizationContext';
 
 export default function SimulationCatalog({ simulations, onSelect }) {
+  const { t } = useLocale();
+
   return (
     <div className="physics-lab lab-mode-blueprint">
       <div className="lab-container">
         <header className="lab-header">
           <div className="lab-title">
-            <span className="eyebrow">NovaLab - Physics Catalog</span>
-            <h1 style={{ fontSize: '1.7rem' }}>Simulation catalog</h1>
+            <span className="eyebrow">{t('NovaLab - Physics Catalog')}</span>
+            <h1 style={{ fontSize: '1.7rem' }}>{t('Simulation catalog')}</h1>
           </div>
         </header>
 
         <section className="catalog-hero card">
-          <div className="eyebrow">Teacher-ready demos</div>
-          <h2 style={{ marginTop: 10, marginBottom: 14 }}>Choose an experiment students can observe.</h2>
+          <div className="eyebrow">{t('Teacher-ready demos')}</div>
+          <h2 style={{ marginTop: 10, marginBottom: 14 }}>{t('Choose an experiment students can observe.')}</h2>
           <p style={{ maxWidth: 760, lineHeight: 1.65, fontSize: '1rem' }}>
-            PhysicsLab presents the existing simulation stands in a clear pilot format.
-            Open a demo, adjust the setup, run the simulation, and use the result to
-            connect observation with physics vocabulary.
+            {t('PhysicsLab presents the existing simulation stands in a clear pilot format. Open a demo, adjust the setup, run the simulation, and use the result to connect observation with physics vocabulary.')}
           </p>
         </section>
 

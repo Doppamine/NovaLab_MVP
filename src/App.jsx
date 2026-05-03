@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import Header from './components/Constructor/Header';
 import ProductErrorBoundary from './components/common/ProductErrorBoundary';
+import { LocalizationProvider, useLocale } from './i18n/LocalizationContext';
 import { getModules } from './services/moduleService';
 import './App.css';
 
@@ -18,15 +19,16 @@ const AetherLabModule = lazy(() => import('./components/AetherLab/AetherLabModul
 const WildfireVRModule = lazy(() => import('./components/WildfireModule/WildfireVRModule'));
 const CarPhysicsLab = lazy(() => import('./components/CarPhysicsLab/CarPhysicsLab'));
 
-const navItems = [
-  { id: 'home', label: 'Home' },
-  { id: 'modules', label: 'Modules' },
-  { id: 'demo', label: 'Demo' },
-  { id: 'teachers', label: 'For Teachers' },
-  { id: 'about', label: 'About' },
-];
-
 function App() {
+  return (
+    <LocalizationProvider>
+      <AppContent />
+    </LocalizationProvider>
+  );
+}
+
+function AppContent() {
+  const { locale, setLocale, t, localizeTree } = useLocale();
   const [modules, setModules] = useState([]);
   const [isLoadingModules, setIsLoadingModules] = useState(true);
   const [modulesError, setModulesError] = useState('');
@@ -42,6 +44,14 @@ function App() {
   const [showDetails, setShowDetails] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [theme, setTheme] = useState(() => localStorage.getItem('novalab-theme') || 'dark');
+
+  const navItems = useMemo(() => [
+    { id: 'home', label: t('Home') },
+    { id: 'modules', label: t('Modules') },
+    { id: 'demo', label: t('Demo') },
+    { id: 'teachers', label: t('For Teachers') },
+    { id: 'about', label: t('About') },
+  ], [t]);
 
   useEffect(() => {
     let isMounted = true;
@@ -94,9 +104,11 @@ function App() {
   }, [feedback]);
 
   const activeModule = useMemo(
-    () => modules.find((module) => module.id === activeModuleId) || null,
-    [activeModuleId, modules],
+    () => localizeTree(modules).find((module) => module.id === activeModuleId) || null,
+    [activeModuleId, localizeTree, modules],
   );
+
+  const localizedModules = useMemo(() => localizeTree(modules), [localizeTree, modules]);
 
   const openModule = (moduleId) => {
     setFeedback('');
@@ -155,14 +167,14 @@ function App() {
   };
 
   const resetActiveModule = () => {
-    setFeedback('Module reset. You can try the activity again from the beginning.');
+    setFeedback(t('Module reset. You can try the activity again from the beginning.'));
     setModuleSessionKey((key) => key + 1);
   };
 
   const toggleInstructions = () => {
     setShowInstructions((current) => {
       const next = !current;
-      setFeedback(next ? 'Instructions shown.' : 'Instructions hidden. You can open them again anytime.');
+      setFeedback(next ? t('Instructions shown.') : t('Instructions hidden. You can open them again anytime.'));
       return next;
     });
   };
@@ -170,7 +182,7 @@ function App() {
   const toggleDetails = () => {
     setShowDetails((current) => {
       const next = !current;
-      setFeedback(next ? 'Components panel shown.' : 'Components panel hidden. Workspace expanded.');
+      setFeedback(next ? t('Components panel shown.') : t('Components panel hidden. Workspace expanded.'));
       return next;
     });
   };
@@ -179,10 +191,10 @@ function App() {
     if (!activeModule) {
       return (
         <div className="product-empty-state">
-          <span className="status-pill status-pill-warning">Module unavailable</span>
-          <h2>The module could not be loaded.</h2>
-          <p>Please return to the module list and choose another activity.</p>
-          <button className="btn btn-primary" onClick={openModules}>Back to modules</button>
+          <span className="status-pill status-pill-warning">{t('Module unavailable')}</span>
+          <h2>{t('The module could not be loaded.')}</h2>
+          <p>{t('Please return to the module list and choose another activity.')}</p>
+          <button className="btn btn-primary" onClick={openModules}>{t('Back to modules')}</button>
         </div>
       );
     }
@@ -212,7 +224,7 @@ function App() {
       case 'rocket-assembly':
         return (
           <RocketConstructor
-            onLaunch={() => setFeedback('Rocket launch is marked pilot mode. The assembly path is ready for a guided classroom demo.')}
+            onLaunch={() => setFeedback(t('Rocket launch is marked pilot mode. The assembly path is ready for a guided classroom demo.'))}
           />
         );
       case 'water-systems':
@@ -228,10 +240,10 @@ function App() {
       default:
         return (
           <div className="product-empty-state">
-            <span className="status-pill status-pill-warning">In development</span>
-            <h2>This module is not ready yet.</h2>
-            <p>It is listed for the pilot roadmap and will open when the demo version is available.</p>
-            <button className="btn btn-primary" onClick={openModules}>Back to modules</button>
+            <span className="status-pill status-pill-warning">{t('In development')}</span>
+            <h2>{t('This module is not ready yet.')}</h2>
+            <p>{t('It is listed for the pilot roadmap and will open when the demo version is available.')}</p>
+            <button className="btn btn-primary" onClick={openModules}>{t('Back to modules')}</button>
           </div>
         );
     }
@@ -239,8 +251,8 @@ function App() {
 
   if (showPhysicsLab) {
     return (
-      <FullScreenLab onClose={() => setShowPhysicsLab(false)} closeLabel="Exit Apollo lab">
-        <Suspense fallback={<FullScreenModuleLoading label="Preparing Apollo 15 lab..." />}>
+      <FullScreenLab onClose={() => setShowPhysicsLab(false)} closeLabel={t('Exit Apollo lab')}>
+        <Suspense fallback={<FullScreenModuleLoading label={t('Preparing Apollo 15 lab...')} />}>
           <PhysicsLab />
         </Suspense>
       </FullScreenLab>
@@ -249,8 +261,8 @@ function App() {
 
   if (showAetherLab) {
     return (
-      <FullScreenLab onClose={() => setShowAetherLab(false)} closeLabel="Exit XR lab" flush>
-        <Suspense fallback={<FullScreenModuleLoading label="Preparing Aether circuit lab..." />}>
+      <FullScreenLab onClose={() => setShowAetherLab(false)} closeLabel={t('Exit XR lab')} flush>
+        <Suspense fallback={<FullScreenModuleLoading label={t('Preparing Aether circuit lab...')} />}>
           <AetherLabModule onClose={() => setShowAetherLab(false)} />
         </Suspense>
       </FullScreenLab>
@@ -259,7 +271,7 @@ function App() {
 
   if (showCarDemo) {
     return (
-      <Suspense fallback={<FullScreenModuleLoading label="Preparing drive physics..." />}>
+      <Suspense fallback={<FullScreenModuleLoading label={t('Preparing drive physics...')} />}>
         <CarDemo3D onComplete={handleCarDemoComplete} assembly={carDemoAssembly} />
       </Suspense>
     );
@@ -271,8 +283,10 @@ function App() {
         <ProductNav
           activeView={activeModule ? 'demo' : view}
           items={navItems}
-          moduleCount={modules.length}
+          locale={locale}
+          moduleCount={localizedModules.length}
           onNavigate={handleNavigation}
+          onSetLocale={setLocale}
           onToggleTheme={toggleTheme}
           theme={theme}
         />
@@ -281,9 +295,9 @@ function App() {
       <main className={`main-content ${activeModule ? 'main-content-module' : ''}`}>
         {view === 'home' && (
           <HomePage
-            modules={modules}
+            modules={localizedModules}
             isLoading={isLoadingModules}
-            error={modulesError}
+            error={t(modulesError)}
             onOpenModule={openModule}
             onOpenModules={openModules}
             onViewDemo={openDemo}
@@ -292,9 +306,9 @@ function App() {
 
         {view === 'modules' && (
           <ModulesPage
-            modules={modules}
+            modules={localizedModules}
             isLoading={isLoadingModules}
-            error={modulesError}
+            error={t(modulesError)}
             onOpenModule={openModule}
             onRetry={() => window.location.reload()}
           />
@@ -334,9 +348,11 @@ function App() {
   );
 }
 
-function ProductNav({ activeView, items, moduleCount, onNavigate, onToggleTheme, theme }) {
+function ProductNav({ activeView, items, locale, moduleCount, onNavigate, onSetLocale, onToggleTheme, theme }) {
+  const { t } = useLocale();
+
   return (
-    <nav className="product-nav" aria-label="Main navigation">
+    <nav className="product-nav" aria-label={t('Main navigation')}>
       <div className="product-nav-links">
         {items.map((item) => (
           <button
@@ -350,66 +366,81 @@ function ProductNav({ activeView, items, moduleCount, onNavigate, onToggleTheme,
           </button>
         ))}
       </div>
+      <div className="language-toggle" aria-label={t('Language switcher')}>
+        <button
+          className={`nav-btn ${locale === 'en' ? 'active' : ''}`}
+          onClick={() => onSetLocale('en')}
+          type="button"
+        >
+          EN
+        </button>
+        <button
+          className={`nav-btn ${locale === 'ru' ? 'active' : ''}`}
+          onClick={() => onSetLocale('ru')}
+          type="button"
+        >
+          RU
+        </button>
+      </div>
       <button
         className="nav-btn theme-toggle"
         onClick={onToggleTheme}
-        title={theme === 'dark' ? 'Use light theme' : 'Use dark theme'}
-        aria-label={theme === 'dark' ? 'Use light theme' : 'Use dark theme'}
+        title={theme === 'dark' ? t('Use light theme') : t('Use dark theme')}
+        aria-label={theme === 'dark' ? t('Use light theme') : t('Use dark theme')}
         type="button"
       >
-        {theme === 'dark' ? 'Light' : 'Dark'}
+        {theme === 'dark' ? t('Light') : t('Dark')}
       </button>
     </nav>
   );
 }
 
 function HomePage({ modules, isLoading, error, onOpenModule, onOpenModules, onViewDemo }) {
+  const { t } = useLocale();
   const featuredModules = modules.slice(0, 4);
 
   return (
     <div className="product-page">
       <section className="hero-section">
         <div className="hero-copy">
-          <span className="section-eyebrow">NovaLab MVP - School pilot</span>
-          <h1>Physics becomes clear when students can see it.</h1>
+          <span className="section-eyebrow">{t('NovaLab MVP - School pilot')}</span>
+          <h1>{t('Physics becomes clear when students can see it.')}</h1>
           <p>
-            NovaLab is an interactive platform that helps students understand physics through
-            visualization, simulations, and practical tasks.
+            {t('NovaLab is an interactive platform that helps students understand physics through visualization, simulations, and practical tasks.')}
           </p>
           <p className="hero-support">
-            Instead of only reading theory, students can build, test, observe, and understand how
-            physics works in practice.
+            {t('Instead of only reading theory, students can build, test, observe, and understand how physics works in practice.')}
           </p>
           <div className="hero-actions">
-            <button className="btn btn-primary" onClick={onOpenModules}>Open modules</button>
-            <button className="btn btn-secondary" onClick={onViewDemo}>View demo</button>
+            <button className="btn btn-primary" onClick={onOpenModules}>{t('Open modules')}</button>
+            <button className="btn btn-secondary" onClick={onViewDemo}>{t('View demo')}</button>
           </div>
         </div>
 
-        <div className="lab-preview" aria-label="NovaLab simulation preview">
+        <div className="lab-preview" aria-label={t('NovaLab simulation preview')}>
           <div className="preview-toolbar">
-            <span>Live physics bench</span>
-            <strong>Pilot mode</strong>
+            <span>{t('Live physics bench')}</span>
+            <strong>{t('Pilot mode')}</strong>
           </div>
           <div className="preview-canvas">
-            <div className="preview-node preview-battery">Battery</div>
+            <div className="preview-node preview-battery">{t('Battery')}</div>
             <div className="preview-wire wire-one"></div>
-            <div className="preview-node preview-lamp">Lamp</div>
+            <div className="preview-node preview-lamp">{t('Lamp')}</div>
             <div className="preview-wire wire-two"></div>
-            <div className="preview-node preview-motor">Motor</div>
+            <div className="preview-node preview-motor">{t('Motor')}</div>
           </div>
           <div className="preview-result">
             <span className="status-dot"></span>
-            Circuit feedback: closed systems create visible results.
+            {t('Circuit feedback: closed systems create visible results.')}
           </div>
         </div>
       </section>
 
       <section className="product-section">
         <SectionHeader
-          eyebrow="Available modules"
-          title="Ready-to-show activities"
-          copy="Existing NovaLab modules are organized as classroom-friendly pilot activities."
+          eyebrow={t('Available modules')}
+          title={t('Ready-to-show activities')}
+          copy={t('Existing NovaLab modules are organized as classroom-friendly pilot activities.')}
         />
         <ModuleGrid
           modules={featuredModules}
@@ -426,13 +457,15 @@ function HomePage({ modules, isLoading, error, onOpenModule, onOpenModules, onVi
 }
 
 function ModulesPage({ modules, isLoading, error, onOpenModule, onRetry }) {
+  const { t } = useLocale();
+
   return (
     <div className="product-page product-page-compact">
       <section className="product-section">
         <SectionHeader
-          eyebrow="Modules"
-          title="Choose a physics activity"
-          copy="Each module shows the learning goal, readiness status, and how students should use it."
+          eyebrow={t('Modules')}
+          title={t('Choose a physics activity')}
+          copy={t('Each module shows the learning goal, readiness status, and how students should use it.')}
         />
         <ModuleGrid
           modules={modules}
@@ -447,9 +480,11 @@ function ModulesPage({ modules, isLoading, error, onOpenModule, onRetry }) {
 }
 
 function ModuleGrid({ modules, isLoading, error, onOpenModule, onRetry }) {
+  const { t } = useLocale();
+
   if (isLoading) {
     return (
-      <div className="modules-grid" aria-label="Loading modules">
+      <div className="modules-grid" aria-label={t('Loading modules')}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="module-card skeleton-card">
             <div className="skeleton-line short"></div>
@@ -465,10 +500,10 @@ function ModuleGrid({ modules, isLoading, error, onOpenModule, onRetry }) {
   if (error) {
     return (
       <div className="product-empty-state">
-        <span className="status-pill status-pill-warning">Data unavailable</span>
-        <h2>Modules could not be loaded.</h2>
+        <span className="status-pill status-pill-warning">{t('Data unavailable')}</span>
+        <h2>{t('Modules could not be loaded.')}</h2>
         <p>{error}</p>
-        {onRetry ? <button className="btn btn-primary" onClick={onRetry}>Try again</button> : null}
+        {onRetry ? <button className="btn btn-primary" onClick={onRetry}>{t('Try again')}</button> : null}
       </div>
     );
   }
@@ -476,9 +511,9 @@ function ModuleGrid({ modules, isLoading, error, onOpenModule, onRetry }) {
   if (!modules.length) {
     return (
       <div className="product-empty-state">
-        <span className="status-pill">Pilot catalog</span>
-        <h2>No modules are available yet.</h2>
-        <p>Please check back later. The pilot catalog will appear here when data is ready.</p>
+        <span className="status-pill">{t('Pilot catalog')}</span>
+        <h2>{t('No modules are available yet.')}</h2>
+        <p>{t('Please check back later. The pilot catalog will appear here when data is ready.')}</p>
       </div>
     );
   }
@@ -498,7 +533,7 @@ function ModuleGrid({ modules, isLoading, error, onOpenModule, onRetry }) {
             <span>{module.level}</span>
           </div>
           <div className="module-goal">
-            <strong>Learning goal</strong>
+            <strong>{t('Learning goal')}</strong>
             <span>{module.learningGoal}</span>
           </div>
           <button className="btn btn-primary module-card-action" onClick={() => onOpenModule(module.id)}>
@@ -523,13 +558,15 @@ function ModuleWorkspace({
   onToggleInstructions,
   onToggleDetails,
 }) {
+  const { t } = useLocale();
+
   if (!module) {
     return (
       <div className="module-workspace">
         <div className="product-empty-state">
-          <h2>The module could not be loaded.</h2>
-          <p>Please return to the module list and choose another activity.</p>
-          <button className="btn btn-primary" onClick={onBack}>Back to modules</button>
+          <h2>{t('The module could not be loaded.')}</h2>
+          <p>{t('Please return to the module list and choose another activity.')}</p>
+          <button className="btn btn-primary" onClick={onBack}>{t('Back to modules')}</button>
         </div>
       </div>
     );
@@ -542,8 +579,8 @@ function ModuleWorkspace({
       {showInstructions ? (
         <aside className="module-context-panel">
           <div className="context-panel-top">
-            <button className="back-link" onClick={onBack}>Back to modules</button>
-            <button className="panel-hide-btn" onClick={onToggleInstructions}>Hide instructions</button>
+            <button className="back-link" onClick={onBack}>{t('Back to modules')}</button>
+            <button className="panel-hide-btn" onClick={onToggleInstructions}>{t('Hide instructions')}</button>
           </div>
 
           <div>
@@ -554,17 +591,17 @@ function ModuleWorkspace({
           <p>{module.description}</p>
 
           <div className="context-block">
-            <strong>Goal</strong>
+            <strong>{t('Goal')}</strong>
             <span>{module.learningGoal}</span>
           </div>
 
           <div className="context-block">
-            <strong>Teacher use</strong>
+            <strong>{t('Teacher use')}</strong>
             <span>{module.teacherUse}</span>
           </div>
 
           <div className="context-block">
-            <strong>What to do</strong>
+            <strong>{t('What to do')}</strong>
             <ol>
               {module.instructions.map((instruction) => (
                 <li key={instruction}>{instruction}</li>
@@ -577,27 +614,27 @@ function ModuleWorkspace({
           <div className="module-actions">
             {module.id === 'car-3d' ? (
               <button className="btn btn-secondary" onClick={onToggleCarVR}>
-                {isVRMode ? 'Use desktop 3D' : 'Try VR mode'}
+                {isVRMode ? t('Use desktop 3D') : t('Try VR mode')}
               </button>
             ) : null}
-            <button className="btn btn-secondary" onClick={onReset}>Reset module</button>
+            <button className="btn btn-secondary" onClick={onReset}>{t('Reset module')}</button>
           </div>
         </aside>
       ) : null}
 
-      <section className="module-stage" aria-label={`${module.title} activity`}>
+      <section className="module-stage" aria-label={`${module.title} ${t('activity')}`}>
         <div className="module-utility-bar">
           {!showInstructions ? (
-            <button className="btn btn-secondary" onClick={onToggleInstructions}>Show instructions</button>
+            <button className="btn btn-secondary" onClick={onToggleInstructions}>{t('Show instructions')}</button>
           ) : null}
           {hasDetailsPanel ? (
             <button className="btn btn-secondary" onClick={onToggleDetails}>
-              {showDetails ? 'Hide components' : 'Show components'}
+              {showDetails ? t('Hide components') : t('Show components')}
             </button>
           ) : null}
           {module.id === 'car-3d' ? (
             <button className="btn btn-secondary" onClick={onToggleCarVR}>
-              {isVRMode ? 'Use desktop 3D' : 'Try VR mode'}
+              {isVRMode ? t('Use desktop 3D') : t('Try VR mode')}
             </button>
           ) : null}
           {!showInstructions && feedback ? <div className="module-feedback compact">{feedback}</div> : null}
@@ -609,27 +646,28 @@ function ModuleWorkspace({
 }
 
 function ValueSection() {
+  const { t } = useLocale();
   const items = [
     {
-      title: 'For students',
-      copy: 'Understand physics through action, not only through text.',
+      title: t('For students'),
+      copy: t('Understand physics through action, not only through text.'),
     },
     {
-      title: 'For teachers',
-      copy: 'Explain difficult topics faster with visual and interactive tools.',
+      title: t('For teachers'),
+      copy: t('Explain difficult topics faster with visual and interactive tools.'),
     },
     {
-      title: 'For schools',
-      copy: 'Test a modern STEM learning tool through a structured pilot launch.',
+      title: t('For schools'),
+      copy: t('Test a modern STEM learning tool through a structured pilot launch.'),
     },
   ];
 
   return (
     <section className="product-section">
       <SectionHeader
-        eyebrow="Why it matters"
-        title="Built for classroom explanation"
-        copy="NovaLab turns abstract physics into something students can test, observe, and discuss."
+        eyebrow={t('Why it matters')}
+        title={t('Built for classroom explanation')}
+        copy={t('NovaLab turns abstract physics into something students can test, observe, and discuss.')}
       />
       <div className="value-grid">
         {items.map((item) => (
@@ -644,66 +682,70 @@ function ValueSection() {
 }
 
 function PilotSection() {
+  const { t } = useLocale();
+
   return (
     <section className="pilot-section">
       <div>
-        <span className="section-eyebrow">Pilot readiness</span>
-        <h2>Prepared for a serious school demo</h2>
+        <span className="section-eyebrow">{t('Pilot readiness')}</span>
+        <h2>{t('Prepared for a serious school demo')}</h2>
       </div>
       <p>
-        NovaLab is currently in MVP mode and is being prepared for pilot testing in schools.
-        The goal of the pilot is to evaluate teacher usability, student engagement, and the
-        impact of visualization on physics understanding.
+        {t('NovaLab is currently in MVP mode and is being prepared for pilot testing in schools. The goal of the pilot is to evaluate teacher usability, student engagement, and the impact of visualization on physics understanding.')}
       </p>
     </section>
   );
 }
 
 function TeachersPage({ onOpenModules }) {
+  const { t } = useLocale();
+
   return (
     <div className="product-page product-page-compact">
       <section className="product-section teacher-section">
         <SectionHeader
-          eyebrow="For Teachers"
-          title="Use NovaLab as a visual lesson companion"
-          copy="The pilot version is designed for short classroom demonstrations, guided student practice, and discussion after each experiment."
+          eyebrow={t('For Teachers')}
+          title={t('Use NovaLab as a visual lesson companion')}
+          copy={t('The pilot version is designed for short classroom demonstrations, guided student practice, and discussion after each experiment.')}
         />
         <div className="teacher-flow">
           <div>
-            <strong>1. Introduce the concept</strong>
-            <span>Start with the learning goal and a simple question students can test.</span>
+            <strong>{t('1. Introduce the concept')}</strong>
+            <span>{t('Start with the learning goal and a simple question students can test.')}</span>
           </div>
           <div>
-            <strong>2. Run the activity</strong>
-            <span>Students build, connect, adjust, or observe the simulation step by step.</span>
+            <strong>{t('2. Run the activity')}</strong>
+            <span>{t('Students build, connect, adjust, or observe the simulation step by step.')}</span>
           </div>
           <div>
-            <strong>3. Discuss the result</strong>
-            <span>Use the visual feedback to connect actions with physics vocabulary.</span>
+            <strong>{t('3. Discuss the result')}</strong>
+            <span>{t('Use the visual feedback to connect actions with physics vocabulary.')}</span>
           </div>
         </div>
-        <button className="btn btn-primary" onClick={onOpenModules}>Open pilot modules</button>
+        <button className="btn btn-primary" onClick={onOpenModules}>{t('Open pilot modules')}</button>
       </section>
     </div>
   );
 }
 
 function AboutPage({ onOpenModules }) {
+  const { t } = useLocale();
+
   return (
     <div className="product-page product-page-compact">
       <section className="product-section about-section">
         <SectionHeader
-          eyebrow="About NovaLab"
-          title="A physics platform for seeing, testing, and understanding"
-          copy="NovaLab focuses on visualization, simulations, practical interaction, and teacher support. The current MVP is frontend-first with stable demo data and existing interactive modules prepared for pilot conversations."
+          eyebrow={t('About NovaLab')}
+          title={t('A physics platform for seeing, testing, and understanding')}
+          copy={t('NovaLab focuses on visualization, simulations, practical interaction, and teacher support. The current MVP is frontend-first with stable demo data and existing interactive modules prepared for pilot conversations.')}
         />
         <div className="readiness-list">
-          <span>Clear school-pilot positioning</span>
-          <span>Existing modules organized by learning goal</span>
-          <span>Professional demo and pilot-mode labels</span>
-          <span>Friendly loading, empty, and recovery states</span>
+          <span>{t('Clear school-pilot positioning')}</span>
+          <span>{t('Existing modules organized by learning goal')}</span>
+          <span>{t('Professional demo and pilot-mode labels')}</span>
+          <span>{t('Friendly loading, empty, and recovery states')}</span>
         </div>
-        <button className="btn btn-primary" onClick={onOpenModules}>Review modules</button>
+        <button className="btn btn-primary" onClick={onOpenModules}>{t('Review modules')}</button>
       </section>
     </div>
   );
@@ -725,10 +767,12 @@ function StatusPill({ status }) {
 }
 
 function ModuleLoading({ module }) {
+  const { t } = useLocale();
+
   return (
     <div className="module-loading-state">
       <div className="loading-spinner"></div>
-      <p>{module ? `Preparing ${module.title}...` : 'Preparing module...'}</p>
+      <p>{module ? `${t('Preparing')} ${module.title}...` : t('Preparing module...')}</p>
     </div>
   );
 }
