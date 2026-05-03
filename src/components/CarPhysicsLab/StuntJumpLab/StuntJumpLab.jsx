@@ -33,7 +33,7 @@ function expectedPrediction(prevRange, nextRange) {
   return delta > 0 ? 'further' : 'shorter';
 }
 
-export default function StuntJumpLab({ onCarLaunch }) {
+export default function StuntJumpLab({ onExit }) {
   const [lesson, setLesson] = useState('conservation');
   const [height, setHeight] = useState(20);            // metres
   const [mass, setMass] = useState(1500);              // kg
@@ -228,15 +228,14 @@ export default function StuntJumpLab({ onCarLaunch }) {
             </div>
           )}
 
-          {onCarLaunch && (
-            <div className="stunt-control-actions" style={{ marginTop: 'auto' }}>
+          {onExit && (
+            <div className="crash-action-row" style={{ marginTop: '0.5rem' }}>
               <button
-                type="button"
-                className="stunt-btn stunt-btn-exit"
-                onClick={onCarLaunch}
+                className="crash-btn crash-btn-exit"
+                onClick={onExit}
                 style={{ width: '100%' }}
               >
-                Exit
+                Exit to Modules
               </button>
             </div>
           )}

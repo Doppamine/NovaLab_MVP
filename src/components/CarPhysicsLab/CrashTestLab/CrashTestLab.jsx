@@ -11,7 +11,7 @@ const BUMPERS = {
 
 const EGG_FORCE_LIMIT = 50000; // Newtons — threshold for egg survival
 
-export default function CrashTestLab({ onCarLaunch }) {
+export default function CrashTestLab({ onExit }) {
   const [mass, setMass] = useState(1500);
   const [speed, setSpeed] = useState(15);
   const [bumperType, setBumperType] = useState('standard');
@@ -98,15 +98,12 @@ export default function CrashTestLab({ onCarLaunch }) {
             </div>
           </div>
 
-          {onCarLaunch && (
-            <>
-              <div className="crash-separator" />
-              <div className="crash-control-actions" style={{ marginTop: 'auto' }}>
-                <button className="crash-btn crash-btn-exit" onClick={onCarLaunch} style={{ width: '100%' }}>
-                  Exit
+          {onExit && (
+            <div className="crash-action-row" style={{ marginTop: '0.5rem' }}>
+                <button className="crash-btn crash-btn-exit" onClick={onExit} style={{ width: '100%' }}>
+                  Exit to Modules
                 </button>
-              </div>
-            </>
+            </div>
           )}
         </section>
 

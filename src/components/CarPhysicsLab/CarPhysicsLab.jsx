@@ -5,7 +5,7 @@ import DragRaceLab from './DragRaceLab/DragRaceLab';
 import LegacyCarPhysicsLab from './LegacyCarPhysicsLab';
 import '../Car3DConstructor/CarPhysicsLab.css';
 
-export default function CarPhysicsLab({ onCarLaunch }) {
+export default function CarPhysicsLab({ onExit }) {
   const [activeTab, setActiveTab] = useState('crashTest');
 
   return (
@@ -49,10 +49,10 @@ export default function CarPhysicsLab({ onCarLaunch }) {
       </nav>
 
       <div className="car-physics-content" style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        {activeTab === 'crashTest' && <CrashTestLab onCarLaunch={onCarLaunch} />}
-        {activeTab === 'stuntJump' && <StuntJumpLab onCarLaunch={onCarLaunch} />}
-        {activeTab === 'dragRace' && <DragRaceLab onCarLaunch={onCarLaunch} />}
-        {activeTab === 'legacy' && <LegacyCarPhysicsLab onCarLaunch={onCarLaunch} />}
+        {activeTab === 'crashTest' && <CrashTestLab onExit={onExit} />}
+        {activeTab === 'stuntJump' && <StuntJumpLab onExit={onExit} />}
+        {activeTab === 'dragRace' && <DragRaceLab onExit={onExit} />}
+        {activeTab === 'legacy' && <LegacyCarPhysicsLab onExit={onExit} />}
       </div>
     </div>
   );

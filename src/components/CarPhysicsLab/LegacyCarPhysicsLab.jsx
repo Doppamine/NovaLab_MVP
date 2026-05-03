@@ -78,7 +78,7 @@ const DASHBOARD_POWER_W = 18;
 const SCREEN_POWER_W = 22;
 const MOTOR_CONTROLLER_POWER_W = 36;
 
-function LegacyCarPhysicsLab({ onCarLaunch }) {
+function LegacyCarPhysicsLab({ onExit }) {
   const [selectedLab, setSelectedLab] = useState('constructor');
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
   const [speedParams, setSpeedParams] = useState({
@@ -354,9 +354,9 @@ function LegacyCarPhysicsLab({ onCarLaunch }) {
           <button type="button" className="control-button" onClick={resetSimulation}>
             Reset
           </button>
-          {onCarLaunch && (
-            <button type="button" className="control-button subtle" onClick={onCarLaunch}>
-              Classic drive
+          {onExit && (
+            <button type="button" className="control-button subtle" onClick={onExit}>
+              Exit lab
             </button>
           )}
         </div>

@@ -224,7 +224,7 @@ function App() {
       case 'wildfire-vr':
         return <WildfireVRModule />;
       case 'car-physics-lab':
-        return <CarPhysicsLab onCarLaunch={handleCarLaunch} />;
+        return <CarPhysicsLab onExit={openModules} />;
       default:
         return (
           <div className="product-empty-state">

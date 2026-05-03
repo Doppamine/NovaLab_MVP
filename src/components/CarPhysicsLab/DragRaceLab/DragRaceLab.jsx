@@ -32,7 +32,7 @@ function formatNum(n, digits = 2) {
   return n.toFixed(digits);
 }
 
-export default function DragRaceLab({ onCarLaunch }) {
+export default function DragRaceLab({ onExit }) {
   const [lesson, setLesson] = useState('race');
 
   // Defaults tuned so a = F/m matches → a clean tie out of the box (the "wow")
@@ -177,15 +177,14 @@ export default function DragRaceLab({ onCarLaunch }) {
             </div>
           )}
 
-          {onCarLaunch && (
-            <div className="dr-control-actions" style={{ marginTop: 'auto' }}>
+          {onExit && (
+            <div className="crash-action-row" style={{ marginTop: '0.5rem' }}>
               <button
-                type="button"
-                className="dr-btn dr-btn-exit"
-                onClick={onCarLaunch}
+                className="crash-btn crash-btn-exit"
+                onClick={onExit}
                 style={{ width: '100%' }}
               >
-                Exit
+                Exit to Modules
               </button>
             </div>
           )}
