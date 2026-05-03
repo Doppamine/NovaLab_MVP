@@ -128,7 +128,12 @@
     backdrop-filter: blur(10px);
 }
 
-.controls-panel {
+/* Scoped to .car-demo-3d so it doesn't collide with .controls-panel inside the
+   CarPhysicsLab submodules (CrashTest / StuntJump / DragRace), which also use
+   the same class name for their grid-area controls panel. Without this scope,
+   the lazy-loaded CarDemo3D CSS would override `grid-area: controls` with
+   `position: absolute; right: ...` and bounce the panel to the right edge. */
+.car-demo-3d .controls-panel {
     position: absolute;
     bottom: var(--spacing-xl);
     right: var(--spacing-xl);
@@ -271,7 +276,7 @@
         width: 210px;
     }
 
-    .controls-panel {
+    .car-demo-3d .controls-panel {
         bottom: var(--spacing-md);
         right: var(--spacing-md);
         width: 220px;
@@ -301,7 +306,7 @@
         width: auto;
     }
 
-    .controls-panel {
+    .car-demo-3d .controls-panel {
         left: var(--spacing-sm);
         right: var(--spacing-sm);
         width: auto;
