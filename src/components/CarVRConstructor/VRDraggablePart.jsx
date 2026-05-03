@@ -7,7 +7,7 @@ import {
     BatteryModel,
     BodyModel,
     ControllerModel
-} from '../../components/Car3DConstructor/Part3DModel';
+} from '../Car3DConstructor/Part3DModel';
 
 /**
  * VRDraggablePart — pure visual component for a single part on the VR field.

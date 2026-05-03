@@ -9,14 +9,14 @@ const WorkArea = lazy(() => import('./components/WorkArea/WorkArea'));
 const CarDemo3D = lazy(() => import('./components/CarDemo3D/CarDemo3D'));
 const Car3DConstructor = lazy(() => import('./components/Car3DConstructor/Car3DConstructor'));
 const RocketConstructor = lazy(() => import('./components/RocketConstructor/RocketConstructor'));
-const CarVRConstructor = lazy(() => import('./features/car-vr-constructor/CarVRConstructor'));
+const CarVRConstructor = lazy(() => import('./components/CarVRConstructor/CarVRConstructor'));
 const WaterModuleRouter = lazy(() => import('./components/WaterModule/WaterModuleRouter'));
 const ThermoModuleRouter = lazy(() => import('./components/ThermoModule/ThermoModuleRouter'));
 const PhysicsRouter = lazy(() => import('./components/PhysicsModule/PhysicsRouter'));
 const PhysicsLab = lazy(() => import('./components/PhysicsLab/PhysicsLab'));
 const AetherLabModule = lazy(() => import('./components/AetherLab/AetherLabModule'));
-const WildfireVRModule = lazy(() => import('./features/wildfire-vr-superflight/WildfireVRModule'));
-const CrashTestLab = lazy(() => import('./features/crash-test-lab/CrashTestLab'));
+const WildfireVRModule = lazy(() => import('./components/WildfireModule/WildfireVRModule'));
+const CrashTestLab = lazy(() => import('./components/CrashTestLab/CrashTestLab'));
 
 const navItems = [
   { id: 'home', label: 'Home' },

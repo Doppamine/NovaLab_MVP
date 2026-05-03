@@ -15,8 +15,7 @@ To maintain code quality and ensure scalability, all code generated must adhere 
 
 ## 4. Agent & "Vibe-Coding" Guardrails
 These rules are strict boundaries to prevent regressions when non-technical team members use AI to generate new features:
-* **Strict Isolation:** Place all newly generated features into their own isolated directories (e.g., `src/features/new-feature/`). 
-* **No Core Mutations:** Do NOT modify existing, working features, core routing, or main layout wrappers while generating new UI components. 
+* **No Core Mutations:** Do NOT modify existing, working features, core routing, or main layout wrappers while generating new UI components or modules unless otherwise prompted or it is required for the feature itself, and you have full understanding of the consequences.
 
 ## 5. Coding Style & Formatting
 * Use clear, descriptive variable names.
@@ -25,7 +24,6 @@ These rules are strict boundaries to prevent regressions when non-technical team
 
 ## 6. VR Mode Rules
 * **Strict Component Isolation:** NEVER modify the existing `src/components/Car3DConstructor/Car3DConstructor.jsx`. 
-* **New Directory:** All VR logic (imports, scene setup, camera handling) must be created in a brand new folder: `src/features/car-vr-constructor/`.
 * **No Direct DOM Access:** Avoid using `document.getElementById` or direct DOM manipulation for the VR canvas. Use `react-xr` event handlers and refs.
 * **Performance:** Ensure `aframe` components are properly cleaned up when the VR mode is toggled off to prevent memory leaks.
 

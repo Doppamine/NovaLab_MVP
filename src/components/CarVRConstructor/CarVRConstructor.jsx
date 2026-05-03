@@ -12,8 +12,8 @@ import VRLocomotion from './VRLocomotion';
 import VRPartsMenu from './VRPartsMenu';
 import VRDraggablePart from './VRDraggablePart';
 
-import { PART_SOCKETS_DATA } from '../../components/Car3DConstructor/partSocketsData';
-import { canConnect, calculateDistance3D, isSocketOccupied } from '../../components/Car3DConstructor/connectionRules3D';
+import { PART_SOCKETS_DATA } from '../Car3DConstructor/partSocketsData';
+import { canConnect, calculateDistance3D, isSocketOccupied } from '../Car3DConstructor/connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
 import './CarVRConstructor.css';
 
