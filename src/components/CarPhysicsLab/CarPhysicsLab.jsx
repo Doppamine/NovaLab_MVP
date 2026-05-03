@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CrashTestLab from './CrashTestLab/CrashTestLab';
 import StuntJumpLab from './StuntJumpLab/StuntJumpLab';
+import DragRaceLab from './DragRaceLab/DragRaceLab';
 import LegacyCarPhysicsLab from './LegacyCarPhysicsLab';
 import '../Car3DConstructor/CarPhysicsLab.css';
 
@@ -33,6 +34,13 @@ export default function CarPhysicsLab({ onCarLaunch }) {
         </button>
         <button
           type="button"
+          className={`lab-tab ${activeTab === 'dragRace' ? 'active' : ''}`}
+          onClick={() => setActiveTab('dragRace')}
+        >
+          <span>Drag Race (Newton&apos;s 2nd Law)</span>
+        </button>
+        <button
+          type="button"
           className={`lab-tab ${activeTab === 'legacy' ? 'active' : ''}`}
           onClick={() => setActiveTab('legacy')}
         >
@@ -43,6 +51,7 @@ export default function CarPhysicsLab({ onCarLaunch }) {
       <div className="car-physics-content" style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {activeTab === 'crashTest' && <CrashTestLab onCarLaunch={onCarLaunch} />}
         {activeTab === 'stuntJump' && <StuntJumpLab onCarLaunch={onCarLaunch} />}
+        {activeTab === 'dragRace' && <DragRaceLab onCarLaunch={onCarLaunch} />}
         {activeTab === 'legacy' && <LegacyCarPhysicsLab onCarLaunch={onCarLaunch} />}
       </div>
     </div>

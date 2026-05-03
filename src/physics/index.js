@@ -15,3 +15,4 @@ export { integrate } from './integrators/rk4.js';
 export { freeFallVacuum, freeFallWithDrag, runApollo15Scenario } from './modules/freeFallAirDrag.js';
 export { estimateBurningStickUniformTime, simulateBurningStick } from './modules/burningStick.js';
 export { simulateStuntJump, interpolateStuntJump, GRAVITY_PRESETS } from './modules/stuntJump.js';
+export { simulateDragRace, interpolateDragRace } from './modules/dragRace.js';
