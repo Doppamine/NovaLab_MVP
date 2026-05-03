@@ -6,21 +6,6 @@ import { simulateDragRace } from '../../../physics';
 
 const TRACK_LENGTH = 100; // metres — fixed for this lab
 
-const LESSONS = {
-  race: {
-    id: 'race',
-    label: '🏁 Race',
-    title: 'Lesson A — Newton\'s 2nd Law',
-    blurb: 'Adjust force and mass for each car. Acceleration a = F / m. The car with the higher acceleration wins.',
-  },
-  mystery: {
-    id: 'mystery',
-    label: '⚖️ Tie Mystery',
-    title: 'Lesson B — Same Acceleration?',
-    blurb: 'Predict the winner before each race. Even very different forces and masses can tie when F/m is equal.',
-  },
-};
-
 const PREDICTIONS = {
   carA: { label: 'Car wins', symbol: '🏎️' },
   tie:  { label: 'It\'s a tie', symbol: '🎯' },
@@ -33,8 +18,6 @@ function formatNum(n, digits = 2) {
 }
 
 export default function DragRaceLab({ onExit }) {
-  const [lesson, setLesson] = useState('race');
-
   // Defaults tuned so a = F/m matches → a clean tie out of the box (the "wow")
   // Car A (sports car): 3000 N / 1000 kg = 3.0 m/s²
   // Car B (truck):      6000 N / 2000 kg = 3.0 m/s²
@@ -47,9 +30,8 @@ export default function DragRaceLab({ onExit }) {
   const [simKey, setSimKey] = useState(0);
   const [liveSample, setLiveSample] = useState({ t: 0, xA: 0, xB: 0, vA: 0, vB: 0 });
 
-  // Mystery-mode predict-first state
+  // Predict-first state
   const [prediction, setPrediction] = useState(null);
-  const [baselineSnapshot, setBaselineSnapshot] = useState(null);
 
   const raceResult = useMemo(
     () =>
@@ -61,18 +43,13 @@ export default function DragRaceLab({ onExit }) {
     [forceA, massA, forceB, massB],
   );
 
-  const isMystery = lesson === 'mystery';
-  const paramsChanged =
-    isMystery &&
-    baselineSnapshot &&
-    (forceA !== baselineSnapshot.forceA ||
-      massA !== baselineSnapshot.massA ||
-      forceB !== baselineSnapshot.forceB ||
-      massB !== baselineSnapshot.massB);
-  const needsPrediction = paramsChanged && prediction === null;
+  const handleLaunchClick = () => {
+    setPrediction(null);
+    setSimulationState('predicting');
+  };
 
-  const handleLaunch = () => {
-    if (needsPrediction) return;
+  const handlePredictAndLaunch = (id) => {
+    setPrediction(id);
     setSimulationState('running');
     setSimKey((k) => k + 1);
   };
@@ -81,19 +58,7 @@ export default function DragRaceLab({ onExit }) {
     setSimulationState('idle');
     setSimKey((k) => k + 1);
     setLiveSample({ t: 0, xA: 0, xB: 0, vA: 0, vB: 0 });
-    if (isMystery) {
-      setBaselineSnapshot({ forceA, massA, forceB, massB });
-      setPrediction(null);
-    }
-  };
-
-  const handleLessonSwitch = (id) => {
-    setLesson(id);
-    setSimulationState('idle');
-    setSimKey((k) => k + 1);
-    setLiveSample({ t: 0, xA: 0, xB: 0, vA: 0, vB: 0 });
     setPrediction(null);
-    setBaselineSnapshot(null);
   };
 
   const winnerKey =
@@ -112,21 +77,8 @@ export default function DragRaceLab({ onExit }) {
         {/* Left: Controls */}
         <section className="dr-panel controls-panel">
           <div className="dr-panel-header">
-            <h3>{LESSONS[lesson].title}</h3>
-            <p>{LESSONS[lesson].blurb}</p>
-          </div>
-
-          <div className="dr-lesson-tabs">
-            {Object.values(LESSONS).map((l) => (
-              <button
-                key={l.id}
-                type="button"
-                className={`dr-lesson-tab ${lesson === l.id ? 'active' : ''}`}
-                onClick={() => handleLessonSwitch(l.id)}
-              >
-                {l.label}
-              </button>
-            ))}
+            <h3>Newton's 2nd Law & Tie Mystery</h3>
+            <p>Predict the winner before each race. Even very different forces and masses can tie when F/m is equal.</p>
           </div>
 
           <div className="dr-assumption-callout">
@@ -156,29 +108,8 @@ export default function DragRaceLab({ onExit }) {
             disabled={simulationState !== 'idle'}
           />
 
-          {isMystery && needsPrediction && (
-            <div className="dr-predict-card">
-              <div className="dr-predict-question">
-                You changed the parameters. Predict the winner before launching:
-              </div>
-              <div className="dr-predict-options">
-                {Object.entries(PREDICTIONS).map(([id, p]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={`dr-predict-btn ${prediction === id ? 'active' : ''}`}
-                    onClick={() => setPrediction(id)}
-                  >
-                    <span className="dr-predict-symbol">{p.symbol}</span>
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {onExit && (
-            <div className="crash-action-row" style={{ marginTop: '0.5rem' }}>
+            <div className="crash-action-row" style={{ marginTop: 'auto' }}>
               <button
                 className="crash-btn crash-btn-exit"
                 onClick={onExit}
@@ -205,13 +136,15 @@ export default function DragRaceLab({ onExit }) {
             <div className="dr-hud-row">
               <div className="dr-hud-tile dr-hud-tile-car">
                 <span className="dr-hud-label"><span style={{ color: '#ff5a5a' }}>●</span> Car</span>
-                <span className="dr-hud-value">a = {formatNum(raceResult.aA)} m/s²</span>
-                <span className="dr-hud-sub">v = {formatNum(liveSample.vA, 1)} m/s</span>
+                <span className="dr-hud-value" style={{ color: '#fff', fontWeight: 'bold', textShadow: '0 0 10px rgba(255,255,255,0.4)' }}>
+                  v = {formatNum(liveSample.vA, 1)} m/s
+                </span>
               </div>
               <div className="dr-hud-tile dr-hud-tile-truck">
                 <span className="dr-hud-label"><span style={{ color: '#5ab4ff' }}>●</span> Truck</span>
-                <span className="dr-hud-value">a = {formatNum(raceResult.aB)} m/s²</span>
-                <span className="dr-hud-sub">v = {formatNum(liveSample.vB, 1)} m/s</span>
+                <span className="dr-hud-value" style={{ color: '#fff', fontWeight: 'bold', textShadow: '0 0 10px rgba(255,255,255,0.4)' }}>
+                  v = {formatNum(liveSample.vB, 1)} m/s
+                </span>
               </div>
             </div>
             <div className="dr-hud-graphs">
@@ -250,12 +183,47 @@ export default function DragRaceLab({ onExit }) {
               <button
                 type="button"
                 className="dr-btn dr-btn-launch dr-btn-floating"
-                onClick={handleLaunch}
-                disabled={needsPrediction}
-                title={needsPrediction ? 'Make a prediction first' : ''}
+                onClick={handleLaunchClick}
               >
                 🚦 Launch Race
               </button>
+            </div>
+          )}
+
+          {/* Predicting Overlay */}
+          {simulationState === 'predicting' && (
+            <div className="dr-results-overlay">
+              <div className="dr-results-modal">
+                <h2 className="dr-results-header" style={{ marginBottom: '1.5rem', borderBottom: 'none' }}>
+                  Who will win?
+                </h2>
+                <p style={{ textAlign: 'center', marginBottom: '2.5rem', color: '#a1a1aa' }}>
+                  You must lock in your prediction based on the parameters you set before the simulation can begin.
+                </p>
+                <div className="dr-predict-options" style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                  {Object.entries(PREDICTIONS).map(([id, p]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className="dr-predict-btn"
+                      onClick={() => handlePredictAndLaunch(id)}
+                      style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}
+                    >
+                      <span style={{ fontSize: '2.5rem' }}>{p.symbol}</span>
+                      <span style={{ fontWeight: '500' }}>{p.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="dr-results-actions" style={{ marginTop: '2.5rem' }}>
+                  <button
+                    type="button"
+                    className="dr-btn dr-btn-reset dr-btn-results-reset"
+                    onClick={handleReset}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -331,7 +299,7 @@ export default function DragRaceLab({ onExit }) {
                   </div>
                 </div>
 
-                {isMystery && prediction !== null && (
+                {prediction !== null && (
                   <div
                     className={`dr-mystery-reveal ${
                       predictionCorrect ? 'correct' : 'wrong'
@@ -345,19 +313,11 @@ export default function DragRaceLab({ onExit }) {
                     </div>
                     <p className="dr-mystery-explain">
                       The winner is whichever car has the larger <code>a = F / m</code>.
-                      The Truck&apos;s engine is bigger, but its mass is bigger too. When the
+                      The Truck's engine is bigger, but its mass is bigger too. When the
                       ratio matches, accelerations match — and the race is a tie regardless of
                       how big the numbers get.
                     </p>
                   </div>
-                )}
-
-                {!isMystery && raceResult.winner === 'tie' && (
-                  <p className="dr-explain">
-                    Both cars have the same acceleration <code>a = F / m</code>, so they cross
-                    the line at the same instant. The truck has more force AND more mass —
-                    they cancel.
-                  </p>
                 )}
 
                 <div className="dr-results-actions">
@@ -379,13 +339,11 @@ export default function DragRaceLab({ onExit }) {
 }
 
 function CarControls({ label, symbol, color, force, mass, onForce, onMass, disabled }) {
-  const a = mass > 0 ? force / mass : 0;
   return (
     <div className={`dr-car-block dr-car-block-${color}`}>
       <div className="dr-car-block-header">
         <span className="dr-car-block-symbol">{symbol}</span>
         <span className="dr-car-block-name">{label}</span>
-        <span className="dr-car-block-accel">a = {a.toFixed(2)} m/s²</span>
       </div>
 
       <div className="dr-control-group">
