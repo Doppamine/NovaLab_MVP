@@ -11,6 +11,8 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  /* Lock LTR so CSS Grid never flips controls/stage on RTL browser locales. */
+  direction: ltr;
 }
 
 .stunt-lab-grid {

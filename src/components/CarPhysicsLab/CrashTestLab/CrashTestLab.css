@@ -9,6 +9,11 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  /* Lock LTR — the controls/stage grid must keep document order even on
+     RTL browser locales (Arabic, Hebrew, Persian, ...). Without this, CSS
+     Grid honours `direction: rtl` and flips the columns, putting controls
+     on the right and covering the canvas. */
+  direction: ltr;
 }
 
 
