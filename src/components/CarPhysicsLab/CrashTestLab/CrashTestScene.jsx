@@ -71,8 +71,8 @@ function CrashCar({ speed, bumperDistance, isSafe, simulationState, onFinish, si
       const distanceThisFrame = speed * delta;
       const newZ = carZ + distanceThisFrame;
       
-      // Check collision (Wall is at Z=30, car front is roughly +2.5 from center)
-      const collisionZ = 29.5 - bumperDistance; // stop earlier for larger bumpers
+      // Check collision (Wall front is at Z=29, car front is roughly +2.5 from center)
+      const collisionZ = 26.5 - bumperDistance; // stop earlier for larger bumpers
       
       if (newZ >= collisionZ) {
         setCarZ(collisionZ);
@@ -103,11 +103,11 @@ function CrashCar({ speed, bumperDistance, isSafe, simulationState, onFinish, si
       </group>
 
       {/* The Payload (Strapped to the roof) */}
-      {/* Positioned on roof of car_full, roughly y=2.2, z=0 */}
+      {/* Positioned on roof of car_full */}
       <EggPayload 
         isSafe={isSafe} 
         simulationState={simulationState} 
-        position={[0, 2.2, 0.5]} 
+        position={[0, 1.45, 0.2]} 
       />
 
       <SplatterParticles 

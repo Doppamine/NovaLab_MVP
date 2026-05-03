@@ -39,13 +39,6 @@ export default function CarPhysicsLab({ onExit }) {
         >
           <span>Drag Race (Newton&apos;s 2nd Law)</span>
         </button>
-        <button
-          type="button"
-          className={`lab-tab ${activeTab === 'legacy' ? 'active' : ''}`}
-          onClick={() => setActiveTab('legacy')}
-        >
-          <span>Legacy Modules</span>
-        </button>
       </nav>
 
       <div className="car-physics-content" style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
