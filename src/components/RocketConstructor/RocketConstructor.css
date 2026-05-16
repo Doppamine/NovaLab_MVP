@@ -3,24 +3,24 @@
     width: 100vw;
     height: calc(100vh - 60px);
     /* Minus header */
-    background: #0b0d17;
+    background: var(--canvas-bg);
     /* Space dark blue */
     overflow: hidden;
 }
 
 .rocket-parts-panel {
     width: 300px;
-    background: #15192b;
-    border-right: 1px solid #2a3b55;
+    background: var(--surface-panel-strong);
+    border-right: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     padding: 1rem;
     z-index: 10;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-panel);
 }
 
-.panel-title {
-    color: #00f2ff;
+.rocket-parts-panel .panel-title {
+    color: var(--color-accent-cyan);
     margin-bottom: 1.5rem;
     font-size: 1.2rem;
     text-transform: uppercase;
@@ -41,17 +41,17 @@
     align-items: center;
     gap: 1rem;
     padding: 0.8rem;
-    background: #1e2538;
-    border: 1px solid #2a3b55;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     cursor: grab;
     transition: all 0.2s;
 }
 
 .rocket-part-item:hover {
-    background: #2a3b55;
-    border-color: #00f2ff;
-    transform: translateX(5px);
+    background: var(--surface-card-hover);
+    border-color: var(--color-accent-cyan);
+    transform: translateX(3px);
 }
 
 .rocket-part-item.complete {
@@ -59,22 +59,22 @@
     opacity: 0.7;
 }
 
-.part-icon {
+.rocket-parts-panel .part-icon {
     font-size: 2rem;
 }
 
-.part-info {
+.rocket-parts-panel .part-info {
     flex: 1;
 }
 
-.part-name {
-    color: #fff;
+.rocket-parts-panel .part-name {
+    color: var(--color-text-primary);
     font-weight: bold;
     font-size: 0.9rem;
 }
 
-.part-count {
-    color: #888;
+.rocket-parts-panel .part-count {
+    color: var(--color-text-muted);
     font-size: 0.8rem;
     display: flex;
     justify-content: space-between;
@@ -89,7 +89,7 @@
 .rocket-workspace {
     flex: 1;
     position: relative;
-    background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+    background: radial-gradient(circle at center, var(--canvas-bg-elevated) 0%, var(--canvas-bg) 100%);
 }
 
 .launch-controls {
@@ -101,7 +101,7 @@
     gap: 1rem;
 }
 
-.btn-launch {
+.rocket-constructor .btn-launch {
     padding: 1rem 3rem;
     font-size: 1.5rem;
     background: linear-gradient(45deg, #ff006e, #ff9900);
@@ -116,12 +116,12 @@
     transition: all 0.3s;
 }
 
-.btn-launch:hover {
+.rocket-constructor .btn-launch:hover {
     transform: scale(1.05);
     box-shadow: 0 0 40px rgba(255, 0, 110, 0.8);
 }
 
-.btn-launch.disabled {
+.rocket-constructor .btn-launch.disabled {
     background: linear-gradient(45deg, #444, #666);
     cursor: not-allowed;
     box-shadow: none;
@@ -132,16 +132,16 @@
 .assembly-hint {
     margin-top: auto;
     padding: 1rem;
-    background: rgba(0, 242, 255, 0.1);
-    border: 1px solid rgba(0, 242, 255, 0.3);
+    background: color-mix(in srgb, var(--color-accent-cyan) 10%, var(--surface-panel));
+    border: 1px solid var(--border-accent);
     border-radius: 8px;
-    color: #aaa;
+    color: var(--color-text-secondary);
     font-size: 0.8rem;
 }
 
 .assembly-hint p {
     margin: 0 0 0.5rem 0;
-    color: #fff;
+    color: var(--color-text-primary);
 }
 
 .assembly-hint ol {
@@ -195,7 +195,7 @@
 }
 
 /* Delete button */
-.btn-delete {
+.rocket-constructor .btn-delete {
     position: absolute;
     bottom: 2rem;
     right: 2rem;
@@ -212,24 +212,24 @@
     z-index: 100;
 }
 
-.btn-delete:hover {
+.rocket-constructor .btn-delete:hover {
     transform: scale(1.05);
     box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
 }
 
 /* Scene hint at bottom */
-.scene-hint {
+.rocket-constructor .scene-hint {
     position: absolute;
     bottom: 6rem;
     left: 50%;
     transform: translateX(-50%);
-    color: #888;
+    color: var(--color-text-muted);
     font-size: 0.75rem;
     text-align: center;
     pointer-events: none;
 }
 
-.scene-hint p {
+.rocket-constructor .scene-hint p {
     margin: 0;
 }
 
@@ -251,7 +251,7 @@
     transform: translateX(-50%);
     z-index: 50;
     width: 300px;
-    background: rgba(27, 39, 53, 0.9);
+    background: var(--surface-panel);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 153, 0, 0.3);
     border-radius: 12px;
@@ -266,7 +266,7 @@
 
 .rocket-progress .progress-label {
     font-size: 0.8rem;
-    color: #fff;
+    color: var(--color-text-primary);
     font-weight: 600;
 }
 
@@ -277,16 +277,16 @@
     font-variant-numeric: tabular-nums;
 }
 
-.progress-info {
+.rocket-constructor .progress-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
 }
 
-.progress-track {
+.rocket-constructor .progress-track {
     height: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--surface-inset);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -300,7 +300,7 @@
 }
 
 /* ========== Rocket Onboarding ========== */
-.onboarding-overlay {
+.rocket-constructor .onboarding-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -314,7 +314,7 @@
 }
 
 .rocket-onboarding {
-    background: rgba(27, 39, 53, 0.95);
+    background: var(--surface-panel-strong);
     backdrop-filter: blur(20px);
     border: 2px solid rgba(255, 153, 0, 0.4);
     border-radius: 16px;
@@ -330,7 +330,7 @@
     50% { box-shadow: 0 0 60px rgba(255, 153, 0, 0.4), 0 20px 40px rgba(0, 0, 0, 0.4); }
 }
 
-.onboarding-icon {
+.rocket-constructor .onboarding-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
     animation: bounce 2s ease infinite;
@@ -341,21 +341,21 @@
     50% { transform: translateY(-8px); }
 }
 
-.onboarding-text {
+.rocket-constructor .onboarding-text {
     font-size: 1.1rem;
-    color: #fff;
+    color: var(--color-text-primary);
     font-weight: 600;
     margin: 0 0 1rem 0;
     line-height: 1.5;
 }
 
-.onboarding-dots {
+.rocket-constructor .onboarding-dots {
     display: flex;
     justify-content: center;
     gap: 8px;
 }
 
-.dot {
+.rocket-constructor .dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -363,14 +363,14 @@
     transition: all 0.3s ease;
 }
 
-.dot.active {
+.rocket-constructor .dot.active {
     background: #ff9900;
     box-shadow: 0 0 8px #ff9900;
     transform: scale(1.3);
 }
 
 /* ========== Rocket Action Buttons ========== */
-.action-buttons {
+.rocket-constructor .action-buttons {
     position: absolute;
     bottom: 2rem;
     right: 2rem;
@@ -379,16 +379,16 @@
     z-index: 50;
 }
 
-.action-buttons .btn-delete {
+.rocket-constructor .action-buttons .btn-delete {
     position: static;
 }
 
-.btn-reset {
+.rocket-constructor .btn-reset {
     padding: 0.8rem 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--control-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    color: #fff;
+    color: var(--color-text-primary);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -396,13 +396,13 @@
     backdrop-filter: blur(10px);
 }
 
-.btn-reset:hover {
-    background: rgba(255, 255, 255, 0.2);
+.rocket-constructor .btn-reset:hover {
+    background: var(--control-bg-hover);
     border-color: #ff9900;
     box-shadow: 0 0 15px rgba(255, 153, 0, 0.3);
     transform: scale(1.05);
 }
 
-.btn-reset:active {
+.rocket-constructor .btn-reset:active {
     transform: scale(0.98);
 }

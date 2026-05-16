@@ -1,8 +1,11 @@
 import React from 'react';
 import { ASSEMBLY_ZONES } from '../../utils/assemblyZones';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './CarAssemblyZones.css';
 
 function CarAssemblyZones({ partsOnField, showHints = true }) {
+    const { t } = useLocale();
+
     // Track which zones are occupied
     const occupiedZones = partsOnField.reduce((acc, part) => {
         if (part.type === 'wheel') {
@@ -45,7 +48,7 @@ function CarAssemblyZones({ partsOnField, showHints = true }) {
                     >
                         {showHints && !isOccupied && (
                             <div className="zone-label" style={{ color: zone.color }}>
-                                {zone.label}
+                                {t(zone.label)}
                             </div>
                         )}
                         {isOccupied && (
@@ -58,13 +61,13 @@ function CarAssemblyZones({ partsOnField, showHints = true }) {
             {/* Assembly hint panel */}
             {showHints && (
                 <div className="assembly-hint-panel">
-                    <h4>📋 Схема сборки</h4>
+                    <h4>📋 {t('Схема сборки')}</h4>
                     <div className="hint-list">
-                        <div className="hint-item">1. Шасси (центр)</div>
-                        <div className="hint-item">2. 4 Колеса (по углам)</div>
-                        <div className="hint-item">3. Двигатель (сверху)</div>
-                        <div className="hint-item">4. Аккумулятор + Пульт</div>
-                        <div className="hint-item">5. Кузов (финиш)</div>
+                        <div className="hint-item">{t('1. Шасси (центр)')}</div>
+                        <div className="hint-item">{t('2. 4 Колеса (по углам)')}</div>
+                        <div className="hint-item">{t('3. Двигатель (сверху)')}</div>
+                        <div className="hint-item">{t('4. Аккумулятор + Пульт')}</div>
+                        <div className="hint-item">{t('5. Кузов (финиш)')}</div>
                     </div>
                     <div className="hint-progress">
                         {occupiedZones.length} / {Object.keys(ASSEMBLY_ZONES).length}

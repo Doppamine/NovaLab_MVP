@@ -1,0 +1,450 @@
+/* ============================================
+   Crash Test Facility - Styles
+   Uses NovaLab global design tokens from global.css
+   ============================================ */
+
+.crash-test-lab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /* Lock LTR — the controls/stage grid must keep document order even on
+     RTL browser locales (Arabic, Hebrew, Persian, ...). Without this, CSS
+     Grid honours `direction: rtl` and flips the columns, putting controls
+     on the right and covering the canvas. */
+  direction: ltr;
+}
+
+
+
+/* ── Buttons ── */
+.crash-btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.crash-btn:hover {
+  transform: translateY(-1px);
+}
+
+.crash-btn:active {
+  transform: translateY(0);
+}
+
+.crash-btn-launch {
+  background: var(--gradient-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--glow-cyan);
+}
+
+.crash-btn-launch:hover {
+  box-shadow: 0 0 30px rgba(0, 242, 255, 0.7);
+}
+
+.crash-btn-reset {
+  background: var(--control-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.crash-btn-reset:hover {
+  border-color: var(--border-accent);
+  background: var(--control-bg-hover);
+}
+
+.crash-btn-exit {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.crash-btn-exit:hover {
+  color: var(--color-text-primary);
+  border-color: var(--border-accent);
+}
+
+/* ── Main Grid ── */
+.crash-lab-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-areas: "controls stage";
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Side Panels ── */
+.crash-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  background: var(--surface-panel);
+  backdrop-filter: blur(10px);
+}
+
+.controls-panel {
+  grid-area: controls;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.crash-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crash-panel-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+.crash-panel-header p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ── Controls ── */
+.crash-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.crash-control-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.crash-control-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-cyan);
+}
+
+.crash-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--surface-inset);
+  outline: none;
+  transition: background var(--transition-fast);
+}
+
+.crash-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.crash-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.crash-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.crash-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+/* Bumper selector */
+.crash-bumper-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crash-bumper-btn {
+  padding: 10px 12px;
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.crash-bumper-btn:hover:not(:disabled) {
+  border-color: var(--border-accent);
+  color: var(--color-text-primary);
+  background: var(--control-bg-hover);
+}
+
+.crash-bumper-btn.active {
+  background: color-mix(in srgb, var(--color-accent-cyan) 16%, transparent);
+  color: var(--color-text-primary);
+  border-color: var(--color-accent-cyan);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent-cyan) 20%, transparent);
+}
+
+.crash-bumper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── 3D Stage ── */
+.crash-stage {
+  grid-area: stage;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas-bg);
+  min-height: 0;
+}
+
+/* ── Telemetry Stats ── */
+.crash-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-md);
+  background: var(--surface-inset);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent-cyan);
+  transition: border-color var(--transition-fast);
+}
+
+.crash-stat .crash-stat-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crash-stat .crash-stat-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.crash-stat .crash-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  margin-top: 2px;
+}
+
+.crash-stat-safe {
+  border-left-color: var(--color-accent-green);
+}
+
+.crash-stat-safe .crash-stat-value {
+  color: var(--color-accent-green);
+}
+
+.crash-stat-danger {
+  border-left-color: var(--color-accent-pink);
+  animation: dangerPulse 1.5s ease-in-out infinite;
+}
+
+.crash-stat-danger .crash-stat-value {
+  color: var(--color-accent-pink);
+}
+
+
+
+/* ── Status Banner ── */
+.crash-status-banner {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  text-align: center;
+  font-size: 0.9rem;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.crash-status-banner.passed {
+  background: color-mix(in srgb, var(--color-accent-green) 14%, transparent);
+  color: var(--color-accent-green);
+  border: 1px solid color-mix(in srgb, var(--color-accent-green) 40%, transparent);
+  box-shadow: 0 0 20px rgba(0, 255, 159, 0.15);
+}
+
+.crash-status-banner.failed {
+  background: color-mix(in srgb, var(--color-accent-pink) 14%, transparent);
+  color: var(--color-accent-pink);
+  border: 1px solid color-mix(in srgb, var(--color-accent-pink) 40%, transparent);
+  box-shadow: 0 0 20px rgba(255, 0, 110, 0.15);
+}
+
+/* ── Separator ── */
+.crash-separator {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--spacing-xs) 0;
+}
+
+/* ── Floating Stage Actions ── */
+.crash-stage-actions {
+  position: absolute;
+  bottom: var(--spacing-xl, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-md);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.crash-stage-actions > * {
+  pointer-events: auto;
+}
+
+.crash-btn-floating {
+  min-height: 52px;
+  padding: 0 28px;
+  font-size: 1rem;
+  border-radius: var(--radius-full, 999px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), var(--glow-cyan);
+  backdrop-filter: blur(8px);
+}
+
+.crash-btn-floating.crash-btn-reset {
+  background: rgba(20, 24, 36, 0.7);
+}
+
+/* ── Results Overlay ── */
+.crash-results-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 16, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+  animation: fadeIn 0.3s ease-out;
+  padding: var(--spacing-lg);
+}
+
+.crash-results-modal {
+  width: min(640px, 100%);
+  max-height: 90%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl, 28px);
+  background: var(--surface-panel);
+  border-radius: var(--radius-lg, 16px);
+  border: 2px solid transparent;
+  animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.crash-results-modal.passed {
+  border-color: var(--color-accent-green);
+  box-shadow:
+    0 0 40px rgba(0, 255, 159, 0.45),
+    0 0 80px rgba(0, 255, 159, 0.25),
+    inset 0 0 24px rgba(0, 255, 159, 0.08);
+}
+
+.crash-results-modal.failed {
+  border-color: var(--color-accent-pink);
+  box-shadow:
+    0 0 40px rgba(255, 0, 110, 0.45),
+    0 0 80px rgba(255, 0, 110, 0.25),
+    inset 0 0 24px rgba(255, 0, 110, 0.08);
+}
+
+.crash-results-header {
+  margin: 0;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.crash-results-modal.passed .crash-results-header {
+  color: var(--color-accent-green);
+}
+
+.crash-results-modal.failed .crash-results-header {
+  color: var(--color-accent-pink);
+}
+
+.crash-results-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.crash-results-stats .crash-stat {
+  align-items: center;
+  text-align: center;
+  border-left: none;
+  border-top: 3px solid var(--color-accent-cyan);
+}
+
+.crash-results-stats .crash-stat-safe {
+  border-top-color: var(--color-accent-green);
+}
+
+.crash-results-stats .crash-stat-danger {
+  border-top-color: var(--color-accent-pink);
+}
+
+.crash-results-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.crash-btn-results-reset {
+  min-height: 52px;
+  padding: 0 36px;
+  font-size: 1rem;
+  border-radius: var(--radius-full, 999px);
+}
+
+/* ── Animations ── */
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: inset 0 0 12px rgba(255, 0, 110, 0.15); }
+}

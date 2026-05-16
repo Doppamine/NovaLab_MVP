@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Scene3D from './Scene3D';
 import DraggablePart3D from './DraggablePart3D';
 import PartsPanel3D from './PartsPanel3D';
+
 import { PART_SOCKETS_DATA } from './partSocketsData';
 import { canConnect, calculateDistance3D, SNAP_RADIUS, isSocketOccupied } from './connectionRules3D';
 import SoundManager from '../../utils/SoundManager';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './Car3DConstructor.css';
 
 function Car3DConstructor({ onCarLaunch }) {
+    const { t } = useLocale();
     const [partsOnField, setPartsOnField] = useState([]);
     const [connections, setConnections] = useState([]);
     const [highlightedSockets, setHighlightedSockets] = useState([]);
@@ -15,15 +18,11 @@ function Car3DConstructor({ onCarLaunch }) {
     const [showOnboarding, setShowOnboarding] = useState(true);
     const [onboardingStep, setOnboardingStep] = useState(0);
 
+
     const partCounts = partsOnField.reduce((acc, part) => {
         acc[part.type] = (acc[part.type] || 0) + 1;
         return acc;
     }, {});
-
-    // Progress calculation
-    const connectedPartsCount = partsOnField.filter(p => p.connectedTo.length > 0).length;
-    const totalRequired = 8; // chassis + 4 wheels + engine + battery + body
-    const progressPercent = Math.min(100, Math.round((connectedPartsCount / totalRequired) * 100));
 
     // Dismiss onboarding after first part is placed
     useEffect(() => {
@@ -252,8 +251,6 @@ function Car3DConstructor({ onCarLaunch }) {
         const hasRequiredParts =
             partCounts.chassis >= 1 &&
             partCounts.wheel >= 4 &&
-            partCounts.engine >= 1 &&
-            partCounts.carBattery >= 1 &&
             partCounts.body >= 1;
 
         if (!hasRequiredParts) return false;
@@ -265,124 +262,116 @@ function Car3DConstructor({ onCarLaunch }) {
             p.type === 'wheel' && p.connectedTo.includes(chassisPart.id)
         );
 
-        const engineConnected = partsOnField.some(p =>
-            p.type === 'engine' && p.connectedTo.includes(chassisPart.id)
-        );
-
         const bodyConnected = partsOnField.some(p =>
             p.type === 'body' && p.connectedTo.includes(chassisPart.id)
         );
 
-        const enginePart = partsOnField.find(p => p.type === 'engine');
-        const batteryConnected = enginePart && partsOnField.some(p =>
-            p.type === 'carBattery' && p.connectedTo.includes(enginePart.id)
+        return connectedWheels.length === 4 && bodyConnected;
+    };
+
+    // Determines which optional parts are connected to the chassis
+    // This info is passed to the simulation to control behavior
+    const getAssemblyInfo = () => {
+        const chassisPart = partsOnField.find(p => p.type === 'chassis');
+        if (!chassisPart) return { hasEngine: false, hasBattery: false };
+
+        const hasEngine = partsOnField.some(p =>
+            p.type === 'engine' && p.connectedTo.includes(chassisPart.id)
         );
 
-        return connectedWheels.length === 4 &&
-            engineConnected &&
-            bodyConnected &&
-            batteryConnected;
+        const hasBattery = partsOnField.some(p =>
+            p.type === 'carBattery' && p.connectedTo.includes(chassisPart.id)
+        );
+
+        return { hasEngine, hasBattery };
     };
 
     const onboardingTips = [
-        { icon: '👆', text: 'Нажми на деталь слева, чтобы добавить её' },
-        { icon: '✋', text: 'Перетащи деталь к светящейся точке' },
-        { icon: '🔗', text: 'Детали соединятся автоматически!' }
+        { icon: '👆', text: t('Нажми на деталь слева, чтобы добавить её') },
+        { icon: '✋', text: t('Перетащи деталь к светящейся точке') },
+        { icon: '🔗', text: t('Детали соединятся автоматически!') }
     ];
 
     return (
         <div className="car-3d-constructor">
-            <PartsPanel3D
-                onPartAdd={handlePartAdd}
-                partCounts={partCounts}
-            />
+                    <PartsPanel3D
+                        onPartAdd={handlePartAdd}
+                        partCounts={partCounts}
+                    />
 
-            <div className="scene-container">
-                {/* Progress Bar */}
-                <div className="progress-bar-container">
-                    <div className="progress-info">
-                        <span className="progress-label">🚗 Прогресс сборки</span>
-                        <span className="progress-count">{connectedPartsCount}/{totalRequired}</span>
-                    </div>
-                    <div className="progress-track">
-                        <div
-                            className="progress-fill"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </div>
-                </div>
+                    <div className="scene-container">
 
-                {/* Onboarding Overlay */}
-                {showOnboarding && partsOnField.length === 0 && (
-                    <div className="onboarding-overlay">
-                        <div className="onboarding-card">
-                            <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
-                            <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
-                            <div className="onboarding-dots">
-                                {onboardingTips.map((_, i) => (
-                                    <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
-                                ))}
+                        {/* Onboarding Overlay */}
+                        {showOnboarding && partsOnField.length === 0 && (
+                            <div className="onboarding-overlay">
+                                <div className="onboarding-card">
+                                    <div className="onboarding-icon">{onboardingTips[onboardingStep].icon}</div>
+                                    <p className="onboarding-text">{onboardingTips[onboardingStep].text}</p>
+                                    <div className="onboarding-dots">
+                                        {onboardingTips.map((_, i) => (
+                                            <span key={i} className={`dot ${i === onboardingStep ? 'active' : ''}`} />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
+                        )}
+
+                        <Scene3D>
+                            {partsOnField.map(part => (
+                                <DraggablePart3D
+                                    key={part.id}
+                                    partType={part.type}
+                                    initialPosition={part.position}
+                                    connectedParts={part.connectedTo}
+                                    highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
+                                    isSelected={selectedPart === part.id}
+                                    onSelect={() => setSelectedPart(part.id)}
+                                    onPositionChange={(pos) => handlePartDrag(part.id, pos)}
+                                    onDrop={(pos) => handlePartDrop(part.id, pos)}
+                                />
+                            ))}
+                        </Scene3D>
+
+                        <div className="scene-hint">
+                            <p>{t('ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб')}</p>
                         </div>
-                    </div>
-                )}
 
-                <Scene3D>
-                    {partsOnField.map(part => (
-                        <DraggablePart3D
-                            key={part.id}
-                            partType={part.type}
-                            initialPosition={part.position}
-                            connectedParts={part.connectedTo}
-                            highlightedSockets={highlightedSockets.filter(h => h.partId === part.id)}
-                            isSelected={selectedPart === part.id}
-                            onSelect={() => setSelectedPart(part.id)}
-                            onPositionChange={(pos) => handlePartDrag(part.id, pos)}
-                            onDrop={(pos) => handlePartDrop(part.id, pos)}
-                        />
-                    ))}
-                </Scene3D>
-
-                <div className="scene-hint">
-                    <p>ЛКМ: Перетащить | ПКМ: Вращать камеру | Колёсико: Масштаб</p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="action-buttons">
-                    {selectedPart && (
-                        <button
-                            className="btn-delete"
-                            onClick={() => handlePartDelete(selectedPart)}
-                        >
-                            🗑️ Удалить деталь
-                        </button>
-                    )}
-                    {partsOnField.length > 0 && (
-                        <button
-                            className="btn-reset"
-                            onClick={handleReset}
-                        >
-                            🔄 Начать заново
-                        </button>
-                    )}
-                </div>
-
-                {isCarComplete() && (
-                    <div className="success-notification">
-                        <div className="success-card">
-                            <h2>🎉 Поздравляем!</h2>
-                            <p>Машина собрана!</p>
-                            <button
-                                className="btn-launch"
-                                onClick={onCarLaunch}
-                            >
-                                🚀 ЗАПУСТИТЬ СИМУЛЯЦИЮ
-                            </button>
+                        {/* Action Buttons */}
+                        <div className="action-buttons">
+                            {selectedPart && (
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => handlePartDelete(selectedPart)}
+                                >
+                                    🗑️ {t('Удалить деталь')}
+                                </button>
+                            )}
+                            {partsOnField.length > 0 && (
+                                <button
+                                    className="btn-reset"
+                                    onClick={handleReset}
+                                >
+                                    🔄 {t('Начать заново')}
+                                </button>
+                            )}
                         </div>
+
+                        {isCarComplete() && (
+                            <div className="success-notification">
+                                <div className="success-card">
+                                    <h2>🎉 {t('Поздравляем!')}</h2>
+                                    <p>{t('Машина собрана!')}</p>
+                                    <button
+                                        className="btn-launch"
+                                        onClick={() => onCarLaunch(getAssemblyInfo())}
+                                    >
+                                        🚀 {t('ЗАПУСТИТЬ СИМУЛЯЦИЮ')}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </div>
+                </div>
     );
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './Part.css';
 
 function Part({
@@ -12,6 +13,7 @@ function Part({
     isSpinning,
     showSlots = true
 }) {
+    const { t } = useLocale();
     const partRef = React.useRef(null);
 
     const getPartClasses = () => {
@@ -51,14 +53,14 @@ function Part({
             onMouseDown={(e) => onDragStart && onDragStart(e, part)}
             onContextMenu={(e) => onRightClick && onRightClick(e, part.id)}
             draggable={false}
-            title="ПКМ для удаления"
+            title={t('ПКМ для удаления')}
         >
             {part.type === 'propeller' ? (
                 // Propeller: only image, no background block
                 part.data.icon.startsWith('/') && (
                     <img
                         src={part.data.icon}
-                        alt="propeller"
+                        alt={t('Пропеллер')}
                         className="propeller-pure-image"
                     />
                 )
@@ -67,13 +69,13 @@ function Part({
                 <div className="part-visual">
                     <div className="part-icon-large">
                         {part.data.icon.startsWith('/') ? (
-                            <img src={part.data.icon} alt={part.data.name} />
+                            <img src={part.data.icon} alt={t(part.data.name)} />
                         ) : (
                             part.data.icon
                         )}
                     </div>
                     <div className="part-label">
-                        {part.data.name}
+                        {t(part.data.name)}
                     </div>
                 </div>
             )}

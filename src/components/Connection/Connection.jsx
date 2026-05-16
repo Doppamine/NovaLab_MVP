@@ -1,7 +1,10 @@
 import React from 'react';
+import { useLocale } from '../../i18n/LocalizationContext';
 import './Connection.css';
 
 function Connection({ connection, fromPart, toPart, onClick, isHovered, onMouseEnter, onMouseLeave }) {
+    const { t } = useLocale();
+
     if (!fromPart || !toPart) return null;
 
     const fromSlot = fromPart.data.slots.find(s => s.id === connection.fromSlot);
@@ -56,7 +59,7 @@ function Connection({ connection, fromPart, toPart, onClick, isHovered, onMouseE
             onClick={onClick}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
-            title="Кликните для удаления соединения"
+            title={t('Кликните для удаления соединения')}
         >
             <path
                 d={pathData}

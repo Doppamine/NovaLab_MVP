@@ -1,8 +1,17 @@
 import React from 'react';
+import { useGLTF } from '@react-three/drei';
 import SocketPoint from './SocketPoint';
 
-// 1. ШАССИ
+// Model paths – served from /public/models/
+const CHASSIS_MODEL = '/models/car_chassis.glb';
+const WHEEL_MODEL = '/models/car_wheel.glb';
+const ENGINE_MODEL = '/models/car_engine.glb';
+const BODY_MODEL = '/models/car_body.glb';
+
+// 1. ШАССИ – replaced with car_chassis.glb
 export function ChassisModel({ connectedParts = [], highlightedSockets = [] }) {
+    const { scene } = useGLTF(CHASSIS_MODEL);
+
     const isSocketHighlighted = (socketPos) => {
         return highlightedSockets.some(h =>
             Math.abs(h.position[0] - socketPos[0]) < 0.1 &&
@@ -13,131 +22,82 @@ export function ChassisModel({ connectedParts = [], highlightedSockets = [] }) {
 
     return (
         <group>
-            <mesh castShadow receiveShadow>
-                <boxGeometry args={[4, 0.3, 6]} />
-                <meshStandardMaterial color="#888" metalness={0.7} roughness={0.3} />
-            </mesh>
+            {/* GLB model replaces the primitive boxGeometry */}
+            <primitive object={scene.clone()} castShadow receiveShadow />
 
-            <SocketPoint position={[-1.8, -0.15, 2.8]} type="wheel" highlight={isSocketHighlighted([-1.8, -0.15, 2.8])} />
-            <SocketPoint position={[1.8, -0.15, 2.8]} type="wheel" highlight={isSocketHighlighted([1.8, -0.15, 2.8])} />
-            <SocketPoint position={[-1.8, -0.15, -2.8]} type="wheel" highlight={isSocketHighlighted([-1.8, -0.15, -2.8])} />
-            <SocketPoint position={[1.8, -0.15, -2.8]} type="wheel" highlight={isSocketHighlighted([1.8, -0.15, -2.8])} />
+            <SocketPoint position={[-1.1, -0.15, 1.6]} type="wheel" highlight={isSocketHighlighted([-1.1, -0.15, 1.6])} />
+            <SocketPoint position={[1.9, -0.15, 1.6]} type="wheel" highlight={isSocketHighlighted([1.9, -0.15, 1.6])} />
+            <SocketPoint position={[-1.1, -0.15, -2.1]} type="wheel" highlight={isSocketHighlighted([-1.1, -0.15, -2.1])} />
+            <SocketPoint position={[1.9, -0.15, -2.1]} type="wheel" highlight={isSocketHighlighted([1.9, -0.15, -2.1])} />
             <SocketPoint position={[0, 0.3, 1.5]} type="engine" highlight={isSocketHighlighted([0, 0.3, 1.5])} />
-            <SocketPoint position={[0, 0.8, 0]} type="body" highlight={isSocketHighlighted([0, 0.8, 0])} />
+            <SocketPoint position={[0.5, 0.5, -0.5]} type="body" highlight={isSocketHighlighted([0.5, 0.5, -0.5])} />
+            <SocketPoint position={[0.9, 0.3, 1.5]} type="carBattery" highlight={isSocketHighlighted([0.9, 0.3, 1.5])} />
         </group>
     );
 }
 
-// 2. КОЛЕСО
+// 2. КОЛЕСО – replaced with car_wheel.glb
 export function WheelModel() {
+    const { scene } = useGLTF(WHEEL_MODEL);
+
     return (
         <group>
-            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.8, 0.8, 0.5, 32]} />
-                <meshStandardMaterial color="#222" metalness={0.3} roughness={0.8} />
-            </mesh>
-            <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.5, 0.5, 0.52, 32]} />
-                <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} />
-            </mesh>
+            {/* GLB model replaces the primitive cylinderGeometry.
+                Rotation applied to orient the wheel correctly (standing upright). */}
+            <primitive object={scene.clone()} castShadow />
             <SocketPoint position={[0, 0, 0]} type="chassis" />
         </group>
     );
 }
 
-// 3. ДВИГАТЕЛЬ
+// 3. ДВИГАТЕЛЬ – replaced with car_engine.glb
 export function EngineModel() {
+    const { scene } = useGLTF(ENGINE_MODEL);
+
     return (
         <group>
-            <mesh castShadow>
-                <boxGeometry args={[1.5, 1, 1.5]} />
-                <meshStandardMaterial color="#ff006e" metalness={0.6} roughness={0.2} />
-            </mesh>
-            <mesh position={[0.6, 0.3, 0]} castShadow>
-                <cylinderGeometry args={[0.2, 0.2, 0.8, 16]} />
-                <meshStandardMaterial color="#9d4edd" metalness={0.7} roughness={0.3} />
-            </mesh>
-            <mesh position={[-0.6, 0.3, 0]} castShadow>
-                <cylinderGeometry args={[0.2, 0.2, 0.8, 16]} />
-                <meshStandardMaterial color="#9d4edd" metalness={0.7} roughness={0.3} />
-            </mesh>
+            {/* GLB model replaces the primitive box + cylinder geometry */}
+            <primitive object={scene.clone()} castShadow />
             <SocketPoint position={[0, -0.5, 0]} type="chassis" />
-            <SocketPoint position={[1.0, 0, 0]} type="carBattery" />
         </group>
     );
 }
 
-// 4. АККУМУЛЯТОР
+// 4. АККУМУЛЯТОР – kept as primitives (no .glb provided)
 export function BatteryModel() {
     return (
         <group>
             <mesh castShadow>
-                <boxGeometry args={[1, 0.8, 1]} />
+                <boxGeometry args={[0.5, 0.4, 0.5]} />
                 <meshStandardMaterial color="#00f2ff" metalness={0.5} roughness={0.3} />
             </mesh>
-            <mesh position={[0.3, 0.5, 0.3]} castShadow>
-                <cylinderGeometry args={[0.1, 0.1, 0.2, 16]} />
+            <mesh position={[0.15, 0.25, 0.15]} castShadow>
+                <cylinderGeometry args={[0.05, 0.05, 0.1, 8]} />
                 <meshStandardMaterial color="#ffaa00" metalness={0.9} roughness={0.1} />
             </mesh>
-            <mesh position={[-0.3, 0.5, 0.3]} castShadow>
-                <cylinderGeometry args={[0.1, 0.1, 0.2, 16]} />
+            <mesh position={[-0.15, 0.25, 0.15]} castShadow>
+                <cylinderGeometry args={[0.05, 0.05, 0.1, 8]} />
                 <meshStandardMaterial color="#ffaa00" metalness={0.9} roughness={0.1} />
             </mesh>
-            <SocketPoint position={[-0.5, 0, 0]} type="engine" />
+            <SocketPoint position={[-0.5, 0, 0]} type="chassis" />
         </group>
     );
 }
 
-// 5. КУЗОВ
+// 5. КУЗОВ – replaced with car_body.glb
 export function BodyModel() {
+    const { scene } = useGLTF(BODY_MODEL);
+
     return (
         <group>
-            <mesh castShadow>
-                <boxGeometry args={[3.5, 1.5, 5.5]} />
-                <meshStandardMaterial
-                    color="#9d4edd"
-                    transparent
-                    opacity={0.6}
-                    metalness={0.4}
-                    roughness={0.3}
-                />
-            </mesh>
-            <mesh position={[0, 0.6, -1]} castShadow>
-                <boxGeometry args={[3, 0.8, 2.5]} />
-                <meshStandardMaterial
-                    color="#7b2cbf"
-                    transparent
-                    opacity={0.7}
-                    metalness={0.4}
-                    roughness={0.3}
-                />
-            </mesh>
-            <mesh position={[1.6, 0.6, -1]} castShadow>
-                <boxGeometry args={[0.05, 0.6, 2]} />
-                <meshStandardMaterial
-                    color="#00f2ff"
-                    transparent
-                    opacity={0.3}
-                    metalness={0.8}
-                    roughness={0.1}
-                />
-            </mesh>
-            <mesh position={[-1.6, 0.6, -1]} castShadow>
-                <boxGeometry args={[0.05, 0.6, 2]} />
-                <meshStandardMaterial
-                    color="#00f2ff"
-                    transparent
-                    opacity={0.3}
-                    metalness={0.8}
-                    roughness={0.1}
-                />
-            </mesh>
-            <SocketPoint position={[0, -0.75, 0]} type="chassis" />
+            {/* GLB model replaces the primitive box geometry with transparent panels */}
+            <primitive object={scene.clone()} castShadow />
+            <SocketPoint position={[0, 1, 0]} type="chassis" />
         </group>
     );
 }
 
-// 6. ПУЛЬТ
+// 6. ПУЛЬТ – kept as primitives (no .glb provided)
 export function ControllerModel() {
     return (
         <group>
@@ -177,3 +137,9 @@ export default {
     body: BodyModel,
     controller: ControllerModel
 };
+
+// Preload all GLB models to avoid runtime loading hitches
+useGLTF.preload(CHASSIS_MODEL);
+useGLTF.preload(WHEEL_MODEL);
+useGLTF.preload(ENGINE_MODEL);
+useGLTF.preload(BODY_MODEL);

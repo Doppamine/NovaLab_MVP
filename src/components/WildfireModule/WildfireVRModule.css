@@ -1,0 +1,340 @@
+.wildfire-vr-module {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  overflow: hidden;
+  background: #101815;
+  color: #fff7e8;
+}
+
+.wildfire-vr-module canvas {
+  display: block;
+}
+
+.wildfire-topbar,
+.wildfire-mission-panel,
+.wildfire-timeline,
+.wildfire-source-chip {
+  position: absolute;
+  z-index: 10;
+  border: 1px solid rgba(255, 232, 188, 0.18);
+  background: rgba(19, 24, 20, 0.76);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.32);
+}
+
+.wildfire-topbar {
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+
+.wildfire-topbar > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.wildfire-kicker,
+.wildfire-section-label {
+  color: #ffd166;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.wildfire-topbar strong {
+  overflow: hidden;
+  color: #fff6df;
+  font-size: clamp(0.95rem, 1.7vw, 1.18rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wildfire-vr-button,
+.wildfire-timeline button,
+.wildfire-estimate-row button {
+  min-height: 38px;
+  border: 1px solid rgba(255, 191, 111, 0.42);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e66c2f, #ab3b24);
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 10px 28px rgba(142, 43, 25, 0.34);
+}
+
+.wildfire-vr-button:hover,
+.wildfire-timeline button:hover,
+.wildfire-estimate-row button:hover {
+  border-color: rgba(255, 223, 178, 0.72);
+  filter: brightness(1.05);
+}
+
+.wildfire-mission-panel {
+  top: 92px;
+  right: 14px;
+  width: min(350px, calc(100% - 28px));
+  max-height: calc(100% - 174px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.wildfire-panel-section {
+  display: grid;
+  gap: 10px;
+}
+
+.wildfire-physics-brief {
+  margin: 0;
+  color: rgba(255, 247, 232, 0.78);
+  font-size: 0.84rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.wildfire-panel-section + .wildfire-panel-section {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 232, 188, 0.14);
+}
+
+.wildfire-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wildfire-metric {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.wildfire-metric span,
+.wildfire-metric small {
+  color: rgba(255, 247, 232, 0.66);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.wildfire-metric strong {
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.wildfire-formula-stack {
+  display: grid;
+  gap: 7px;
+}
+
+.wildfire-formula-stack code {
+  min-width: 0;
+  display: block;
+  padding: 8px 9px;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: rgba(9, 13, 12, 0.72);
+  color: #e4f7ff;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.wildfire-fuel-list {
+  display: grid;
+  gap: 7px;
+}
+
+.wildfire-fuel-list div {
+  min-height: 30px;
+  display: grid;
+  grid-template-columns: 13px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 247, 232, 0.82);
+  font-size: 0.8rem;
+}
+
+.wildfire-fuel-list i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.wildfire-fuel-list strong {
+  color: #fff2cb;
+  font-size: 0.76rem;
+}
+
+.wildfire-estimate-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.wildfire-estimate-row input {
+  min-width: 0;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(4, 7, 7, 0.68);
+  color: #fff9ec;
+  font: inherit;
+  font-weight: 800;
+  padding: 0 10px;
+}
+
+.wildfire-estimate-row input:focus {
+  border-color: rgba(255, 209, 102, 0.8);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.16);
+}
+
+.wildfire-result {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.wildfire-result-success {
+  background: rgba(69, 189, 122, 0.14);
+  border: 1px solid rgba(102, 224, 150, 0.4);
+}
+
+.wildfire-result-close {
+  background: rgba(255, 209, 102, 0.13);
+  border: 1px solid rgba(255, 209, 102, 0.38);
+}
+
+.wildfire-result-warning {
+  background: rgba(229, 86, 50, 0.15);
+  border: 1px solid rgba(244, 121, 78, 0.42);
+}
+
+.wildfire-result span {
+  color: rgba(255, 247, 232, 0.76);
+}
+
+.wildfire-timeline {
+  left: 14px;
+  bottom: 14px;
+  min-height: 54px;
+  width: min(620px, calc(100% - 392px));
+  display: grid;
+  grid-template-columns: auto auto minmax(120px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.wildfire-timeline button {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 0.82rem;
+}
+
+.wildfire-progress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.wildfire-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffd166, #ff7b32, #e83f2c);
+  box-shadow: 0 0 18px rgba(255, 105, 45, 0.56);
+  transition: width 0.16s linear;
+}
+
+.wildfire-timeline strong {
+  color: #fff2ca;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.wildfire-source-chip {
+  left: 14px;
+  top: 92px;
+  max-width: 330px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: rgba(255, 247, 232, 0.72);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+@media (max-width: 1120px) {
+  .wildfire-mission-panel {
+    width: 320px;
+  }
+
+  .wildfire-timeline {
+    width: min(560px, calc(100% - 358px));
+  }
+}
+
+@media (max-width: 860px) {
+  .wildfire-vr-module {
+    min-height: 920px;
+  }
+
+  .wildfire-topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wildfire-topbar strong {
+    white-space: normal;
+  }
+
+  .wildfire-mission-panel {
+    top: auto;
+    right: 10px;
+    bottom: 146px;
+    left: 10px;
+    width: auto;
+    max-height: 430px;
+  }
+
+  .wildfire-source-chip {
+    display: none;
+  }
+
+  .wildfire-timeline {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    width: auto;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wildfire-progress {
+    grid-column: 1 / -1;
+  }
+}

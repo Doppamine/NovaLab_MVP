@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:https": "node scripts/ensure-dev-port-free.mjs 5173 && NOVALAB_HTTPS=true vite --host 0.0.0.0",
+    "cert:https": "node scripts/create-local-https-cert.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -13,11 +15,15 @@
     "@react-spring/three": "^10.0.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "@react-three/xr": "^6.6.21",
     "framer-motion": "^12.23.24",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-ga4": "^3.0.1",
     "three": "^0.181.2",
-    "three-stdlib": "^2.36.1"
+    "three-stdlib": "^2.36.1",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -10,7 +10,6 @@ import {
     startBreathing, stopBreathing
 } from './PumpSFX';
 
-// Начальные параметры "Самопомощи"
 const INITIAL_PARAMS = {
     pistonDiameter: 50,
     strokeLength: 0.5,
@@ -20,12 +19,12 @@ const INITIAL_PARAMS = {
 };
 
 const AVAILABLE_PARTS = [
-    { id: 'pipe', name: 'Труба ПВХ', icon: '🚰', desc: 'Основа насоса', baseCost: 3 },   // $3/м длины
-    { id: 'piston', name: 'Поршень', icon: '💿', desc: 'Создает тягу', baseCost: 8 },
-    { id: 'valveBottom', name: 'Кл. Дна', icon: '🕳️', desc: 'Держит воду', baseCost: 5 },
-    { id: 'valvePiston', name: 'Кл. Поршня', icon: '🍩', desc: 'Пропускает вверх', baseCost: 5 },
-    { id: 'handle', name: 'Ручка', icon: '🕹️', desc: 'Механизм', baseCost: 12 },
-    { id: 'seal', name: 'Герметик', icon: '🩹', desc: 'От протечек', baseCost: 2 },
+    { id: 'pipe', name: 'PVC pipe', icon: '🚰', desc: 'Main pump body', baseCost: 3 },
+    { id: 'piston', name: 'Piston', icon: '💿', desc: 'Creates suction', baseCost: 8 },
+    { id: 'valveBottom', name: 'Bottom valve', icon: '🕳️', desc: 'Holds water column', baseCost: 5 },
+    { id: 'valvePiston', name: 'Piston valve', icon: '🍩', desc: 'Lets water move up', baseCost: 5 },
+    { id: 'handle', name: 'Handle', icon: '🕹️', desc: 'Manual motion input', baseCost: 12 },
+    { id: 'seal', name: 'Seal', icon: '🩹', desc: 'Prevents leaks', baseCost: 2 },
 ];
 
 import PumpScene from './PumpScene';
@@ -33,10 +32,11 @@ import GroundEnvironment from './GroundEnvironment';
 import { WaterParticles, AquiferBubbles } from './WaterEffects';
 import AnimatedCounter from './AnimatedCounter';
 
-export default function WaterPumpModule() {
+export default function WaterPumpModule({ showDetails = true }) {
     const [params, setParams] = useState(INITIAL_PARAMS);
     const [assembledParts, setAssembledParts] = useState([]);
     const [isSimulating, setIsSimulating] = useState(false);
+    const [userMessage, setUserMessage] = useState('Select all pump components, then start the simulation to test water flow.');
 
     const [metrics, setMetrics] = useState({
         volume: 0,
@@ -70,6 +70,7 @@ export default function WaterPumpModule() {
     const handleAssemble = (partId) => {
         if (!assembledParts.includes(partId)) {
             setAssembledParts([...assembledParts, partId]);
+            setUserMessage(`${getWaterPartName(AVAILABLE_PARTS, partId)} added to the pump system.`);
             playAssembleClick();
         }
     };
@@ -79,7 +80,18 @@ export default function WaterPumpModule() {
         setIsSimulating(false);
         stopPumpLoop();
         stopBreathing();
+        setUserMessage(`${getWaterPartName(AVAILABLE_PARTS, partId)} removed. Run the simulation again after rebuilding.`);
         playRemoveClick();
+    };
+
+    const resetPump = () => {
+        setParams(INITIAL_PARAMS);
+        setAssembledParts([]);
+        setIsSimulating(false);
+        stopPumpLoop();
+        stopBreathing();
+        setMetrics({ volume: 0, force: 0, efficiency: 0, peopleServed: 0, fatigueRatio: 0, error: null });
+        setUserMessage('Pump workspace reset. Select components and test the system again.');
     };
 
     const toggleSimulation = () => {
@@ -87,22 +99,28 @@ export default function WaterPumpModule() {
         const hasAll = required.every(p => assembledParts.includes(p));
 
         if (!isSimulating && !hasAll) {
-            setMetrics(m => ({ ...m, error: "Насос собран не полностью или не герметично!" }));
+            const missing = required
+                .filter(p => !assembledParts.includes(p))
+                .map(p => getWaterPartName(AVAILABLE_PARTS, p))
+                .join(', ');
+            const message = `Required components are missing: ${missing}.`;
+            setMetrics(m => ({ ...m, error: message }));
+            setUserMessage(message);
             playError();
             return;
         }
 
         if (!isSimulating) {
-            // Запуск
             setMetrics(m => ({ ...m, error: null }));
             setIsSimulating(true);
+            setUserMessage('Simulation started. Watch the water flow and performance metrics.');
             playWaterSplash();
             startPumpLoop(params.cycleSpeed);
         } else {
-            // Остановка
             setIsSimulating(false);
             stopPumpLoop();
             stopBreathing();
+            setUserMessage('Simulation paused. Adjust depth or pump size, then run it again.');
         }
     };
 
@@ -120,10 +138,12 @@ export default function WaterPumpModule() {
             let newPeople = 0;
 
             if (!pumpReachesWater) {
-                newError = `Насос не достигает воды! Глубина насоса: ${params.pumpDepth}м, уровень воды: ${params.waterDepth}м`;
+                newError = `The pump does not reach the water. Pump depth: ${params.pumpDepth} m. Water level: ${params.waterDepth} m.`;
+                setUserMessage('Incomplete result: increase pump depth or raise the water level before testing again.');
                 playError();
             } else if (fatigue >= 1.0) {
-                newError = "💀 Человек не может качать! Уменьшите диаметр или глубину.";
+                newError = 'The force is too high for comfortable manual pumping. Reduce piston diameter or pump depth.';
+                setUserMessage('The design is too hard to operate. Adjust the parameters and rerun the test.');
                 playError();
             } else {
                 const radiusM = (params.pistonDiameter / 2) / 1000;
@@ -132,6 +152,7 @@ export default function WaterPumpModule() {
                 newEff = Math.max(10, 100 - fatigue * 50);
                 const dailyLiters = newFlow * 60 * 8;
                 newPeople = Math.floor(dailyLiters / 20);
+                setUserMessage('The pump works. Water is moving through the assembled system.');
             }
 
             // Дыхание при усталости
@@ -164,10 +185,10 @@ export default function WaterPumpModule() {
     }, [buildCost, metrics.peopleServed]);
 
     return (
-        <div className="water-module-container">
-            {/* ЛЕВАЯ ПАНЕЛЬ: Инвентарь */}
+        <div className={`water-module-container ${showDetails ? '' : 'details-hidden'}`}>
+            {showDetails ? (
             <div className="panel left-panel">
-                <h2>Инвентарь (Самопомощь)</h2>
+                <h2>Pump components</h2>
                 <div className="parts-grid">
                     {AVAILABLE_PARTS.map(part => {
                         const isAssembled = assembledParts.includes(part.id);
@@ -195,7 +216,7 @@ export default function WaterPumpModule() {
                                             exit={{ scale: 0 }}
                                             className="status-badge"
                                         >
-                                            Установлено ✓
+                                            Installed
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -204,8 +225,8 @@ export default function WaterPumpModule() {
                     })}
                 </div>
             </div>
+            ) : null}
 
-            {/* ЦЕНТР: 3D Сцена */}
             <div className="center-workspace">
                 {/* Виньетка усталости */}
                 {isSimulating && metrics.fatigueRatio > 0.5 && (
@@ -261,21 +282,25 @@ export default function WaterPumpModule() {
                 </Canvas>
 
                 <div className="simulation-controls">
+                    <div className="water-user-feedback" role="status">{userMessage}</div>
                     <button
                         className={`sim-btn ${isSimulating ? 'stop' : 'start'}`}
                         onClick={toggleSimulation}
                     >
-                        {isSimulating ? '⏹ ОСТАНОВИТЬ' : '▶ КАЧАТЬ ВОДУ'}
+                        {isSimulating ? 'Stop simulation' : 'Start pump test'}
+                    </button>
+                    <button className="sim-btn reset" onClick={resetPump}>
+                        Reset
                     </button>
                 </div>
             </div>
 
-            {/* ПРАВАЯ ПАНЕЛЬ: Настройки и Метрики */}
+            {showDetails ? (
             <div className="panel right-panel">
-                <h2>Параметры</h2>
+                <h2>Parameters</h2>
                 <div className="sliders-container">
                     <div className="slider-group">
-                        <label>Диаметр поршня: {params.pistonDiameter} мм</label>
+                        <label>Piston diameter: {params.pistonDiameter} mm</label>
                         <input
                             type="range" min="30" max="100"
                             value={params.pistonDiameter}
@@ -283,7 +308,7 @@ export default function WaterPumpModule() {
                         />
                     </div>
                     <div className="slider-group">
-                        <label>Длина хода: {params.strokeLength} м</label>
+                        <label>Stroke length: {params.strokeLength} m</label>
                         <input
                             type="range" min="0.2" max="1.5" step="0.1"
                             value={params.strokeLength}
@@ -291,7 +316,7 @@ export default function WaterPumpModule() {
                         />
                     </div>
                     <div className="slider-group">
-                        <label>🌊 Уровень воды: {params.waterDepth} м</label>
+                        <label>Water level: {params.waterDepth} m</label>
                         <input
                             type="range" min="5" max="15" step="1"
                             value={params.waterDepth}
@@ -299,7 +324,7 @@ export default function WaterPumpModule() {
                         />
                     </div>
                     <div className="slider-group">
-                        <label>🔧 Глубина насоса: {params.pumpDepth} м{params.pumpDepth < params.waterDepth ? ' ⚠️' : ' ✅'}</label>
+                        <label>Pump depth: {params.pumpDepth} m {params.pumpDepth < params.waterDepth ? 'Needs deeper setup' : 'Ready'}</label>
                         <input
                             type="range" min="5" max="15" step="1"
                             value={params.pumpDepth}
@@ -308,25 +333,25 @@ export default function WaterPumpModule() {
                     </div>
                 </div>
 
-                <h2>Бизнес-метрики</h2>
+                <h2>Results</h2>
                 <div className="metrics-dashboard">
                     <div className="metric-box highlight">
-                        <span className="metric-label">💰 Стоимость сборки</span>
+                        <span className="metric-label">Build cost</span>
                         <span className="metric-value green"><AnimatedCounter value={buildCost} prefix="$" /></span>
                     </div>
                     <div className="metric-box highlight">
-                        <span className="metric-label">👥 Обеспечивает водой</span>
-                        <span className="metric-value blue"><AnimatedCounter value={metrics.peopleServed} suffix=" чел/день" /></span>
+                        <span className="metric-label">People served</span>
+                        <span className="metric-value blue"><AnimatedCounter value={metrics.peopleServed} suffix=" people/day" /></span>
                         {metrics.peopleServed > 0 && (
-                            <span className="metric-sub">${costPerPerson} / чел / день</span>
+                            <span className="metric-sub">${costPerPerson} / person / day</span>
                         )}
                     </div>
                     <div className="metric-box">
-                        <span className="metric-label">💧 Поток</span>
-                        <span className="metric-value blue"><AnimatedCounter value={metrics.volume} suffix=" л/мин" /></span>
+                        <span className="metric-label">Water flow</span>
+                        <span className="metric-value blue"><AnimatedCounter value={metrics.volume} suffix=" L/min" /></span>
                     </div>
                     <div className={`metric-box ${metrics.fatigueRatio > 0.7 ? 'danger' : ''}`}>
-                        <span className="metric-label">💪 Усилие / Усталость</span>
+                        <span className="metric-label">Force / fatigue</span>
                         <span className="metric-value orange">
                             <AnimatedCounter value={metrics.force} suffix=" N" />
                             {metrics.fatigueRatio > 0 && (
@@ -345,11 +370,16 @@ export default function WaterPumpModule() {
                         )}
                     </div>
                     <div className="metric-box">
-                        <span className="metric-label">⚡ КПД</span>
+                        <span className="metric-label">Efficiency</span>
                         <span className="metric-value green"><AnimatedCounter value={metrics.efficiency} suffix="%" /></span>
                     </div>
                 </div>
             </div>
+            ) : null}
         </div>
     );
+}
+
+function getWaterPartName(parts, partId) {
+    return parts.find(part => part.id === partId)?.name || 'Component';
 }

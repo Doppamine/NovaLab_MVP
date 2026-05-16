@@ -1,0 +1,210 @@
+{
+  "id": "burning_stick_lab_v1",
+  "version": "1.0.0",
+  "simulation_kind": "burning_stick",
+  "title": "Burn Lab — горящая палка",
+  "subject": "physics",
+  "topic": "thermodynamics.combustion_front",
+  "grade": [8, 9, 10, 11],
+  "estimated_minutes": 20,
+  "language": "ru",
+  "description": "Палка горит не просто \"с одинаковой скоростью\". На фронт горения влияют толщина, влажность, кислород, ветер и даже способ поджига. Здесь можно устроить почти инженерный стенд по горению — и увидеть, как меняется время полного прогорания.",
+  "pedagogical_goals": [
+    "Понять, что время горения зависит не только от длины, но и от условий тепло- и массообмена.",
+    "Увидеть, как влажность и дефицит кислорода замедляют фронт горения.",
+    "Сравнить простую оценку t = L / v с численной моделью фронта горения.",
+    "Почувствовать, как режим поджига и толщина меняют результат сильнее, чем кажется на глаз."
+  ],
+  "scene": {
+    "environment": "burn_chamber",
+    "material_preset": "pine_stick",
+    "ignition_mode": "one_end",
+    "ignition_count": 1,
+    "ambient_temperature_c": 22,
+    "ambient_temperature_k": 295.15,
+    "oxygen_fraction": 0.2095,
+    "wind_speed": 1.4
+  },
+  "parameters_ui": [
+    {
+      "key": "stick.material_preset",
+      "label": "Материал",
+      "type": "select",
+      "options": [
+        { "value": "pine_stick", "label": "🌲 Сосновая палочка" },
+        { "value": "bamboo_stick", "label": "🎋 Бамбуковая шпажка" },
+        { "value": "oak_stick", "label": "🪵 Дубовая рейка" }
+      ],
+      "default": "pine_stick"
+    },
+    {
+      "key": "stick.length",
+      "label": "Длина палки",
+      "unit_display": "м",
+      "unit_si": "m",
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.01,
+      "default": 0.7
+    },
+    {
+      "key": "stick.radius",
+      "label": "Радиус палки",
+      "unit_display": "мм",
+      "unit_si": "m",
+      "display_scale": 1000,
+      "min": 0.003,
+      "max": 0.03,
+      "step": 0.0005,
+      "default": 0.008
+    },
+    {
+      "key": "stick.moisture_fraction",
+      "label": "Влажность",
+      "unit_display": "%",
+      "unit_si": "1",
+      "display_scale": 100,
+      "min": 0.0,
+      "max": 0.35,
+      "step": 0.01,
+      "default": 0.08
+    },
+    {
+      "key": "environment.oxygen_fraction",
+      "label": "Кислород в среде",
+      "unit_display": "%",
+      "unit_si": "1",
+      "display_scale": 100,
+      "min": 0.12,
+      "max": 0.35,
+      "step": 0.005,
+      "default": 0.2095
+    },
+    {
+      "key": "environment.wind_speed",
+      "label": "Обдув / ветер",
+      "unit_display": "м/с",
+      "unit_si": "m/s",
+      "min": 0.0,
+      "max": 8.0,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "key": "environment.ambient_temperature_c",
+      "label": "Температура воздуха",
+      "unit_display": "°C",
+      "unit_si": "C",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "default": 22
+    },
+    {
+      "key": "ignition.mode",
+      "label": "Поджиг",
+      "type": "select",
+      "options": [
+        { "value": "one_end", "label": "🔥 С одного конца" },
+        { "value": "two_ends", "label": "🔥🔥 С двух концов" }
+      ],
+      "default": "one_end"
+    }
+  ],
+  "solver": {
+    "method": "RK4_adaptive",
+    "max_dt": 0.05,
+    "relative_tolerance": 0.0001,
+    "max_simulation_time": 600
+  },
+  "outputs": [
+    { "key": "burnout_time", "unit": "s", "label": "Время полного прогорания" },
+    { "key": "remaining_length", "unit": "m", "label": "Оставшаяся длина" },
+    { "key": "mass_remaining", "unit": "kg", "label": "Оставшаяся масса" },
+    { "key": "front_temperature", "unit": "K", "label": "Температура фронта" },
+    { "key": "heat_release_rate", "unit": "W", "label": "Тепловыделение" }
+  ],
+  "assumptions": [
+    "Модель одномерная: фронт распространяется вдоль палки, а не по сложной 3D-геометрии.",
+    "Материал считается однородным, без сучков и трещин.",
+    "Коэффициенты фронта горения — эффективные инженерные параметры для учебной симуляции.",
+    "Кислород и температура влияют на фронт через сглаженные коэффициенты, без полной химической кинетики.",
+    "Палка не ломается и не провисает; теплоотдача в опору не учитывается."
+  ],
+  "references": [
+    "Drysdale, D. An Introduction to Fire Dynamics, 3rd ed.",
+    "SFPE Handbook of Fire Protection Engineering, sections on ignition and flame spread.",
+    "CRC Handbook of Chemistry and Physics — density data for wood materials.",
+    "NovaLab educational calibration set for thin-stick combustion under open-air conditions."
+  ],
+  "lesson_flow": {
+    "phase_1_setup": {
+      "display_text": "На глаз кажется, что палка просто равномерно укорачивается. Но реальное горение — это гонка между нагревом, кислородом и влажностью. Попробуй сначала оценить время прогорания грубо, а потом посмотри, как численная модель ломает интуицию.",
+      "highlight_params": [
+        "stick.length",
+        "stick.radius",
+        "stick.moisture_fraction",
+        "environment.oxygen_fraction",
+        "ignition.mode"
+      ]
+    },
+    "phase_2_manual": {
+      "prompt": "Сделай инженерную оценку: считай, что фронт идёт равномерно со скоростью базового горения материала. Сколько секунд палка будет гореть полностью?",
+      "inputs": [
+        { "key": "student_burnout_time", "label": "Время прогорания", "type": "number", "unit": "с" }
+      ],
+      "hints": [
+        "Подсказка 1: если фронт идёт с примерно постоянной скоростью v, то t ≈ L / v.",
+        "Подсказка 2: если поджечь с двух концов, каждому фронту нужно пройти только половину длины.",
+        "Подсказка 3: влажность и дефицит кислорода уменьшают реальную скорость фронта — грубая оценка почти всегда оптимистична."
+      ]
+    },
+    "phase_3_simulate": {
+      "show_charts": ["remaining_length", "front_temperature", "mass_remaining"],
+      "show_burn_scene": true
+    },
+    "phase_4_compare": {
+      "expected_answer": { "key": "burnout_time", "tolerance_percent": 18 }
+    },
+    "phase_5_explain": {
+      "default_level": 2,
+      "show_wiggle": true,
+      "wiggle_params": [
+        "environment.oxygen_fraction",
+        "environment.wind_speed",
+        "stick.moisture_fraction",
+        "stick.radius"
+      ]
+    }
+  },
+  "reference_test_points": [
+    {
+      "label": "Сухая сосновая палочка, один конец",
+      "inputs": {
+        "material": "pine_stick",
+        "length": 0.7,
+        "radius": 0.008,
+        "moisture_fraction": 0.08,
+        "oxygen_fraction": 0.2095,
+        "wind_speed": 1.4,
+        "ambient_temperature_c": 22,
+        "ignition_mode": "one_end"
+      },
+      "expected_qualitative": "Догореть должна примерно за 1.5-2.5 минуты; температура фронта быстро выходит в область 700-900 K."
+    },
+    {
+      "label": "Тот же стенд, но поджиг с двух концов",
+      "inputs": {
+        "material": "pine_stick",
+        "length": 0.7,
+        "radius": 0.008,
+        "moisture_fraction": 0.08,
+        "oxygen_fraction": 0.2095,
+        "wind_speed": 1.4,
+        "ambient_temperature_c": 22,
+        "ignition_mode": "two_ends"
+      },
+      "expected_qualitative": "Время должно уменьшиться почти вдвое, но не строго в 2 раза из-за переходных режимов нагрева."
+    }
+  ]
+}
