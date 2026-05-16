@@ -4,7 +4,6 @@ import ProductErrorBoundary from './components/common/ProductErrorBoundary';
 import { LocalizationProvider, useLocale } from './i18n/LocalizationContext';
 import { getModules } from './services/moduleService';
 import { initGA, trackPageView, trackEvent } from './services/analyticsService';
-import { initGA, trackPageView, trackEvent } from './services/analyticsService';
 import './App.css';
 
 const PartsPanel = lazy(() => import('./components/PartsPanel/PartsPanel'));
