@@ -46,6 +46,24 @@ function AppContent() {
   const [feedback, setFeedback] = useState('');
   const [theme, setTheme] = useState(() => localStorage.getItem('novalab-theme') || 'dark');
 
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    let path = `/${view}`;
+    if (view === 'module' && activeModuleId) {
+      path = `/module/${activeModuleId}`;
+    } else if (showPhysicsLab) {
+      path = '/module/apollo-15';
+    } else if (showAetherLab) {
+      path = '/module/aether-vr';
+    } else if (showCarDemo) {
+      path = '/demo/car-3d';
+    }
+    trackPageView(path);
+  }, [view, activeModuleId, showPhysicsLab, showAetherLab, showCarDemo]);
+
   const navItems = useMemo(() => [
     { id: 'home', label: t('Home') },
     { id: 'modules', label: t('Modules') },
