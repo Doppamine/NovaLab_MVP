@@ -3,6 +3,8 @@ import Header from './components/Constructor/Header';
 import ProductErrorBoundary from './components/common/ProductErrorBoundary';
 import { LocalizationProvider, useLocale } from './i18n/LocalizationContext';
 import { getModules } from './services/moduleService';
+import { initGA, trackPageView, trackEvent } from './services/analyticsService';
+import { initGA, trackPageView, trackEvent } from './services/analyticsService';
 import './App.css';
 
 const PartsPanel = lazy(() => import('./components/PartsPanel/PartsPanel'));
@@ -111,6 +113,7 @@ function AppContent() {
   const localizedModules = useMemo(() => localizeTree(modules), [localizeTree, modules]);
 
   const openModule = (moduleId) => {
+    trackEvent('Module', 'Open', moduleId);
     setFeedback('');
 
     if (moduleId === 'apollo-15') {
@@ -156,6 +159,7 @@ function AppContent() {
   };
 
   const handleCarLaunch = (assembly = null) => {
+    trackEvent('Action', 'Car Launch', 'car-3d');
     // assembly can be { hasEngine, hasBattery } from the constructor
     setCarDemoAssembly(assembly);
     setShowCarDemo(true);

@@ -24,3 +24,4 @@ certs/*.pem
 *.njsproj
 *.sln
 *.sw?
+NovaLab_MVP.code-workspace
