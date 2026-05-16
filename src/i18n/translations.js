@@ -795,5 +795,11 @@ export const translations = {
     'To grade selection': 'К выбору класса',
     'Grade 7: Section 1': '7 класс: раздел 1',
     'Introduction to physics (9 lessons)': 'Введение в физику (9 уроков)',
+    'Contacts': 'Контакты',
+    'Get in touch with us': 'Свяжитесь с нами',
+    'Feel free to reach out to us for partnerships or any other inquiries.': 'Мы всегда открыты для новых идей, партнерств и предложений.',
+    'Email': 'Эл. почта',
+    'Phone': 'Телефон',
+    'Instagram': 'Инстаграм',
   },
 };

@@ -67,7 +67,7 @@ function AppContent() {
   const navItems = useMemo(() => [
     { id: 'home', label: t('Home') },
     { id: 'modules', label: t('Modules') },
-    { id: 'demo', label: t('Demo') },
+    { id: 'contacts', label: t('Contacts') },
     { id: 'teachers', label: t('For Teachers') },
     { id: 'about', label: t('About') },
   ], [t]);
@@ -337,6 +337,7 @@ function AppContent() {
 
         {view === 'teachers' && <TeachersPage onOpenModules={openModules} />}
         {view === 'about' && <AboutPage onOpenModules={openModules} />}
+        {view === 'contacts' && <ContactsPage />}
 
         {view === 'module' && (
           <ModuleWorkspace
@@ -767,6 +768,36 @@ function AboutPage({ onOpenModules }) {
           <span>{t('Friendly loading, empty, and recovery states')}</span>
         </div>
         <button className="btn btn-primary" onClick={onOpenModules}>{t('Review modules')}</button>
+      </section>
+    </div>
+  );
+}
+
+function ContactsPage() {
+  const { t } = useLocale();
+
+  return (
+    <div className="product-page product-page-compact">
+      <section className="product-section about-section">
+        <SectionHeader
+          eyebrow={t('Contacts')}
+          title={t('Get in touch with us')}
+          copy={t('Feel free to reach out to us for partnerships or any other inquiries.')}
+        />
+        <div className="readiness-list" style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem'}}>
+          <span style={{fontSize: '1.2rem', color: 'var(--color-text-primary)', padding: '1.2rem'}}>
+            <strong style={{minWidth: '120px', display: 'inline-block'}}>{t('Email')}:</strong> 
+            <a href="mailto:novalab.partnership@gmail.com" style={{color: 'var(--color-accent-cyan)', textDecoration: 'none', fontWeight: 'bold'}}>novalab.partnership@gmail.com</a>
+          </span>
+          <span style={{fontSize: '1.2rem', color: 'var(--color-text-primary)', padding: '1.2rem'}}>
+            <strong style={{minWidth: '120px', display: 'inline-block'}}>{t('Phone')}:</strong> 
+            <a href="tel:+77073501234" style={{color: 'var(--color-accent-cyan)', textDecoration: 'none', fontWeight: 'bold'}}>+77073501234</a>
+          </span>
+          <span style={{fontSize: '1.2rem', color: 'var(--color-text-primary)', padding: '1.2rem'}}>
+            <strong style={{minWidth: '120px', display: 'inline-block'}}>{t('Instagram')}:</strong> 
+            <a href="https://instagram.com/novalab.global" target="_blank" rel="noopener noreferrer" style={{color: 'var(--color-accent-cyan)', textDecoration: 'none', fontWeight: 'bold'}}>novalab.global</a>
+          </span>
+        </div>
       </section>
     </div>
   );
